@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./Components/Home";
 import Login from "./Components/Login";
 import About from "./Components/About";
@@ -33,13 +33,7 @@ function App() {
           <Route path="Unauthorized" element={<Unauthorized />} />
 
           {/* we want to protect these routes */}
-          {/* <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
-            <Route element={<PersistLogin />}> */}
           <Route path="Register" element={<RegisterStation />} />
-          {/* multiple route can be placed in here */}
-          {/* </Route>
-          </Route> */}
-
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
             <Route element={<PersistLogin />}>
               <Route path="Admin" element={<Admin />} />
