@@ -81,6 +81,13 @@ button {
   display: inline-block;
 }
 
+.Form-Input {
+  margin-top: 10px;
+  width: 400px;
+  position: center;
+  box-sizing: border-box;
+  justify-content: center;
+}
 /* .App {
   display: flex;
   flex-direction: column;

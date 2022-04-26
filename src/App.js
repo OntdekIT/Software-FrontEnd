@@ -13,6 +13,7 @@ import Layout from "./Components/Layout";
 import PersistLogin from "./Components/PersistLogin";
 import RequireAuth from "./Components/RequireAuth";
 import NavBar from "./Components/NavBar";
+import UserDetails from "./Components/UserDetails";
 
 const ROLES = {
   User: 2001,
@@ -31,7 +32,7 @@ function App() {
           <Route path="Login" element={<Login />} />
           <Route path="Signup" element={<FormSignup />} />
           <Route path="Unauthorized" element={<Unauthorized />} />
-
+          <Route path="Userdetails" element={<UserDetails />} />
           {/* we want to protect these routes */}
           <Route path="Register" element={<RegisterStation />} />
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>

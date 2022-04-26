@@ -1,5 +1,3 @@
-import FormSignup from "../../src/Pages/FormSignup";
-
 it("Should POST the correct json", () => {
   const username = "Piet";
   const email = "test@email.com";
