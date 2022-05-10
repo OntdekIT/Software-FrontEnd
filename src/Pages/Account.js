@@ -1,15 +1,15 @@
-import React from 'react'
-
+import React from 'react';
 import { useState, useEffect } from "react";
 import axios from "axios";
-
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Account() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  
+  let navigate = useNavigate();
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -28,7 +28,6 @@ export default function Account() {
     getData();
   });
 
-
   return (
     <div className="Account">
       <h1>Stations</h1>
@@ -36,20 +35,19 @@ export default function Account() {
       {error && (
         <div>{`There is a problem fetching the post data - ${error}`}</div>
       )}
-      <ul>
+      <table>
+        <tr>
+          <th>Station Naam</th>
+        </tr>
         {data &&
-          data.map(({ id, name, height, locationId, locationName, latitude, longitude, sensors }) => (
-            <lu key={id}>
-              <h3>Naam: {name}</h3>
-              <h2>Hoogte: {height}</h2>
-              <h2>Locatie Id: {locationId}</h2>
-              <h2>Locatie: {locationName}</h2>
-              <h2>Latitude: {latitude}</h2>
-              <h2>Longitude: {longitude}</h2>
-              <h2>Aantal sensoren: {sensors}</h2>
-            </lu>
+          <ul>
+          {data.map(({ id, name }) => (
+            <li key={id}>
+              <Link to="/Station/" state={id}>{name}</Link>
+            </li>
           ))}
-      </ul>
+          </ul>}
+      </table>
     </div>
   );
 }
