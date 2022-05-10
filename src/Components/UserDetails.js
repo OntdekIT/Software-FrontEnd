@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../api/axios";
 
 function UserDetails() {
-  const [userData, setUserData] = useState();
+  const [userData, setUserData] = useState(null);
 
   const handleChange = (e) => {
     console.log(e);
@@ -11,14 +11,17 @@ function UserDetails() {
   const handleSubmit = (e) => {
     console.log(e);
   };
-  axios
-    .get("http://localhost:8082/api/User", {})
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8082/api/User/1", {})
+      .then((response) => {
+        setUserData(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <>
@@ -32,6 +35,7 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
+            value={userData.username}
           />
           <label className="labels">Email</label>
           <input
@@ -40,6 +44,7 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
+            value={userData.mailAddress}
           />
           <label className="labels">Password</label>
           <input
@@ -48,6 +53,7 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
+            value={userData.passwordHash}
           />
           <label className="labels">Repeat Password</label>
           <input
@@ -56,6 +62,7 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
+            value={userData.passwordSalt}
           />
           <button>Update my data!</button>
         </div>
