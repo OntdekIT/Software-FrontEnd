@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "../api/axios";
 
 function UserDetails() {
   const [userData, setUserData] = useState(null);
+  const { id } = useParams();
 
   const handleChange = (e) => {
     console.log(e);
@@ -14,7 +16,7 @@ function UserDetails() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8082/api/User/1", {})
+      .get(`http://localhost:8082/api/User/${id}`, {})
       .then((response) => {
         setUserData(response);
       })
@@ -44,7 +46,6 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
-            value={userData.mailAddress}
           />
           <label className="labels">Password</label>
           <input
@@ -53,7 +54,6 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
-            value={userData.passwordHash}
           />
           <label className="labels">Repeat Password</label>
           <input
@@ -62,7 +62,6 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
-            value={userData.passwordSalt}
           />
           <button>Update my data!</button>
         </div>
