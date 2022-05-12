@@ -3,38 +3,32 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+export default function Station() {
+    const readValues = {id : 0, name: "", height:0, locationName:"", longtitude:0,latitude:0  };
+    const [station, setStation] = useState(readValues);
 
-export default function Station(props) {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    
-    const location = useLocation();
-    const datas = location.state;
-    console.log(datas);
+    let {id} = useParams();
 
     useEffect(() => {
-      const getData = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:8082/api/Station/` + console.log(datas)
-          );
-          setData(response.data);
-          setError(null);
-        } catch (err) {
-          setError(err.message);
-          setData(null);
-        } finally {
-          setLoading(false);
-        }
-      };
-      getData();
-    });
+
+      axios.get('http://localhost:8082/api/Station/'+ (id))
     
+      .then(resp => {
+        const { id, name, locationName, height, longitude, latitude} = resp.data
+        setStation({ id, name, height, locationName, longitude, latitude })
+        console.log(resp.data);
+      })
+    }, []);
+
     return (
         <div className="Station">
-          <h1>Station</h1>
-          <p>id: {datas}</p>
+          <div>
+              <p>Naam: {station.name}</p>
+              <p>Locatie: {station.locationName}</p>
+              <p>Hoogte: {station.height}</p>
+              <p>Lengtegraad: {station.longitude}</p>
+              <p>Breedtegraad: {station.latitude}</p>
+          </div>
         </div>
     );
 }

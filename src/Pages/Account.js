@@ -8,8 +8,8 @@ export default function Account() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  let navigate = useNavigate();
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const getData = async () => {
       try {
@@ -25,6 +25,7 @@ export default function Account() {
         setLoading(false);
       }
     };
+    const log = console.log(data);
     getData();
   });
 
@@ -43,7 +44,7 @@ export default function Account() {
           <ul>
           {data.map(({ id, name }) => (
             <li key={id}>
-              <Link to="/Station/" state={id}>{name}</Link>
+              <Link to={`/Station/${id}`}> {name}</Link>
             </li>
           ))}
           </ul>}
