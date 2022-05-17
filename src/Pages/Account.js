@@ -27,7 +27,7 @@ export default function Account() {
     };
     const log = console.log(data);
     getData();
-  });
+  },[]);
 
   return (
     <div className="Account">
