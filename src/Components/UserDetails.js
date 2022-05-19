@@ -16,7 +16,7 @@ function UserDetails() {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8082/api/User/${id}`, {})
+      .get(`http://localhost:8082/api/User/1`, {})
       .then((response) => {
         setUserData(response);
       })
@@ -37,7 +37,6 @@ function UserDetails() {
             type="text"
             className="form-control"
             onChange={handleChange}
-            value={userData.username}
           />
           <label className="labels">Email</label>
           <input

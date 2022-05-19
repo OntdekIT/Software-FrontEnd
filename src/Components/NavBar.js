@@ -44,6 +44,10 @@ function NavBar() {
                   {" "}
                   Account
                 </Link>
+                <Link className="nav-link" to="/Stations">
+                  {" "}
+                  Stations
+                </Link>
               </li>
             </ul>
           </div>
