@@ -4,19 +4,14 @@ import axios from "axios";
 
 function RegisterStation() {
   // states for Registration
-  /*  userId is currently forced to 1
-      this needs to be changed once a logged in user is applicable */
   const inputvalues = {
-    userId: 1,
     stationname: "",
     address: "",
     height: 0,
     longitude: 0,
     latitude: 0,
-    ispublic: false,
   };
   const [inputs, setInputs] = useState(inputvalues);
-  const [isChecked, setIsChecked] = useState(false);
   //States for checking errors
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
@@ -24,13 +19,6 @@ function RegisterStation() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInputs({ ...inputs, [name]: value });
-    console.log(inputs);
-  };
-
-  const checkboxHandler = (event) => {
-    setIsChecked(!isChecked);
-    const { name, checked } = event.target;
-    setInputs({ ...inputs, [name]: checked });
     console.log(inputs);
   };
 
@@ -144,15 +132,6 @@ function RegisterStation() {
               name="latitude"
               type="text"
             />
-          </div>
-          <div>
-            <input
-              type="checkbox" 
-              checked={isChecked} 
-              onChange={checkboxHandler} 
-              placeholder="Ispublic" 
-              name="ispublic"/>
-              <label className="label">Ik wil dit station publiek zichtbaar hebben</label>
           </div>
 
           <button className="btn btn-primary" type="submit">
