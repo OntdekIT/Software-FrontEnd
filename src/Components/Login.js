@@ -14,95 +14,98 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";
+    
+    const mailRef = useRef();
+    const errRef = useRef();
+    const successRef = useRef();
+
+    const [mail, setMail] = useState('');
+    const [errMsg, setErrMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
 
     //put focus on user input box
-    const userRef = useRef();
-    const errRef = useRef();
-
-    const [user, setUser] = useState('');
-    const [pwd, setPwd] = useState('');
-    const [errMsg, setErrMsg] = useState('');
-
     useEffect(() => {
-      userRef.current.focus();
+      mailRef.current.focus();
     }, [])
 
     useEffect(() => {
       setErrMsg('');
-    }, [user, pwd])
+      setSuccessMsg('');
+    }, [mail])
 
 
     const handleSubmit = async (e) => {
       e.preventDefault();
-
       try {
-          const response = await axios.post(LOGIN_URL, JSON.stringify({ email: user, password: pwd }),
-              {
-                  headers: { 'Content-Type': 'application/JSON' },
-                  withCredentials: true
-              });
+        const response = await axios.post(LOGIN_URL, JSON.stringify({ mailAddress : mail }),
+        {
+            headers: { 'Content-Type': 'application/JSON' },
+            withCredentials: false
+        });
 
-          console.log(JSON.stringify(response?.data));
-          const accessToken = response?.data?.accessToken;
-          const roles = response?.data?.roles;
+        console.log(JSON.stringify(response?.data));
+        const accessToken = response?.data?.accessToken;
+        const roles = response?.data?.roles;
 
-          //save all of our info in auth object, which is saved in global context
-          setAuth({ user, pwd, roles, accessToken });
-          setUser('');
-          setPwd('');
-          navigate(from, { replace: true });
-
-      } catch (err) {
-          if (!err?.response) {
-              setErrMsg('No server response');
-          } else if (err.response?.status === 400) {
-              //400 status is harcoded given by backend
-              setErrMsg('Missing username or password');
-          } else if (err.response?.status === 401) {
-              setErrMsg('Unauthorized');
-          } else {
-              setErrMsg('Login failed');
-          }
-          //set focus on error display, so a screenreader can read info
-          errRef.current.focus();
+        //save all of our info in auth object, which is saved in global context
+        setAuth({ mail, roles, accessToken });
+        setMail('');
+        if (response?.status === 200) {
+          setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
         }
+      } catch (err) {
+        if (!err?.response) {
+          setErrMsg('Kon geen verbinding maken, probeer het later opnieuw');
+        } else if (err.response?.status === 400) {
+          setErrMsg('De ingevulde gegevens zijn te lang');
+        } else if (err.response?.status === 404) {
+          setErrMsg('Het email adres kon niet gevonden worden');
+        } else if (err.response?.status === 422) {
+          if (err.response?.data === 2) {
+            setErrMsg('Het email adres ontbreekt');
+          }
+          setErrMsg('Er ontbreken nog gegevens');
+        } else {
+            setErrMsg('Inloggen gefaald, probeer het later opnieuw');
+        }
+        //set focus on error display, so a screenreader can read info
+        errRef.current.focus();
+      }
   }
 
   return (
-    <section>
-        <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+    <section className="form-section">
+        {
+          errMsg && (
+            <div ref={errRef} className="error-msg">{errMsg}</div>
+          )
+        }
+        {
+          successMsg && (
+            <div ref={successRef} className="success-msg">{successMsg}</div>
+          )
+        }
         <h1>Inloggen</h1>
 
         <form onSubmit={handleSubmit}>
-            <label htmlFor="email">Email:</label>
             <input
                 type="email"
                 id="email"
-                ref={userRef}
+                ref={mailRef}
                 autoComplete="off"
-                onChange={(e) => setUser(e.target.value)}
-                value={user}
+                onChange={(e) => setMail(e.target.value)}
+                value={mail}
                 required
+                placeholder="Email"
             />
-            {/*value: to clear input on submission*/}
-
-            <label htmlFor="password">Wachtwoord:</label>
-            <input
-                type="password"
-                id="password"
-                onChange={(e) => setPwd(e.target.value)}
-                value={pwd}
-                required
-            />
-            <button>Inloggen</button>
+            <button className="button">Inloggen</button>
         </form>
-
-        <p>
-            Nog geen account?<br />
+        <div className="form-redirect">
+            <p>Nog geen account?</p>
             <span className="line">
-                <Link to="/signup">Registreer</Link>
+                <Link to="/register">Registreren</Link>
             </span>
-        </p>
+        </div>
     </section>
   )
 }

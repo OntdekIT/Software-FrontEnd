@@ -4,7 +4,7 @@ import Home from "./Components/Home";
 import Login from "./Components/Login";
 import About from "./Components/About";
 import ErrorPage from "./Components/ErrorPage";
-import FormSignup from "./Components/FormSignup";
+import Register from "./Components/Register";
 import RegisterStation from "./Components/RegisterStation";
 import Unauthorized from "./Components/Unauthorized";
 import Admin from "./Components/Admin";
@@ -17,7 +17,7 @@ import NavBar from "./Components/NavBar";
 import Account from "./Components/Account";
 import Station from "./Components/Station";
 import UserDetails from "./Components/UserDetails";
-import MapPage from "./Components/MapPage";
+import Verify from "./Components/Verify"
 
 const ROLES = {
   User: 2001,
@@ -27,28 +27,27 @@ const ROLES = {
 function App() {
   return (
     <>
-      <NavBar> </NavBar>
+      <NavBar></NavBar>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        <Route className="container" path="/" element={<Layout />}>
           {/* public routes */}
           <Route path="/" element={<Home />} />
           <Route path="About" element={<About />} />
           <Route path="Login" element={<Login />} />
-          <Route path="Signup" element={<FormSignup />} />
-          <Route path="/Edit/:stationId" element={<EditStation />} />
+          <Route path="Register" element={<Register />} />
           <Route path="Unauthorized" element={<Unauthorized />} />
-          <Route path="Map" element={<MapPage />} />
           <Route path="/Account" element={<Account />} />
-          <Route path="/Station/:id" element={<Station />} />
-
-          <Route path="Userdetails" element={<UserDetails />} />
+          <Route path="/Verify/:linkHash/:email" element={<Verify />} />
 
           {/* we want to protect these routes */}
-          <Route path="Stations" element={<StationsTable />} />
-          <Route path="Register" element={<RegisterStation />} />
+          <Route path="Userdetails" element={<UserDetails />} />
+          <Route path="/Station/:id" element={<Station />} />
+          <Route path="/Station/Create" element={<RegisterStation />} />
+          <Route path="/Station/Edit:id" element={<EditStation />} />
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
             <Route element={<PersistLogin />}>
               <Route path="Admin" element={<Admin />} />
+              <Route path="Stations" element={<StationsTable />} />
             </Route>
           </Route>
 

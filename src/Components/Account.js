@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Account() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [errMsg, setErrMsg] = useState(null);
 
   const navigate = useNavigate();
   
@@ -17,9 +17,9 @@ export default function Account() {
           `http://localhost:8082/api/Station/user/1` 
         );
         setData(response.data);
-        setError(null);
+        setErrMsg(null);
       } catch (err) {
-        setError(err.message);
+        setErrMsg(err.message);
         setData(null);
       } finally {
         setLoading(false);
@@ -32,10 +32,16 @@ export default function Account() {
   return (
     <div className="Account">
       <h1>Stations</h1>
-      {loading && <div>A moment please...</div>}
-      {error && (
-        <div>{`There is a problem fetching the post data - ${error}`}</div>
-      )}
+      {
+        loading && (
+          <div>A moment please...</div>
+        )
+      }
+      {
+        errMsg && (
+          <div className="error-msg">{errMsg}</div>
+        )
+      }
       <table>
         <tr>
           <th>Station Naam</th>
