@@ -3,6 +3,35 @@ import axios from '../api/axios';
 import {Map, TileLayer, useMap, Popup, Marker, Polygon} from 'react-leaflet';
 import HeatmapLayer from './HeatmapLayer';
 
+const App = () => {
+    const [posts, setPost] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:8082/api/Translation")
+            .then((response) => response.json())
+
+            .then((data) => {
+                console.log(data);
+                setPost(data);
+            })
+
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
+
+    return (null);
+};
+
+function GiveLanguage(){
+    const Language = "Nederlands"
+    return Language;
+}
+
+function GivePageId(){
+    const PageId = "Home"
+    return PageId;
+}
+
 const BLUR = 30;
 const RADIUS = 30;
 

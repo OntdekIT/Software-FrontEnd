@@ -3,6 +3,35 @@ import { useRef, useState, useEffect } from "react";
 import axios from "../api/axios";
 // import { useLocation } from 'react-router-dom';
 
+const App = () => {
+    const [posts, setPost] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:8082/api/Translation")
+            .then((response) => response.json())
+
+            .then((data) => {
+                console.log(data);
+                setPost(data);
+            })
+
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
+
+    return (null);
+};
+
+function GiveLanguage(){
+    const Language = "Nederlands"
+    return Language;
+}
+
+function GivePageId(){
+    const PageId = "UserDetails"
+    return PageId;
+}
+
 const UPDATEUSER_URL = '/User';
 
 function UserDetails() {
