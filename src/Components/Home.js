@@ -53,7 +53,7 @@ const RADIUS = 30;
 }
 
 const colors = {
-    1: "red", 2: "green", 3: "blue", 4: "purple", 5: "cyan", 6: "brown", 7: "gray", 8: "pink", 9: "yellow"
+    1: "red", 2: "green", 3: "blue", 4: "purple", 5: "cyan", 6: "brown", 7: '#F73D94', 8: "pink", 9: "gray", 10: "yellow"
 }
 
 function getRegionColor(regionId){
