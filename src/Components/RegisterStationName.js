@@ -34,8 +34,8 @@ export default function RegisterStationName() {
                     </div>
                     <div className={"col-5"}>
 
-                        <Link to={"/station/create"}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
-                        <button className={"btn btn-primary"} onClick={() => handleClick(nameRef.current.value)}>Volgende</button>
+                        <Link to={"/station/create"}><button className={"btn btn-outline-primary mx-5"}>Vorige</button></Link>
+                        <button className={"btn btn-primary mx-5"} onClick={() => handleClick(nameRef.current.value)}>Volgende</button>
                     </div>
                 </div>
             </div>

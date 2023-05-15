@@ -65,6 +65,12 @@ export default function RegisterStationVisibility() {
             console.log("Antwoorden zijn niet valid");
         }
     }
+
+    const toPreviousPage = () => {
+        const array = [items[0], items[1]];
+        navigate(`/station/create/height?items=${encodeURIComponent(JSON.stringify(array))}`);
+    }
+
     return (
         <div>
             <br/>
@@ -102,8 +108,8 @@ export default function RegisterStationVisibility() {
                         </ul>
                     </div>
                     <div className={"col-5"}>
-                        <Link to={"/station/create/height"} state={items}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
-                        <button className={"btn btn-primary mx-4"} onClick={handleClick}>Afronden</button>
+                        <button className={"btn btn-outline-primary mx-5"} onClick={toPreviousPage}>Terug</button>
+                        <button className={"btn btn-primary mx-5"} onClick={handleClick}>Afronden</button>
                     </div>
                 </div>
             </div>

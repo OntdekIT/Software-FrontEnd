@@ -25,6 +25,7 @@ export default function RegisterStationHeight() {
         setAnswers(updatedAnswers);
         navigate(`/station/create/visibility?items=${encodeURIComponent(JSON.stringify(updatedAnswers))}`);
     }
+
     return (
         <div>
             <br/>
@@ -81,8 +82,8 @@ export default function RegisterStationHeight() {
                         </ul>
                     </div>
                     <div className={"col-5"}>
-                        <Link to={"/station/create/name"} state={items}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
-                        <button className={"btn btn-primary"} onClick={handleClick}>Volgende</button>
+                        <Link to={"/station/create/name"} state={items[0]}><button className={"btn btn-outline-primary mx-5"}>Vorige</button></Link>
+                        <button className={"btn btn-primary mx-5"} onClick={handleClick}>Volgende</button>
                     </div>
                 </div>
             </div>
