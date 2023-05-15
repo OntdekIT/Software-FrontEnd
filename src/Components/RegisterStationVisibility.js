@@ -1,9 +1,12 @@
 import React, {useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 export default function RegisterStationVisibility() {
-    const {state} = useLocation();
-    const [answers, setAnswers] = useState(state);
     const [visibility, setVisibility] = useState();
+    const navigate = useNavigate();
+    const params = new URLSearchParams(window.location.search);
+    const items = JSON.parse(decodeURIComponent(params.get('items')));
+
+    const [answers, setAnswers] = useState(items);
     let answersValid = true;
 
     const postNaarBackend = async () => {
@@ -92,9 +95,14 @@ export default function RegisterStationVisibility() {
                 </div>
                 <div className={"row mt-5"}>
                     <div className={"col-4"}>
+                        <ul>
+                            {items.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
                     </div>
                     <div className={"col-5"}>
-                        <Link to={"/station/create/height"} state={state}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
+                        <Link to={"/station/create/height"} state={items}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
                         <button className={"btn btn-primary mx-4"} onClick={handleClick}>Afronden</button>
                     </div>
                 </div>

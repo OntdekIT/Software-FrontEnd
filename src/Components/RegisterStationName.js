@@ -1,14 +1,17 @@
 import React, {useRef, useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 export default function RegisterStationName() {
     const { state } = useLocation();
     const [strings, setStrings] = useState([state]);
     const nameRef = useRef();
-    const handleClick = () => {
-        const name = nameRef.current.value;
-        setStrings([...strings, name]);
-    }
+    const navigate = useNavigate();
 
+    const handleClick = (name) => {
+        const updatedStrings = [...strings, name]
+        setStrings(updatedStrings);
+        navigate(`/station/create/height?items=${encodeURIComponent(JSON.stringify(updatedStrings))}`);
+
+    }
 
     return (
         <div>
@@ -26,17 +29,13 @@ export default function RegisterStationName() {
                     </div>
                 </div>
 
-
                 <div className={"row mt-5"}>
                     <div className={"col-4"}>
                     </div>
-
-
                     <div className={"col-5"}>
 
                         <Link to={"/station/create"}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
-                        <button className={"btn btn-secondary"} onClick={handleClick}>Test</button>
-                        <Link onClick={handleClick} to={"/station/create/height"} state={{strings: strings}} onClick={handleClick} className={"btn btn-primary mx-4"}>Volgende</Link>
+                        <button className={"btn btn-primary"} onClick={() => handleClick(nameRef.current.value)}>Volgende</button>
                     </div>
                 </div>
             </div>

@@ -1,13 +1,13 @@
 import React, {useState} from "react";
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 export default function RegisterStationHeight() {
-    //const { state } = useLocation();
     const [direction, setDirection] = useState();
     const [height, setHeight] = useState();
     const [location, setLocation] = useState();
     const [answers, setAnswers] = useState([]);
-    const locationRouter = useLocation();
-    const strings = locationRouter.state.strings;
+    const navigate = useNavigate();
+    const params = new URLSearchParams(window.location.search);
+    const items = JSON.parse(decodeURIComponent(params.get('items')));
 
     const handleRadioChange = (event) => {
         setLocation(event.target.value);
@@ -21,7 +21,9 @@ export default function RegisterStationHeight() {
         setHeight(event.target.value);
     }
     const handleClick = () => {
-        setAnswers([...answers, strings[0], strings[1], height, direction, location]);
+        const updatedAnswers = [...answers, items[0], items[1], height, direction, location];
+        setAnswers(updatedAnswers);
+        navigate(`/station/create/visibility?items=${encodeURIComponent(JSON.stringify(updatedAnswers))}`);
     }
     return (
         <div>
@@ -72,16 +74,15 @@ export default function RegisterStationHeight() {
                 </div>
                 <div className={"row mt-5"}>
                     <div className={"col-4"}>
-                        {strings.map(s => {
-                            return(
-                                <div>{s}</div>
-                            )
-                        })}
+                        <ul>
+                            {items.map((item, index) => (
+                                <li key={index}>{item}</li>
+                            ))}
+                        </ul>
                     </div>
                     <div className={"col-5"}>
-                        <Link to={"/station/create/name"} state={strings[0]}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
-                        <button className={"btn btn-secondary"} onClick={handleClick}>Test</button>
-                        <Link onClick={handleClick} to={"/station/create/visibility"} state={answers}><button className={"btn btn-primary mx-4"}>Volgende</button></Link>
+                        <Link to={"/station/create/name"} state={items}><button className={"btn btn-outline-primary mx-4"}>Vorige</button></Link>
+                        <button className={"btn btn-primary"} onClick={handleClick}>Volgende</button>
                     </div>
                 </div>
             </div>
