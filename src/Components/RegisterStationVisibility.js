@@ -72,29 +72,29 @@ export default function RegisterStationVisibility() {
     }
 
     return (
-        <div>
+        <div className={"color"}>
             <br/>
             <div className={"container gy-5"}>
                 <div className={"row"}>
                     <div className={"col-4"}></div>
                     <div className={"col-4"}>
                         <h4><b>(4/4) Meetstation toevoegen</b></h4>
-                        <label>
+                        <label className={"labelMargin"}>
                             <h5>Prive meetstation </h5>
                             <div className={"form-text"}> Specifieke data van een meetstation kunnen alleen bekeken worden door de eigenaar. Data van een prive meetstation worden alsnog gebruikt in de kaart. </div>
+
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPrivate"
+                                       value="false" onChange={handleRadioChange}/>
+                                <label className="form-check-label" htmlFor="RadioPrivate">Prive</label>
+                            </div>
+
+                            <div className="form-check form-check-inline">
+                                <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPublic"
+                                       value="true" onChange={handleRadioChange}/>
+                                <label className="form-check-label" htmlFor="RadioPublic">Openbaar</label>
+                            </div>
                         </label>
-
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPrivate"
-                                   value="false" onChange={handleRadioChange}/>
-                            <label className="form-check-label" htmlFor="RadioPrivate">Prive</label>
-                        </div>
-
-                        <div className="form-check form-check-inline">
-                            <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPublic"
-                                   value="true" onChange={handleRadioChange}/>
-                            <label className="form-check-label" htmlFor="RadioPublic">Openbaar</label>
-                        </div>
                     </div>
 
 
@@ -108,8 +108,8 @@ export default function RegisterStationVisibility() {
                         </ul>
                     </div>
                     <div className={"col-5"}>
-                        <button className={"btn btn-outline-primary mx-5"} onClick={toPreviousPage}>Terug</button>
-                        <button className={"btn btn-primary mx-5"} onClick={handleClick}>Afronden</button>
+                        <button className={"button2Inline"} onClick={toPreviousPage}>Vorige</button>
+                        <Link to={"/Account"}><button className={"button2"} onClick={handleClick}>Afronden</button></Link>
                     </div>
                 </div>
             </div>
