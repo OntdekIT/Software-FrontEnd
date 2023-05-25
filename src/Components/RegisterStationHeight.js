@@ -1,13 +1,16 @@
 import React, {useState} from "react";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 export default function RegisterStationHeight() {
-    const [direction, setDirection] = useState();
+    const [direction, setDirection] = useState("N");
     const [height, setHeight] = useState();
     const [location, setLocation] = useState();
     const [answers, setAnswers] = useState([]);
+
     const navigate = useNavigate();
     const params = new URLSearchParams(window.location.search);
     const items = JSON.parse(decodeURIComponent(params.get('items')));
+
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const handleRadioChange = (event) => {
         setLocation(event.target.value);
@@ -21,9 +24,20 @@ export default function RegisterStationHeight() {
         setHeight(event.target.value);
     }
     const handleClick = () => {
-        const updatedAnswers = [...answers, items[0], items[1], height, direction, location];
-        setAnswers(updatedAnswers);
-        navigate(`/station/create/visibility?items=${encodeURIComponent(JSON.stringify(updatedAnswers))}`);
+        setErrorMessage(null);
+
+        if(direction === undefined){
+            setErrorMessage("Vul een richting in.");
+        } else if(height === undefined){
+            setErrorMessage("Vul een hoogte in.");
+        } else if (location === undefined){
+            setErrorMessage("Vul een locatie in.");
+        } else {
+            const updatedAnswers = [...answers, items[0], items[1], height, direction, location];
+            setAnswers(updatedAnswers);
+            navigate(`/station/create/visibility?items=${encodeURIComponent(JSON.stringify(updatedAnswers))}`);
+        }
+
     }
 
     return (
@@ -33,7 +47,7 @@ export default function RegisterStationHeight() {
                 <div className={"row"}>
                     <div className={"col-4"}></div>
                     <div className={"col-4"}>
-                        <h4><b>(3/4) Meetstation toevoegen</b></h4>
+                        <h4><b>(3/5) Meetstation toevoegen</b></h4>
                         <label className={"labelMargin"}>
                             <h5>Richting</h5>
                             <div className={"form-text"}>Naar welke richting staat uw meetstation gericht? </div>
@@ -73,18 +87,18 @@ export default function RegisterStationHeight() {
 
                             </div>
                         </label>
+                        <br/>
+                        {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
                     </div>
+
                 </div>
                 <div className={"row mt-5"}>
                     <div className={"col-4"}>
-                        <ul>
-                            {items.map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                        </ul>
                     </div>
                     <div className={"col-5"}>
-                        <Link to={"/station/create/name"} state={items[0]}><button className={"button2Inline"}>Vorige</button></Link>
+                        <Link to={"/station/create/name"} state={items[0]}>
+                            <button className={"button2Inline"}>Vorige</button>
+                        </Link>
                         <button className={"button2"} onClick={handleClick}>Volgende</button>
                     </div>
                 </div>

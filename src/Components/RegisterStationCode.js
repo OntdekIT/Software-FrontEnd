@@ -1,5 +1,5 @@
 import React, {useState, useRef} from "react";
-import {Link} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {wait} from "@testing-library/user-event/dist/utils";
 import '../index.css';
 
@@ -15,7 +15,7 @@ export default function RegisterStationCode() {
                 if(response.ok) {
                    success = true;
                 }else{
-                    setErrorMessage("De registratiecode bestaat niet...");
+                    setErrorMessage("De registratiecode is niet beschikbaar.");
                 }
                 return response.text();
             })
@@ -27,36 +27,29 @@ export default function RegisterStationCode() {
         });
     }
 
+    const navigate = useNavigate();
     const checkMeetstation = () => {
         setErrorMessage(null);
-        getMeetstationCode(databaseTag, registrationCode);
-        wait(300).then(() => {
-            if(success === true) {
-                console.log("YIPPEEE");
-                success = false;
-            }
-            else {
-                console.log("oh:(");
-            }}
-        );
+
+        if(registrationCode === undefined){
+            setErrorMessage("Vul een registratie code in.");
+        } else if (databaseTag === undefined) {
+            setErrorMessage("Vul een tag in.");
+        } else {
+            getMeetstationCode(databaseTag, registrationCode);
+            wait(300).then(() => {
+                if(success === true) {
+                    console.log("YIPPEEE");
+                    success = false;
+                    navigate(`/station/create/name?items=${encodeURIComponent(registrationCode)}`)
+                } else {
+                    console.log("oh:(");
+                }}
+            );
+        }
 
     }
 
-    const buttonValidationCheck = () => {
-        let valid = false;
-
-        if(registrationCode != null && databaseTag != null){
-            valid = true;
-        }
-
-        if(valid == true){
-            return(
-            <Link to={"/station/create/name"} state={registrationCode}></Link>
-            )
-        }
-
-        return null;
-    }
 
     const handleChangeCode = (event) => {
         setRegistrationCode(event.target.value);
@@ -67,12 +60,12 @@ export default function RegisterStationCode() {
 
     return (
         <div className={"color"}>
-             <br/>
+            <br/>
              <div className={"container gy-5"}>
                  <div><div className={"row"}>
                          <div className={"col-4"}></div>
                          <div className={"col-4"}>
-                             <h4><b>(1/4) Meetstation toevoegen</b></h4>
+                             <h4><b>(1/5) Meetstation toevoegen</b></h4>
                              <label className={"labelMargin"}>
                                  <h5>Registratie code </h5>
                                  <div className={"form-text"}> Registratie code is aanwezig op uw meetstation. </div>
@@ -108,20 +101,30 @@ export default function RegisterStationCode() {
                          </div>
                      </div>
                 </div>
-                <div className={"row mt-5"}>
-                    <div className={"col-4"}></div>
-                    <div className={"col-5"}>
-                        <Link to={"/Account"}>
-                            <button className={"button2Inline"}>Annuleren</button>
-                        </Link>
-                        <button className={"button2"} onClick={checkMeetstation}>Checken</button>
-                        <Link to={"/station/create/name"} state={registrationCode}>
-                            <button className={"button2"} >Volgende</button>
-                        </Link>
+                {/*<div className={"row mt-5"}>*/}
+                {/*    <div className={"col-4"}></div>*/}
+                {/*    <div className={"col-5"}>*/}
+                {/*        <Link to={"/Account"}>*/}
+                {/*            <button className={"button2Inline"}>Annuleren</button>*/}
+                {/*        </Link>*/}
+                {/*        <button className={"button2"} onClick={checkMeetstation}>Checken</button>*/}
+                {/*        <Link to={"/station/create/name"} state={registrationCode}>*/}
+                {/*            <button className={"button2"} >Volgende</button>*/}
+                {/*        </Link>*/}
 
-                        {/*<button className={"button2"} onClick={buttonValidationCheck}>Volgende</button>*/}
-                    </div>
-                </div>
+                {/*    </div>*/}
+                {/*</div>*/}
+                 <div className={"row mt-5"}>
+                     <div className={"col-4"}></div>
+                     <div className={"col-5"}>
+                         <Link to={"/Account"}>
+                             <button className={"button2Inline"}>Annuleren</button>
+                         </Link>
+                         {/*<Link to={"/station/create/name"} state={registrationCode}>*/}
+                             <button className={"button2"} onClick={checkMeetstation}>Volgende</button>
+                         {/*</Link>*/}
+                     </div>
+                 </div>
             </div>
         </div>
     );

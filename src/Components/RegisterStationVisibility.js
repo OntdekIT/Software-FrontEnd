@@ -6,68 +6,35 @@ export default function RegisterStationVisibility() {
     const params = new URLSearchParams(window.location.search);
     const items = JSON.parse(decodeURIComponent(params.get('items')));
 
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const [answers, setAnswers] = useState(items);
     let answersValid = true;
-
-    const postNaarBackend = async () => {
-        await fetch('http://localhost:8082/api/Station/registerStation', {
-            method: 'POST',
-            body: JSON.stringify({
-                userId: "1",
-                registerCode: answers[0],
-                databaseTag: "MJS",
-                stationName: answers[1],
-                height: answers[2],
-                direction: answers[3],
-                publicInfo: visibility,
-                outside: answers[4]
-            }),
-            headers: {
-                'Content-type': 'application/json; charset=UTF-8',
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-            })
-            .catch((err) => {
-                console.log(err.message);
-            });
-    };
 
     const handleRadioChange = (event) => {
         setVisibility(event.target.value);
     }
 
-    const checkValues = () => {
-        if(answers.length === 5)
-        {
-            answers.map(a => {
-               if(a == null) {
-                    answersValid = false;
-               }
-            });
-        }
-        else {
-            answersValid = false;
-        }
-    }
 
     const handleClick = () => {
+        setErrorMessage(null);
 
         answers.map(a => {
             console.log(a);
         })
-        checkValues();
-        if(answersValid) {
-            postNaarBackend();
+
+        if(visibility === undefined){
+            setErrorMessage("Vul een status in.");
+        } else {
+            const updatedAnswers = [...answers, visibility];
+            setAnswers(updatedAnswers);
+            navigate(`/station/create/data?items=${encodeURIComponent(JSON.stringify(updatedAnswers))}`);
         }
-        else {
-            console.log("Antwoorden zijn niet valid");
-        }
+
     }
 
     const toPreviousPage = () => {
-        const array = [items[0], items[1]];
+        const array = [items[0], items[1], items[2], items[3], items[4]];
         navigate(`/station/create/height?items=${encodeURIComponent(JSON.stringify(array))}`);
     }
 
@@ -78,7 +45,7 @@ export default function RegisterStationVisibility() {
                 <div className={"row"}>
                     <div className={"col-4"}></div>
                     <div className={"col-4"}>
-                        <h4><b>(4/4) Meetstation toevoegen</b></h4>
+                        <h4><b>(4/5) Meetstation toevoegen</b></h4>
                         <label className={"labelMargin"}>
                             <h5>Prive meetstation </h5>
                             <div className={"form-text"}> Specifieke data van een meetstation kunnen alleen bekeken worden door de eigenaar. Data van een prive meetstation worden alsnog gebruikt in de kaart. </div>
@@ -95,21 +62,18 @@ export default function RegisterStationVisibility() {
                                 <label className="form-check-label" htmlFor="RadioPublic">Openbaar</label>
                             </div>
                         </label>
+                        <br/>
+                        {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
                     </div>
 
 
                 </div>
                 <div className={"row mt-5"}>
                     <div className={"col-4"}>
-                        <ul>
-                            {items.map((item, index) => (
-                                <li key={index}>{item}</li>
-                            ))}
-                        </ul>
                     </div>
                     <div className={"col-5"}>
                         <button className={"button2Inline"} onClick={toPreviousPage}>Vorige</button>
-                        <Link to={"/Account"}><button className={"button2"} onClick={handleClick}>Afronden</button></Link>
+                        <button className={"button2"} onClick={handleClick}>Afronden</button>
                     </div>
                 </div>
             </div>
