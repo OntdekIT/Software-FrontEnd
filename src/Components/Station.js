@@ -24,7 +24,6 @@ export default function Station() {
         <div className="Station">
           <div>
               <p>Naam: {station.name}</p>
-              <p>Locatie: {station.locationName}</p>
               <p>Hoogte: {station.height}</p>
               <p>Lengtegraad: {station.longitude}</p>
               <p>Breedtegraad: {station.latitude}</p>

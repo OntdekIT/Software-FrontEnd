@@ -42,6 +42,8 @@ export default function Account() {
           <div className="error-msg">{errMsg}</div>
         )
       }
+
+      <Link to={"/station/create"}> <button className={"button2"}>Station toevoegen</button></Link>
       <table>
         <tr>
           <th>Station Naam</th>

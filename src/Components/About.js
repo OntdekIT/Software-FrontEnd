@@ -1,9 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 export default function About() {
   return (
-    <div>
-      Over ons Pagina
-      <h1>Over</h1>
-    </div>
+      <div>
+          <h3>Over ons</h3>
+      </div>
   );
 }
