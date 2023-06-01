@@ -20,10 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
-      - name: Install router dependencies
-        run: npm install react-router-dom 6.2.2 --legacy-peer-deps
-        
+        run: npm install --legacy-peer-deps        
       - name: Compile build
         run: npm run build
         
