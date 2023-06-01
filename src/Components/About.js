@@ -78,5 +78,8 @@ export default function About() {
         {/*{secondFakeArray[0]}*/}
       <h1>Over</h1>
     </div>
+      <div>
+          <h3>Over ons</h3>
+      </div>
   );
 }

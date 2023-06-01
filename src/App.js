@@ -18,6 +18,11 @@ import Account from "./Components/Account";
 import Station from "./Components/Station";
 import UserDetails from "./Components/UserDetails";
 import Verify from "./Components/Verify"
+import RegisterStationCode from "./Components/RegisterStationCode";
+import RegisterStationName from "./Components/RegisterStationName";
+import RegisterStationHeight from "./Components/RegisterStationHeight";
+import RegisterStationData from "./Components/RegisterStationData";
+import RegisterStationVisibility from "./Components/RegisterStationVisibility";
 
 const ROLES = {
   User: 2001,
@@ -42,7 +47,11 @@ function App() {
           {/* we want to protect these routes */}
           <Route path="Userdetails" element={<UserDetails />} />
           <Route path="/Station/:id" element={<Station />} />
-          <Route path="/Station/Create" element={<RegisterStation />} />
+          <Route path="/Station/Create" element={<RegisterStationCode />} />
+          <Route path="/Station/Create/Name" element={<RegisterStationName />} />
+          <Route path="/Station/Create/Height" element={<RegisterStationHeight />} />
+          <Route path="/Station/Create/Data" element={<RegisterStationData />} />
+          <Route path="/Station/Create/Visibility" element={<RegisterStationVisibility />} />
           <Route path="/Station/Edit:id" element={<EditStation />} />
           <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
             <Route element={<PersistLogin />}>
