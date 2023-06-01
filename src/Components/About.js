@@ -69,17 +69,19 @@ export default function About() {
         ["email2", "password2"]];
 
   return (
-    <div>
-        {/*{posts.map((bloks)=> {return bloks.map((Translation) => {return Translation.text})})}*/}
-        {/*<button onClick={listTranslations}></button>*/}
-        {Object.keys(Translations).map((Translation, index) => {return(<div key={index}>{Translations[Translation].text}</div>)})}
-        {/*{fakeArray[0].map((a,b) => {return <li key={a + b}>{a}</li>; })}*/}
-        {/*{secondFakeArray.map((a,b = 1) => {return <li key={"hoi" + b}>{a}</li>; })}*/}
-        {/*{secondFakeArray[0]}*/}
-      <h1>Over</h1>
-    </div>
-      <div>
-          <h3>Over ons</h3>
-      </div>
+      <>
+          <div>
+              {/*{posts.map((bloks)=> {return bloks.map((Translation) => {return Translation.text})})}*/}
+              {/*<button onClick={listTranslations}></button>*/}
+              {Object.keys(Translations).map((Translation, index) => {return(<div key={index}>{Translations[Translation].text}</div>)})}
+              {/*{fakeArray[0].map((a,b) => {return <li key={a + b}>{a}</li>; })}*/}
+              {/*{secondFakeArray.map((a,b = 1) => {return <li key={"hoi" + b}>{a}</li>; })}*/}
+              {/*{secondFakeArray[0]}*/}
+              <h1>Over</h1>
+          </div>
+          <div>
+              <h3>Over ons</h3>
+          </div>
+      </>
   );
 }
