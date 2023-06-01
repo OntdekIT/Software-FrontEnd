@@ -1,6 +1,36 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as Menu } from '../img/icons/menu.svg';
+import {useState, useEffect} from "react";
+
+const App = () => {
+  const [posts, setPost] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:8082/api/Translation")
+        .then((response) => response.json())
+
+        .then((data) => {
+          console.log(data);
+          setPost(data);
+        })
+
+        .catch((err) => {
+          console.log(err.message);
+        });
+  }, []);
+
+  return (null);
+};
+
+function GiveLanguage(){
+  const Language = "Nederlands"
+  return Language;
+  }
+
+  function GivePageId(){
+  const PageId = "NavBar"
+    return PageId;
+  }
 
 function NavBar() {
   return (

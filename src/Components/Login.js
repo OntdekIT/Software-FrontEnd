@@ -4,6 +4,34 @@ import useAuth from '../hooks/useAuth';
 import axios from '../api/axios';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
+const App = () => {
+    const [posts, setPost] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:8082/api/Translation")
+            .then((response) => response.json())
+
+            .then((data) => {
+                console.log(data);
+                setPost(data);
+            })
+
+            .catch((err) => {
+                console.log(err.message);
+            });
+    }, []);
+
+    return (null);
+};
+
+function GiveLanguage(){    const Language = "Nederlands"
+    return Language;
+}
+
+function GivePageId(){
+    const PageId = "Login"
+    return PageId;
+}
+
 const LOGIN_URL = '/Authentication/login';
 
 const Login = () => {
