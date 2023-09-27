@@ -1,7 +1,7 @@
 import { useLocation, useParams, Link } from 'react-router-dom';
 import React from 'react';
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { api } from '../App';
 
 export default function Station() {
     const readValues = {id: 0, name: "", height: 0, locationName: "", longtitude: 0, latitude: 0, ispublic: false  };
@@ -11,7 +11,7 @@ export default function Station() {
 
     useEffect(() => {
 
-      axios.get('http://localhost:8082/api/Station/'+ (id))
+      api.get('/Station/'+ (id))
     
       .then(resp => {
         const { id, name, locationName, height, longitude, latitude, ispublic} = resp.data

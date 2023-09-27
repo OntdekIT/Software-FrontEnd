@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import axios from '../api/axios';
-import {Map, TileLayer, useMap, Popup, Marker, Polygon} from 'react-leaflet';
+import {Map, TileLayer, Popup, Marker, Polygon} from 'react-leaflet';
 import HeatmapLayer from './HeatmapLayer';
 import RadioButtonGroup from './RadioButtons';
-
+import { api } from "../App";
 
 const App = () => {
     const [posts, setPost] = useState([]);
     useEffect(() => {
-        fetch("http://localhost:8082/api/Translation")
+        api.get("/Translation")
             .then((response) => response.json())
 
             .then((data) => {
@@ -137,12 +136,12 @@ const Home = () => {
 
     function getHeatmapData()
     {
-        axios.get('http://localhost:8082/api/Heatmap/'+1).then((response) => setTemperatureData(response.data))
+        api.get('/Heatmap/'+1).then((response) => setTemperatureData(response.data))
         .catch(function (error) {
             handleAxiosError(error);
         })
 
-        axios.get('http://localhost:8082/api/Heatmap/'+4).then(function (response) {
+        api.get('/Heatmap/'+4).then(function (response) {
             setFijnstofData(response.data)
         })
         .catch(function (error) {
@@ -152,7 +151,7 @@ const Home = () => {
 
     function getStationsData()
     {
-        axios.get(`http://localhost:8082/api/Station/Stations`).then((response) => {setData(response.data); console.log(response.data);})
+        api.get(`/Station/Stations`).then((response) => {setData(response.data); console.log(response.data);})
         .catch(function (error) {
             handleAxiosError(error);
         })
@@ -160,7 +159,7 @@ const Home = () => {
 
     function getAverageData()
     {
-        axios.get('http://localhost:8082/api/Sensor/average').then((response) => setAvgData(response.data))
+        api.get('/Sensor/average').then((response) => setAvgData(response.data))
         .catch(function (error) {
             handleAxiosError(error);
         })
@@ -168,7 +167,7 @@ const Home = () => {
 
     function getRegionCords()
     {
-        axios.get('http://localhost:8082/api/Region/regioninfo').then((response) => {
+        api.get('/Region/regioninfo').then((response) => {
             setRegionData(response.data);
             // Since this is the last called get request, enable settings when successfull
             setShowSettings(true);

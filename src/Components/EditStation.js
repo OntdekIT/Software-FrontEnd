@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {useParams, useNavigate} from 'react-router-dom';
 import React from "react";
-import axios from "axios";
+import { api } from "../App";
 
 function EditStation() {
 
@@ -20,7 +20,6 @@ const navigate = useNavigate();
 const { stationId } = useParams();
 console.log(stationId);
 
-
 const handleChange = (event) => {
   const { name, value } = event.target;
   setStation({ ...station, [name]: value });
@@ -35,7 +34,7 @@ const checkboxHandler = (event) => {
 };
 
 useEffect(() => {
-  axios.get('http://localhost:8082/api/Station/'+ (stationId))
+  api.get('/Station/'+ (stationId))
   .then(resp => {
     const { id, name, locationName, height, longitude, latitude, ispublic} = resp.data
     setStation({ id, name, height, locationName, longitude, latitude, ispublic })
@@ -53,7 +52,7 @@ useEffect(() => {
           latitude: station.latitude, 
           ispublic: station.ispublic
       }
-        axios.put('http://localhost:8082/api/Station/', currentStation)
+        api.put('/Station/', currentStation)
           .then((response) => {
             console.log(response);
           })
@@ -75,7 +74,7 @@ useEffect(() => {
       e.preventDefault();
       let confirmDelete = window.confirm('Delete station?')
       if(confirmDelete){
-        axios.delete('http://localhost:8082/api/Station/'+ (stationId))
+        api.delete('/Station/'+ (stationId))
         .then((response) => {
           console.log(response);
         })

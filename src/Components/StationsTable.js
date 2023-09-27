@@ -1,14 +1,14 @@
 import React from "react";
-import axios from "../api/axios";
 import { useState, useEffect } from "react";
+import { api } from "../App";
 
 function AllStations() {
   const [stations, setStations] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8082/api/Station`)
+    api
+      .get(`/api/Station`)
       .then((response) => console.log(response))
       .catch((error) => console.log(error))
       .finally(() => setLoading(false));

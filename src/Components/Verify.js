@@ -1,8 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from '../api/axios';
 import {useCookies} from "react-cookie";
-
+import { api } from "../App";
 
 const url = '/Authentication/verify';
 
@@ -13,7 +12,7 @@ const Verify = () => {
     useEffect(() => {
         const getData = async () => {
             try {
-                const response = await axios.get(url , { params : {linkHash, email} });
+                const response = await api.get(url , { params : {linkHash, email} });
                 console.log(response);
                 let expireTime = new Date();
                 expireTime.setDate(expireTime.getDate() + 7);

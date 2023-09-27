@@ -1,13 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import useAuth from '../hooks/useAuth';
-//import '../SignUpIn.css'
-import axios from '../api/axios';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { api } from "../App";
 
 const App = () => {
     const [posts, setPost] = useState([]);
     useEffect(() => {
-        fetch("http://localhost:8082/api/Translation")
+        api.get("/Translation")
             .then((response) => response.json())
 
             .then((data) => {
@@ -65,7 +64,7 @@ const Login = () => {
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post(LOGIN_URL, JSON.stringify({ mailAddress : mail }),
+        const response = await api.post(LOGIN_URL, JSON.stringify({ mailAddress : mail }),
         {
             headers: { 'Content-Type': 'application/JSON' },
             withCredentials: false

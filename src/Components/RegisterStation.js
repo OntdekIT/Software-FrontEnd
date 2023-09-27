@@ -1,6 +1,6 @@
 import { useState } from "react";
 import React from "react";
-import axios from "axios";
+import { api } from "../App";
 
 function RegisterStation() {
   // states for Registration
@@ -40,8 +40,8 @@ function RegisterStation() {
     setError(validate(inputs));
     if (error == false) {
       setSubmitted(true);
-      axios
-        .post("http://localhost:8082/api/Station", inputs)
+      api
+        .post("/Station", inputs)
         .then((response) => {
           console.log(response);
         })

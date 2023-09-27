@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import useAuth from '../hooks/useAuth';
-import axios from '../api/axios';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { api } from "../App";
 
 const REGISTER_URL = '/Authentication/register';
 
@@ -42,7 +42,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-        const response = await axios.post(REGISTER_URL, JSON.stringify({ firstName : firstname, lastName : surname, userName : username, mailAddress : email }),
+        const response = await api.post(REGISTER_URL, JSON.stringify({ firstName : firstname, lastName : surname, userName : username, mailAddress : email }),
           {
               headers: { 'Content-Type': 'application/JSON' },
               withCredentials: false

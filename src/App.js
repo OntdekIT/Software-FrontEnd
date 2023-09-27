@@ -23,11 +23,16 @@ import RegisterStationName from "./Components/RegisterStationName";
 import RegisterStationHeight from "./Components/RegisterStationHeight";
 import RegisterStationData from "./Components/RegisterStationData";
 import RegisterStationVisibility from "./Components/RegisterStationVisibility";
+import axios from "./api/axios";
 
 const ROLES = {
   User: 2001,
   Admin: 5150,
 };
+
+export const api = axios.create({
+  baseURL: "http://localhost:8082/api"
+});
 
 function App() {
   return (

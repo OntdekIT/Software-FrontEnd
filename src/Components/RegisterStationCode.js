@@ -2,6 +2,7 @@ import React, {useState, useRef} from "react";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {wait} from "@testing-library/user-event/dist/utils";
 import '../index.css';
+import { api } from "../App";
 
 export default function RegisterStationCode() {
     const [errorMessage, setErrorMessage] = useState(null);
@@ -10,7 +11,7 @@ export default function RegisterStationCode() {
     const [databaseTag, setDatabaseTag] = useState();
     let success = false;
     const getMeetstationCode = (databaseTag, registrationCode) => {
-        fetch(`http://localhost:8082/api/Station/available?databaseTag=${databaseTag}&registrationCode=${registrationCode}`)
+        api.get(`/Station/available?databaseTag=${databaseTag}&registrationCode=${registrationCode}`)
             .then((response) => {
                 if(response.ok) {
                    success = true;

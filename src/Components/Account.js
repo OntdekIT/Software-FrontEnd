@@ -1,12 +1,12 @@
 import React from 'react';
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../App';
 
 const App = () => {
   const [posts, setPost] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:8082/api/Translation")
+    api.get("/Translation")
         .then((response) => response.json())
 
         .then((data) => {
@@ -42,8 +42,8 @@ export default function Account() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8082/api/Station/user/1` 
+        const response = await api.get(
+          `/Station/user/1` 
         );
         setData(response.data);
         setErrMsg(null);

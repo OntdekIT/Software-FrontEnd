@@ -1,11 +1,11 @@
-import axios from '../api/axios';
+import { api } from '../App';
 import useAuth from './useAuth';
 
 const useRefreshToken = () => {
     const { setAuth } = useAuth();
     
     const refresh = async () => {
-        const response = await axios.get('/Authorization/refresh', {
+        const response = await api.get('/Authorization/refresh', {
             withCredentials: true //allows us to send cookies (refreshtoken) with our request
         });
         setAuth(prev => { //use previous function/info (of setAuth)

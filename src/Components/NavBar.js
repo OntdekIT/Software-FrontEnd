@@ -2,11 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as Menu } from '../img/icons/menu.svg';
 import {useState, useEffect} from "react";
+import { api } from "../App";
 
 const App = () => {
   const [posts, setPost] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:8082/api/Translation")
+    api.get("/Translation")
         .then((response) => response.json())
 
         .then((data) => {

@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 // import { useParams } from "react-router-dom";
-import axios from "../api/axios";
+import { api } from "../App";
 // import { useLocation } from 'react-router-dom';
 
 const App = () => {
     const [posts, setPost] = useState([]);
     useEffect(() => {
-        fetch("http://localhost:8082/api/Translation")
+        api.get("/Translation")
             .then((response) => response.json())
 
             .then((data) => {
@@ -58,7 +58,7 @@ function UserDetails() {
   // };
 
   useEffect(() => {
-    axios.get(`http://localhost:8082/api/User/1`) // id from cookies ofzo
+    api.get(`/User/1`) // id from cookies ofzo
       .then((response) => {
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
@@ -77,7 +77,7 @@ function UserDetails() {
     setSuccessMsg('');
 
     try {
-      const response = await axios.put(UPDATEUSER_URL, JSON.stringify({ firstName, lastName, userName, mailAddress, id: 1 }),
+      const response = await api.put(UPDATEUSER_URL, JSON.stringify({ firstName, lastName, userName, mailAddress, id: 1 }),
         {
             headers: { 'Content-Type': 'application/JSON' },
             withCredentials: false
