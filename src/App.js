@@ -23,7 +23,7 @@ import RegisterStationName from "./Components/RegisterStationName";
 import RegisterStationHeight from "./Components/RegisterStationHeight";
 import RegisterStationData from "./Components/RegisterStationData";
 import RegisterStationVisibility from "./Components/RegisterStationVisibility";
-import axios from "./api/axios";
+import axios from "axios";
 
 const ROLES = {
   User: 2001,
