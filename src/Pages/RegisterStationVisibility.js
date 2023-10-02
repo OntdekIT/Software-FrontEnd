@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 export default function RegisterStationVisibility() {
     const [visibility, setVisibility] = useState();
     const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function RegisterStationVisibility() {
             console.log(a);
         })
 
-        if(visibility === undefined){
+        if (visibility === undefined) {
             setErrorMessage("Vul een status in.");
         } else {
             const updatedAnswers = [...answers, visibility];
@@ -40,7 +40,7 @@ export default function RegisterStationVisibility() {
 
     return (
         <div className={"color"}>
-            <br/>
+            <br />
             <div className={"container gy-5"}>
                 <div className={"row"}>
                     <div className={"col-4"}></div>
@@ -52,17 +52,17 @@ export default function RegisterStationVisibility() {
 
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPrivate"
-                                       value="false" onChange={handleRadioChange}/>
+                                    value="false" onChange={handleRadioChange} />
                                 <label className="form-check-label" htmlFor="RadioPrivate">Prive</label>
                             </div>
 
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" type="radio" name="RadioVisibility" id="RadioPublic"
-                                       value="true" onChange={handleRadioChange}/>
+                                    value="true" onChange={handleRadioChange} />
                                 <label className="form-check-label" htmlFor="RadioPublic">Openbaar</label>
                             </div>
                         </label>
-                        <br/>
+                        <br />
                         {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
                     </div>
 

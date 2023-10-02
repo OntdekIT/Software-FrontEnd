@@ -5,7 +5,7 @@ import "jquery/src/jquery";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap";
 import "./index.css";
-import "./fonts/Roboto-Regular.woff";
+import "./Assets/Roboto-Regular.woff";
 import App from "./App";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";

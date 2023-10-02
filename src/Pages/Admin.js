@@ -1,11 +1,12 @@
 import { useNavigate, Link } from 'react-router-dom';
-import useLogout from "../hooks/useLogout";
+import useLogout from "../Hooks/useLogout";
+//import Users from './Users';
 
 const Admin = () => {
     const navigate = useNavigate();
     const logout = useLogout();
 
-    const signOut = async () => { 
+    const signOut = async () => {
         await logout();
         navigate('/login');
     }
@@ -14,7 +15,7 @@ const Admin = () => {
         <section>
             <h1>Admins Page</h1>
             <br />
-            {/*<Users /> dit is een crud component (get all) */} 
+            {/*<Users /> dit is een crud component (get all) */}
             <br />
             <div className="flexGrow">
                 <Link to="/">Home</Link>

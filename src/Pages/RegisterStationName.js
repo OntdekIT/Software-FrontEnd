@@ -1,5 +1,5 @@
-import React, {useRef, useState} from "react";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 export default function () {
     const { state } = useLocation();
     const nameRef = useRef();
@@ -15,14 +15,14 @@ export default function () {
     const handleClick = (name) => {
         setErrorMessage(null);
 
-        if(name === ""){
+        if (name === "") {
             setErrorMessage("Vul een naam in.");
         } else {
             let updatedStrings = [];
 
-            if(state !== null){
+            if (state !== null) {
                 updatedStrings = [state, name];
-            }else{
+            } else {
                 updatedStrings = [...strings, name];
             }
 
@@ -33,7 +33,7 @@ export default function () {
 
     return (
         <div className={"color"}>
-            <br/>
+            <br />
             <div className={"container gy-5"}>
                 <div className={"row"}>
                     <div className={"col-4"}></div>
@@ -43,8 +43,8 @@ export default function () {
                             <h5>Naam</h5>
                             <div className={"form-text"}> Geef uw meetstation een naam. </div>
 
-                            <input type={"text"} className={"form-control"} placeholder={"Naam..."} ref={nameRef} required/>
-                            <br/>
+                            <input type={"text"} className={"form-control"} placeholder={"Naam..."} ref={nameRef} required />
+                            <br />
                             {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
                         </label>
                     </div>

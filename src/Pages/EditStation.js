@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import {useParams, useNavigate} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import React from "react";
 import { api } from "../App";
 
 function EditStation() {
 
-const inputvalues = { 
-  id: 0, 
-  name: '', 
-  height: 0, 
-  locationName: '', 
-  longitude: 0, 
-  latitude: 0, 
-  ispublic: false 
-};
-const [station, setStation] = useState(inputvalues);
-const [isChecked, setIsChecked] = useState(false);
-const navigate = useNavigate();
-const { stationId } = useParams();
-console.log(stationId);
+  const inputvalues = {
+    id: 0,
+    name: '',
+    height: 0,
+    locationName: '',
+    longitude: 0,
+    latitude: 0,
+    ispublic: false
+  };
+  const [station, setStation] = useState(inputvalues);
+  const [isChecked, setIsChecked] = useState(false);
+  const navigate = useNavigate();
+  const { stationId } = useParams();
+  console.log(stationId);
 
 const handleChange = (event) => {
   const { name, value } = event.target;
@@ -26,12 +26,12 @@ const handleChange = (event) => {
   console.log(station);
 };
 
-const checkboxHandler = (event) => {
-  setIsChecked(!isChecked);
-  const { name, checked } = event.target;
-  setStation({ ...station, [name]: checked });
-  console.log(station);
-};
+  const checkboxHandler = (event) => {
+    setIsChecked(!isChecked);
+    const { name, checked } = event.target;
+    setStation({ ...station, [name]: checked });
+    console.log(station);
+  };
 
 useEffect(() => {
   api.get('/Station/'+ (stationId))
@@ -69,6 +69,23 @@ useEffect(() => {
           });
           return navigate('/');   
     }
+    axios.put('http://localhost:8082/api/Station/', currentStation)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error(error.response.data);
+          console.error(error.response.status);
+          console.error(error.response.headers);
+        } else if (error.request) {
+          console.error(error.request);
+        } else {
+          console.error("Error", error.message);
+        }
+      });
+    return navigate('/');
+  }
 
     const handleDelete = (e) => {
       e.preventDefault();
@@ -89,9 +106,9 @@ useEffect(() => {
             console.error("Error", error.message);
           }
         });
-      }    
-      return navigate('/');   
-      };
+    }
+    return navigate('/');
+  };
 
   return (
     <div className="form">
@@ -149,16 +166,16 @@ useEffect(() => {
           </div>
           <div>
             <input
-              type="checkbox" 
-              checked={station.ispublic} 
-              onChange={checkboxHandler} 
-              placeholder="Ispublic" 
-              name="ispublic"/>
-              <label className="label">Ik wil dit station publiek zichtbaar hebben</label>
+              type="checkbox"
+              checked={station.ispublic}
+              onChange={checkboxHandler}
+              placeholder="Ispublic"
+              name="ispublic" />
+            <label className="label">Ik wil dit station publiek zichtbaar hebben</label>
           </div>
 
           <button onClick={() => navigate(-1)}>Back</button>
-          <button size="sm" color="danger" onClick={(e) =>handleDelete(e, station.id)}>Delete</button>
+          <button size="sm" color="danger" onClick={(e) => handleDelete(e, station.id)}>Delete</button>
           <button className="btn btn-primary" type="submit">Submit</button>
         </div>
       </form>

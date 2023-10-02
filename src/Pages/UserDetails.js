@@ -9,27 +9,27 @@ const App = () => {
         api.get("/Translation")
             .then((response) => response.json())
 
-            .then((data) => {
-                console.log(data);
-                setPost(data);
-            })
+      .then((data) => {
+        console.log(data);
+        setPost(data);
+      })
 
-            .catch((err) => {
-                console.log(err.message);
-            });
-    }, []);
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
 
-    return (null);
+  return (null);
 };
 
-function GiveLanguage(){
-    const Language = "Nederlands"
-    return Language;
+function GiveLanguage() {
+  const Language = "Nederlands"
+  return Language;
 }
 
-function GivePageId(){
-    const PageId = "UserDetails"
-    return PageId;
+function GivePageId() {
+  const PageId = "UserDetails"
+  return PageId;
 }
 
 const UPDATEUSER_URL = '/User';
@@ -37,22 +37,22 @@ const UPDATEUSER_URL = '/User';
 function UserDetails() {
   // const location = useLocation();
   // const from = location.state?.from?.pathname || "/";
-  
+
   const firstNameRef = useRef();
   const lastNameRef = useRef();
   const userNameRef = useRef();
   const mailAddressRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
-  
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [userName, setUserName] = useState('');
   const [mailAddress, setMailAddress] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  
-  
+
+
   // const handleChange = (e) => {
   //   console.log(e);
   // };
@@ -79,8 +79,8 @@ function UserDetails() {
     try {
       const response = await api.put(UPDATEUSER_URL, JSON.stringify({ firstName, lastName, userName, mailAddress, id: 1 }),
         {
-            headers: { 'Content-Type': 'application/JSON' },
-            withCredentials: false
+          headers: { 'Content-Type': 'application/JSON' },
+          withCredentials: false
         });
 
       console.log(JSON.stringify(response?.data));
@@ -99,34 +99,34 @@ function UserDetails() {
       if (response?.status === 200) {
         setSuccessMsg('Successfully updated!');
       }
-      
+
       // Navigates to home page
       //navigate(from, { replace: true });
 
     } catch (err) {
       console.log(err.response);
       if (!err?.response) {
-          console.log(err);
-          console.log(!err?.response)
-          setErrMsg('No server response');
+        console.log(err);
+        console.log(!err?.response)
+        setErrMsg('No server response');
       } else if (err.response?.status === 400) {
-            setErrMsg('Ingevulde velden zijn incorrect');
+        setErrMsg('Ingevulde velden zijn incorrect');
       } else if (err.response?.status === 401) {
-          setErrMsg('Geen toegang');
+        setErrMsg('Geen toegang');
       } else if (err.response?.status === 409 && err.response?.data === 1) {
-          setErrMsg('Gebruikersnaam al in gebruik');
+        setErrMsg('Gebruikersnaam al in gebruik');
       } else if (err.response?.status === 409 && err.response?.data === 2) {
-          setErrMsg('Email al in gebruik');
+        setErrMsg('Email al in gebruik');
       } else if (err.response?.status === 422 && err.response?.data === 1) {
-          setErrMsg('Gebruikersnaam niet ingevuld');
+        setErrMsg('Gebruikersnaam niet ingevuld');
       } else if (err.response?.status === 422 && err.response?.data === 2) {
-          setErrMsg('Email niet ingevuld');
+        setErrMsg('Email niet ingevuld');
       } else if (err.response?.status === 422 && err.response?.data === 3) {
-          setErrMsg('Voornaam niet ingevuld');
+        setErrMsg('Voornaam niet ingevuld');
       } else if (err.response?.status === 422 && err.response?.data === 4) {
-          setErrMsg('Achternaam niet ingevuld');
+        setErrMsg('Achternaam niet ingevuld');
       } else {
-          setErrMsg('Aanpassen niet gelukt, probeer het later opnieuw');
+        setErrMsg('Aanpassen niet gelukt, probeer het later opnieuw');
       }
       //set focus on error display, so a screenreader can read info
       errRef.current.focus();
@@ -149,48 +149,48 @@ function UserDetails() {
 
       <form onSubmit={handleSubmit}>
         <input
-            type="firstname"
-            id="firstname"
-            ref={firstNameRef}
-            autoComplete="off"
-            onChange={(e) => setFirstName(e.target.value)}
-            value={firstName}
-            required
-            placeholder="Voornaam"
+          type="firstname"
+          id="firstname"
+          ref={firstNameRef}
+          autoComplete="off"
+          onChange={(e) => setFirstName(e.target.value)}
+          value={firstName}
+          required
+          placeholder="Voornaam"
         />
         <input
-            type="lastname"
-            id="lastname"
-            ref={lastNameRef}
-            autoComplete="off"
-            onChange={(e) => setLastName(e.target.value)}
-            value={lastName}
-            required
-            placeholder="Achternaam"
+          type="lastname"
+          id="lastname"
+          ref={lastNameRef}
+          autoComplete="off"
+          onChange={(e) => setLastName(e.target.value)}
+          value={lastName}
+          required
+          placeholder="Achternaam"
         />
         <input
-            type="username"
-            id="username"
-            ref={userNameRef}
-            autoComplete="off"
-            onChange={(e) => setUserName(e.target.value)}
-            value={userName}
-            required
-            placeholder="Gebruikersnaam"
+          type="username"
+          id="username"
+          ref={userNameRef}
+          autoComplete="off"
+          onChange={(e) => setUserName(e.target.value)}
+          value={userName}
+          required
+          placeholder="Gebruikersnaam"
         />
         <input
-            type="email"
-            id="email"
-            ref={mailAddressRef}
-            autoComplete="off"
-            onChange={(e) => setMailAddress(e.target.value)}
-            value={mailAddress}
-            required
-            placeholder="Email"
+          type="email"
+          id="email"
+          ref={mailAddressRef}
+          autoComplete="off"
+          onChange={(e) => setMailAddress(e.target.value)}
+          value={mailAddress}
+          required
+          placeholder="Email"
         />
         <button class="button">Aanpassen</button>
       </form>
-  </section>
+    </section>
   );
 }
 

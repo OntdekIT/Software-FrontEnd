@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import {Map, TileLayer, Popup, Marker, Polygon} from 'react-leaflet';
-import HeatmapLayer from './HeatmapLayer';
-import RadioButtonGroup from './RadioButtons';
 import { api } from "../App";
+import { Map, TileLayer, useMap, Popup, Marker, Polygon } from 'react-leaflet';
+import HeatmapLayer from '../Components/HeatmapLayer';
+import RadioButtonGroup from '../Components/RadioButtons';
+
 
 const App = () => {
     const [posts, setPost] = useState([]);
@@ -23,12 +24,12 @@ const App = () => {
     return (null);
 };
 
-function GiveLanguage(){
+function GiveLanguage() {
     const Language = "Nederlands"
     return Language;
 }
 
-function GivePageId(){
+function GivePageId() {
     const PageId = "Home"
     return PageId;
 }
@@ -38,18 +39,18 @@ const RADIUS = 30;
 
 //TODO: implement RegionCords en Region uit DB!
 
-  const gradient_default = {
+const gradient_default = {
     0.1: '#89BDE0', 0.2: '#96E3E6', 0.4: '#82CEB6',
     0.6: '#FAF3A5', 0.8: '#F5D98B', '1.0': '#DE9A96'
-  };
+};
 
-  const gradient_fijnstof = {
+const gradient_fijnstof = {
     0.1: '#6D28ED', 0.2: '#9A07EF', 0.4: '#CD13F2',
     0.6: '#F900E0', 0.8: '#F73D94', '1.0': '#F43430'
-  };
+};
 
-  function getGradient(typeID){
-    if(typeID === 4) return gradient_fijnstof;
+function getGradient(typeID) {
+    if (typeID === 4) return gradient_fijnstof;
     return gradient_default;
 }
 
@@ -66,11 +67,11 @@ const colors = {
     11: "red", 12: "red", 13: "red", 14: "red", 15: "red", 16: "red", 17: 'red', 18: "red", 19: "red", 20: "red",
     21: "red", 22: "red", 23: "red", 24: "red", 25: "red", 26: "red", 27: 'red', 28: "red", 29: "red", 30: "red",
     31: "red", 32: "red", 33: "red", 34: "red", 35: "red", 36: "red", 37: 'red', 38: "red", 39: "red", 40: "red",
-    41: "red", 42: "red", 43: "red", 44: "red", 45: "red", 46:"red", 47: "red", 48: "red", 49: "red", 50:"red"
+    41: "red", 42: "red", 43: "red", 44: "red", 45: "red", 46: "red", 47: "red", 48: "red", 49: "red", 50: "red"
 }
 
-function getRegionColor(regionId){
-    if(regionId <= 50) return colors[regionId];
+function getRegionColor(regionId) {
+    if (regionId <= 50) return colors[regionId];
     else return regionId[1];
 }
 
@@ -96,39 +97,39 @@ const Home = () => {
     const [showDataStations, setShowDataStations] = useState(true);
     const [showRegions, setShowRegions] = useState(true);
 
-    function handleToggleTemp(){
+    function handleToggleTemp() {
         setShowTemp(!showTemp);
         setShowRegions(false);
         setShowFijnstof(false);
     }
 
-    function handleToggleStikstof(){
+    function handleToggleStikstof() {
         setShowStikstof(!showStikstof);
     }
 
-    function handleToggleKoolstof(){
+    function handleToggleKoolstof() {
         setShowKoolstof(!showKoolstof);
     }
 
-    function handleToggleFijnStof(){
+    function handleToggleFijnStof() {
         setShowFijnstof(!showFijnstof);
         setShowTemp(false);
         setShowRegions(false);
     }
 
-    function handleToggleVochtigheid(){
+    function handleToggleVochtigheid() {
         setShowVochtigheid(!showVochtigheid);
     }
-    
-    function handleToggleWindspeed(){
+
+    function handleToggleWindspeed() {
         setShowWindspeed(!showWindspeed);
     }
 
-    function handleToggleShowDataStations(){
+    function handleToggleShowDataStations() {
         setShowDataStations(!showDataStations);
     }
 
-    function handleToggleShowRegions(){
+    function handleToggleShowRegions() {
         setShowRegions(!showRegions);
         setShowFijnstof(false);
         setShowTemp(false)
@@ -136,17 +137,17 @@ const Home = () => {
 
     function getHeatmapData()
     {
-        api.get('/Heatmap/'+1).then((response) => setTemperatureData(response.data))
+        api.get('/Heatmap/' + 1).then((response) => setTemperatureData(response.data))
         .catch(function (error) {
             handleAxiosError(error);
         })
 
-        api.get('/Heatmap/'+4).then(function (response) {
+        api.get('/Heatmap/' + 4).then(function (response) {
             setFijnstofData(response.data)
         })
-        .catch(function (error) {
-            handleAxiosError(error);
-        })
+            .catch(function (error) {
+                handleAxiosError(error);
+            })
     }
 
     function getStationsData()
@@ -173,10 +174,10 @@ const Home = () => {
             setShowSettings(true);
             console.log(response.data);
         })
-        .catch(function (error) {
-            handleAxiosError(error);
-        })
-        
+            .catch(function (error) {
+                handleAxiosError(error);
+            })
+
     }
 
     function handleAxiosError(error) {
@@ -185,15 +186,13 @@ const Home = () => {
     }
 
     useEffect(() => {
-        try
-        {
+        try {
             getStationsData();
             getAverageData();
             getHeatmapData();
             getRegionCords();
         }
-        catch (error)
-        {
+        catch (error) {
             // Errors don't reach this catch, check function 'handleAxiosError'
             console.log('error loading data.');
             setErrMsg('Fout bij ophalen kaart-data.');
@@ -207,96 +206,96 @@ const Home = () => {
                     errMsg && (
                         <div className="errorOverlay">
                             <p ref={errRef} aria-live="assertive">{errMsg}</p>
-                            <button className="button" onClick={() => window.location.reload(false) }>Opnieuw proberen</button>
+                            <button className="button" onClick={() => window.location.reload(false)}>Opnieuw proberen</button>
                         </div>
                     )
                 }
-                <Map center={[51.565120, 5.066322]} zoom={13}> 
+                <Map center={[51.565120, 5.066322]} zoom={13}>
                     <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/> 
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <RegionLayer data={regionData} visible={showRegions}></RegionLayer>
                     <MeetStationLayer data={data} visible={showDataStations}></MeetStationLayer>
                     <HeatMapLayer heatmapData={temperatureData} gradient={getGradient(1)} visible={showTemp}></HeatMapLayer>
                     <HeatMapLayer heatmapData={fijnstofData} gradient={getGradient(4)} visible={showFijnstof}></HeatMapLayer>
                 </Map>
             </div>
-            <RadioButtonGroup handleToggleShowRegions={handleToggleShowRegions} handleToggleTemp={handleToggleTemp} handleToggleFijnStof={handleToggleFijnStof}/>
+            <RadioButtonGroup handleToggleShowRegions={handleToggleShowRegions} handleToggleTemp={handleToggleTemp} handleToggleFijnStof={handleToggleFijnStof} />
         </section>
     )
 }
 
-const RegionLayer = ({data, visible}) =>{
-    if(!visible) return (<></>);
+const RegionLayer = ({ data, visible }) => {
+    if (!visible) return (<></>);
 
-     return (
+    return (
         <>
-        {data.map(({ region, cordsList, averageData}) =>(
-            <Polygon positions={cordsList} key={region.id} color={getRegionColor(region.id)} opacity={0.25} fillOpacity={0.2}>
-                <Popup>
-                    <label className="bold">Algemene data {region.name}</label> <br/>
+            {data.map(({ region, cordsList, averageData }) => (
+                <Polygon positions={cordsList} key={region.id} color={getRegionColor(region.id)} opacity={0.25} fillOpacity={0.2}>
+                    <Popup>
+                        <label className="bold">Algemene data {region.name}</label> <br />
 
-                    {averageData.map(({id, name, data}) =>(
-                    <div key = {id}>
-                        <label>
-                            {name}: {data} {getDataTypeSuffix(id)}
-                        </label>
-                    </div>
-                    
-                ))}
-                </Popup>
-         </Polygon>
-        ))}
+                        {averageData.map(({ id, name, data }) => (
+                            <div key={id}>
+                                <label>
+                                    {name}: {data} {getDataTypeSuffix(id)}
+                                </label>
+                            </div>
+
+                        ))}
+                    </Popup>
+                </Polygon>
+            ))}
         </>)
 
-   }
+}
 
 
-const HeatMapLayer = ({heatmapData, gradient, visible}) => {
-    if(!visible) return(<></>);
+const HeatMapLayer = ({ heatmapData, gradient, visible }) => {
+    if (!visible) return (<></>);
 
     return (
         <HeatmapLayer
-        fitBoundsOnLoad
-        points={heatmapData}
-        longitudeExtractor={marker => marker.longitude}
-        latitudeExtractor={marker => marker.latitude}
-        gradient={gradient}
-        intensityExtractor={marker => marker.value}
-        radius={Number(RADIUS)}
-        blur={Number(BLUR)}
-        max={Number.parseFloat(0.4)}
-      />
+            fitBoundsOnLoad
+            points={heatmapData}
+            longitudeExtractor={marker => marker.longitude}
+            latitudeExtractor={marker => marker.latitude}
+            gradient={gradient}
+            intensityExtractor={marker => marker.value}
+            radius={Number(RADIUS)}
+            blur={Number(BLUR)}
+            max={Number.parseFloat(0.4)}
+        />
     )
-   }
+}
 
-   const MeetStationLayer = ({data, visible}) =>{
-        if(!visible) return (<></>);
+const MeetStationLayer = ({ data, visible }) => {
+    if (!visible) return (<></>);
 
-        return(
-            <>
-             {data.map(({ id, latitude, longitude , name, sensors}) => (
-            <Marker key = {id} position={[latitude, longitude]}>
-              <Popup>
-                <label className="bold">{name}</label>
+    return (
+        <>
+            {data.map(({ id, latitude, longitude, name, sensors }) => (
+                <Marker key={id} position={[latitude, longitude]}>
+                    <Popup>
+                        <label className="bold">{name}</label>
 
-                {sensors.map(({id, typeId, data}) =>(
-                    <div key = {id}>
-                        <label>
-                            {getDataType(typeId)}: {data} {getDataTypeSuffix(typeId)}
-                        </label>
-                    </div>
-                    
-                ))}
-              </Popup>
-            </Marker>
-        ))}      
-            </>
-        )         
-   }
-   
+                        {sensors.map(({ id, typeId, data }) => (
+                            <div key={id}>
+                                <label>
+                                    {getDataType(typeId)}: {data} {getDataTypeSuffix(typeId)}
+                                </label>
+                            </div>
 
-   function getDataTypeSuffix(typeId){
-    switch(typeId){
+                        ))}
+                    </Popup>
+                </Marker>
+            ))}
+        </>
+    )
+}
+
+
+function getDataTypeSuffix(typeId) {
+    switch (typeId) {
         case 1:
             return "°C";
         case 2:
@@ -312,10 +311,10 @@ const HeatMapLayer = ({heatmapData, gradient, visible}) => {
         default:
             return "Onbekend.";
     }
-   }
+}
 
-   function getDataType(typeId){
-    switch(typeId){
+function getDataType(typeId) {
+    switch (typeId) {
         case 1:
             return "Temperatuur";
         case 2:
@@ -331,6 +330,6 @@ const HeatMapLayer = ({heatmapData, gradient, visible}) => {
         default:
             return "Onbekend.";
     }
-   }
+}
 
 export default Home

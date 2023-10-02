@@ -10,25 +10,31 @@
   --light-red: #dc3545;
   --green: #33A567;
 }
+
 body {
   font-family: "Roboto", "Segoe UI", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     "sans-serif" !important;
 }
+
 /* Setting general spacing for all content in main */
 main {
   margin: 0 auto;
   max-width: 1280px;
 }
+
 main section {
   margin-top: 1.6rem !important;
 }
+
 .bold {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .offscreen {
   display: none;
 }
+
 .button {
   background-color: var(--yellow);
   color: var(--dark-grey);
@@ -68,12 +74,14 @@ main section {
 }
 
 .button2Inline:hover {
-  background-color: var(--yellow); /* Green */
+  background-color: var(--yellow);
+  /* Green */
 }
 
 .button:active {
   transform: scale(0.98);
 }
+
 /*///////////////////////////////////////////////////*/
 /*                  Specific classes                 */
 /*///////////////////////////////////////////////////*/
@@ -81,32 +89,40 @@ main section {
 .navbar-section {
   background-color: var(--yellow);
 }
-.navbar-section nav a, .navbar-section nav div ul li a  {
+
+.navbar-section nav a,
+.navbar-section nav div ul li a {
   color: var(--dark-grey);
 }
+
 nav.navbar {
   max-width: 1280px;
   margin: 0 auto;
 }
+
 .navbar-toggler:focus {
   box-shadow: none !important;
 }
+
 .navbar-toggler-icon {
   color: var(--dark-grey);
 }
+
 /* End navbar */
 
 /* Home */
 .map-container {
   position: relative;
 }
-.leaflet-container{
+
+.leaflet-container {
   width: 100%;
   height: 40rem;
   border-radius: 0.5rem;
   position: relative;
   z-index: 1;
 }
+
 .errorOverlay {
   width: 100%;
   height: 40rem;
@@ -119,11 +135,14 @@ nav.navbar {
   align-items: center;
   flex-direction: column;
 }
-.errorOverlay p, .errorOverlay a {
+
+.errorOverlay p,
+.errorOverlay a {
   font-size: 2rem;
   color: #FFFFFF !important;
   margin: 0 5px;
 }
+
 /* End home */
 
 /* Form */
@@ -132,6 +151,7 @@ form {
   flex-direction: column;
   padding-bottom: 1rem;
 }
+
 .form-section {
   width: 100%;
   margin: auto;
@@ -139,11 +159,13 @@ form {
   display: flex;
   flex-direction: column;
 }
+
 .form-section h1 {
   text-align: center;
   color: var(--dark-grey);
   margin-bottom: 1.6rem;
 }
+
 .form-section form input {
   background-color: #F5F3F3;
   border: none;
@@ -151,16 +173,20 @@ form {
   padding: 1rem 1.2rem;
   margin-bottom: 0.6rem;
 }
+
 .form-section form input:focus {
   outline-color: var(--dark-grey);
 }
+
 .form-section .form-redirect {
   display: flex;
   justify-content: center;
 }
+
 .form-section .form-redirect p {
   margin-right: 0.2rem;
 }
+
 /* End form */
 
 /* Alerts */
@@ -173,6 +199,7 @@ form {
   padding: 1rem 1.2rem;
   margin-bottom: 1.2rem;
 }
+
 .success-msg {
   color: #1e4620;
   background-color: #edf7ed;
@@ -182,6 +209,7 @@ form {
   padding: 0.8rem;
   margin-bottom: 0.5rem;
 }
+
 /* End alerts */
 /*///////////////////////////////////////////////////*/
 /*                 Responsive changes                */
@@ -190,24 +218,27 @@ form {
   main {
     padding: 12px;
   }
+
   nav.navbar {
     padding-left: 12px;
     padding-right: 12px;
   }
 }
+
 @media only screen and (max-width: 650px) {
   .errorOverlay p {
     font-size: 1.5rem;
     text-align: center;
   }
 }
+
 /*///////////////////////////////////////////////////*/
 /*                       Fonts                       */
 /*///////////////////////////////////////////////////*/
 @font-face {
   font-family: 'Roboto';
-  src: url('./fonts/Roboto-Regular.woff2') format('woff2'),
-      url('./fonts/Roboto-Regular.woff') format('woff');
+  src: url('./Assets/Roboto-Regular.woff2') format('woff2'),
+    url('./Assets/Roboto-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -216,14 +247,14 @@ form {
 /*///////////////////////////////////////////////////*/
 /*              Meetstation toevoegen               */
 /*///////////////////////////////////////////////////*/
-.color{
+.color {
   margin: 3rem;
   outline-style: solid;
   outline-color: #ffc107;
   outline-offset: 1rem;
 }
 
-.labelMargin{
+.labelMargin {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }

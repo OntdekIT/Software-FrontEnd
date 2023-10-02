@@ -1,5 +1,6 @@
-import React, {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 export default function RegisterStationHeight() {
     const [direction, setDirection] = useState("N");
     const [height, setHeight] = useState();
@@ -26,11 +27,11 @@ export default function RegisterStationHeight() {
     const handleClick = () => {
         setErrorMessage(null);
 
-        if(direction === undefined){
+        if (direction === undefined) {
             setErrorMessage("Vul een richting in.");
-        } else if(height === undefined){
+        } else if (height === undefined) {
             setErrorMessage("Vul een hoogte in.");
-        } else if (location === undefined){
+        } else if (location === undefined) {
             setErrorMessage("Vul een locatie in.");
         } else {
             const updatedAnswers = [...answers, items[0], items[1], height, direction, location];
@@ -42,7 +43,7 @@ export default function RegisterStationHeight() {
 
     return (
         <div className={"color"}>
-            <br/>
+            <br />
             <div className={"container gy-5"}>
                 <div className={"row"}>
                     <div className={"col-4"}></div>
@@ -66,7 +67,7 @@ export default function RegisterStationHeight() {
                             <div className={"form-text"}>Op welke hoogte vanaf de grond hangt uw meetstation? </div>
 
                             <input type={"text"} className={"form-control"} placeholder={"Hoogte in cm"} value={height}
-                            onChange={handleHeightChange} required
+                                onChange={handleHeightChange} required
                             />
                         </label>
 
@@ -74,20 +75,20 @@ export default function RegisterStationHeight() {
                             <h5>Locatie</h5>
                             <div className={"form-text"}>Staat uw meetstation buiten of binnen? </div>
 
-                            <br/>
+                            <br />
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" type="radio" name="RadioInsideOrOutside" id="RadioInside"
-                                       value="false" onChange={handleRadioChange} />
+                                    value="false" onChange={handleRadioChange} />
                                 <label className="form-check-label" htmlFor="RadioInside">Binnen</label>
                             </div>
                             <div className="form-check form-check-inline">
                                 <input className="form-check-input" type="radio" name="RadioInsideOrOutside" id="RadioOutside"
-                                       value="true" onChange={handleRadioChange}/>
+                                    value="true" onChange={handleRadioChange} />
                                 <label className="form-check-label" htmlFor="RadioOutside">Buiten</label>
 
                             </div>
                         </label>
-                        <br/>
+                        <br />
                         {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
                     </div>
 

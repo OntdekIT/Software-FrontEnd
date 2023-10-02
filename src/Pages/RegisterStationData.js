@@ -1,6 +1,7 @@
-import React, {useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
 import { api } from "../App";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 export default function RegisterStationData() {
     const navigate = useNavigate();
     const params = new URLSearchParams(window.location.search);
@@ -40,10 +41,9 @@ export default function RegisterStationData() {
 
     const checkValues = () => {
         console.log(answers);
-        if(answers.length === 6)
-        {
+        if (answers.length === 6) {
             answers.map(a => {
-                if(a == null) {
+                if (a == null) {
                     answersValid = false;
                 }
             });
@@ -62,7 +62,7 @@ export default function RegisterStationData() {
         checkValues();
 
 
-        if(answersValid) {
+        if (answersValid) {
             postNaarBackend();
         }
         else {
@@ -78,24 +78,24 @@ export default function RegisterStationData() {
 
     return (
         <div className={"color"}>
-            <br/>
+            <br />
             <div className={"container gy-5"}>
                 <div className={"row"}>
                     <div className={"col-4"}></div>
                     <div className={"col-4"}>
                         <h4><b>(5/5) Gegevens controleren</b></h4>
                         <label className={"labelMargin"}>
-                            Registratiecode: <br/>
-                            <div className={"form-text"}>{items[0]}</div><br/>
-                            Naam: <br/>
-                            <div className={"form-text"}>{items[1]}</div><br/>
-                            Hoogte: <br/>
-                            <div className={"form-text"}>{items[2]} cm</div><br/>
-                            Richting:<br/>
-                            <div className={"form-text"}>{items[3]}</div><br/>
-                            Buiten: <br/>
-                            <div className={"form-text"}>{items[4]}</div><br/>
-                            Prive: <br/>
+                            Registratiecode: <br />
+                            <div className={"form-text"}>{items[0]}</div><br />
+                            Naam: <br />
+                            <div className={"form-text"}>{items[1]}</div><br />
+                            Hoogte: <br />
+                            <div className={"form-text"}>{items[2]} cm</div><br />
+                            Richting:<br />
+                            <div className={"form-text"}>{items[3]}</div><br />
+                            Buiten: <br />
+                            <div className={"form-text"}>{items[4]}</div><br />
+                            Prive: <br />
                             <div className={"form-text"}>{items[5]}</div>
                         </label>
                         {errorMessage && <label className={"error-msg"}>{errorMessage}</label>}
