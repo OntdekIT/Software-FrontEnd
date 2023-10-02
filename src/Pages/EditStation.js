@@ -4,7 +4,6 @@ import React from "react";
 import { api } from "../App";
 
 function EditStation() {
-
   const inputvalues = {
     id: 0,
     name: '',
@@ -14,17 +13,18 @@ function EditStation() {
     latitude: 0,
     ispublic: false
   };
+
   const [station, setStation] = useState(inputvalues);
   const [isChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
   const { stationId } = useParams();
   console.log(stationId);
 
-const handleChange = (event) => {
-  const { name, value } = event.target;
-  setStation({ ...station, [name]: value });
-  console.log(station);
-};
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setStation({ ...station, [name]: value });
+    console.log(station);
+  };
 
   const checkboxHandler = (event) => {
     setIsChecked(!isChecked);
@@ -33,59 +33,43 @@ const handleChange = (event) => {
     console.log(station);
   };
 
-useEffect(() => {
-  api.get('/Station/'+ (stationId))
-  .then(resp => {
-    const { id, name, locationName, height, longitude, latitude, ispublic} = resp.data
-    setStation({ id, name, height, locationName, longitude, latitude, ispublic })
-  })
-}, []);
+  useEffect(() => {
+    api.get('/Station/'+ (stationId))
+    .then(resp => {
+      const { id, name, locationName, height, longitude, latitude, ispublic} = resp.data
+      setStation({ id, name, height, locationName, longitude, latitude, ispublic })
+    })
+  }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
-        const currentStation = {
-          id: station.id,
-          name: station.name,
-          address: station.locationName,
-          height: station.height,
-          longitude: station.longitude,
-          latitude: station.latitude, 
-          ispublic: station.ispublic
+      const currentStation = {
+        id: station.id,
+        name: station.name,
+        address: station.locationName,
+        height: station.height,
+        longitude: station.longitude,
+        latitude: station.latitude, 
+        ispublic: station.ispublic
       }
-        api.put('/Station/', currentStation)
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((error) => {
-            if (error.response) {
-              console.error(error.response.data);
-              console.error(error.response.status);
-              console.error(error.response.headers);
-            } else if (error.request) {
-              console.error(error.request);
-            } else {
-              console.error("Error", error.message);
-            }
-          });
-          return navigate('/');   
+
+      api.put('/Station/', currentStation)
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          if (error.response) {
+            console.error(error.response.data);
+            console.error(error.response.status);
+            console.error(error.response.headers);
+          } else if (error.request) {
+            console.error(error.request);
+          } else {
+            console.error("Error", error.message);
+          }
+        });
+      return navigate('/');   
     }
-    axios.put('http://localhost:8082/api/Station/', currentStation)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error(error.response.data);
-          console.error(error.response.status);
-          console.error(error.response.headers);
-        } else if (error.request) {
-          console.error(error.request);
-        } else {
-          console.error("Error", error.message);
-        }
-      });
-    return navigate('/');
-  }
 
     const handleDelete = (e) => {
       e.preventDefault();
