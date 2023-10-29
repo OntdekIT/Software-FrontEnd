@@ -3,8 +3,29 @@ import { RoundToOneDecimal } from "../Lib/Utility";
 
 const RegionLayer = ({ data, visible }) => {
     if (!visible) return (<></>);
-    let mintemp= -10;
-    let tempDif = 40;
+
+    let mintemp= Number.MIN_VALUE;
+    let maxtemp = Number.MIN_VALUE;
+    let tempDif = 1;
+
+    data.map((neighbourhood) => {
+        if((mintemp === Number.MIN_VALUE || maxtemp === Number.MIN_VALUE)
+            && !isNaN(neighbourhood.avgTemp)){
+            mintemp = neighbourhood.avgTemp;
+            maxtemp = neighbourhood.avgTemp + tempDif;
+            console.log("init "+mintemp.toString()+" "+maxtemp.toString());
+        }
+        else if (neighbourhood.avgTemp < mintemp && !isNaN(neighbourhood.avgTemp)){
+            mintemp = neighbourhood.avgTemp;
+            console.log("mintemp");
+        }
+        else if (neighbourhood.avgTemp > maxtemp && !isNaN(neighbourhood.avgTemp)){
+            maxtemp = neighbourhood.avgTemp;
+            console.log("maxtemp");
+        }
+    });
+    tempDif = maxtemp - mintemp;
+    console.log(maxtemp.toString()+" "+mintemp.toString()+" "+tempDif.toString());
 
     function setRegionColour(value){
         let contrastValue = (value-mintemp)/tempDif;
