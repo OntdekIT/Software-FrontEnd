@@ -9,23 +9,20 @@ const RegionLayer = ({ data, visible }) => {
     let tempDif = 1;
 
     data.map((neighbourhood) => {
-        if((mintemp === Number.MIN_VALUE || maxtemp === Number.MIN_VALUE)
-            && !isNaN(neighbourhood.avgTemp)){
-            mintemp = neighbourhood.avgTemp;
-            maxtemp = neighbourhood.avgTemp + tempDif;
-            console.log("init "+mintemp.toString()+" "+maxtemp.toString());
-        }
-        else if (neighbourhood.avgTemp < mintemp && !isNaN(neighbourhood.avgTemp)){
-            mintemp = neighbourhood.avgTemp;
-            console.log("mintemp");
-        }
-        else if (neighbourhood.avgTemp > maxtemp && !isNaN(neighbourhood.avgTemp)){
-            maxtemp = neighbourhood.avgTemp;
-            console.log("maxtemp");
+        if (!isNaN(neighbourhood.avgTemp)){
+            if((mintemp === Number.MIN_VALUE || maxtemp === Number.MIN_VALUE)){
+                mintemp = neighbourhood.avgTemp;
+                maxtemp = neighbourhood.avgTemp + tempDif;
+            }
+            else if (neighbourhood.avgTemp < mintemp){
+                mintemp = neighbourhood.avgTemp;
+            }
+            else if (neighbourhood.avgTemp > maxtemp){
+                maxtemp = neighbourhood.avgTemp;
+            }
         }
     });
     tempDif = maxtemp - mintemp;
-    console.log(maxtemp.toString()+" "+mintemp.toString()+" "+tempDif.toString());
 
     function setRegionColour(value){
         let contrastValue = (value-mintemp)/tempDif;
