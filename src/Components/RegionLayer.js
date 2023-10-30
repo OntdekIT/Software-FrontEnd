@@ -4,25 +4,23 @@ import { RoundToOneDecimal } from "../Lib/Utility";
 const RegionLayer = ({ data, visible }) => {
     if (!visible) return (<></>);
 
-    let mintemp= Number.MIN_VALUE;
+    let mintemp= Number.MAX_VALUE;
     let maxtemp = Number.MIN_VALUE;
     let tempDif = 1;
 
     data.map((neighbourhood) => {
         if (!isNaN(neighbourhood.avgTemp)){
-            if((mintemp === Number.MIN_VALUE || maxtemp === Number.MIN_VALUE)){
-                mintemp = neighbourhood.avgTemp;
-                maxtemp = neighbourhood.avgTemp + tempDif;
-            }
-            else if (neighbourhood.avgTemp < mintemp){
+            if (neighbourhood.avgTemp < mintemp){
                 mintemp = neighbourhood.avgTemp;
             }
-            else if (neighbourhood.avgTemp > maxtemp){
+            if (neighbourhood.avgTemp > maxtemp){
                 maxtemp = neighbourhood.avgTemp;
             }
         }
     });
-    tempDif = maxtemp - mintemp;
+    if (maxtemp - mintemp != 0){
+        tempDif = maxtemp - mintemp;
+    }
 
     function setRegionColour(value){
         if (isNaN(value)){return "rgb(100,100,100)"}
