@@ -25,6 +25,8 @@ const RegionLayer = ({ data, visible }) => {
     tempDif = maxtemp - mintemp;
 
     function setRegionColour(value){
+        if (isNaN(value)){return "rgb(100,100,100)"}
+
         let contrastValue = (value-mintemp)/tempDif;
         let red = Math.round(Red(contrastValue)*255);
         let green = Math.round(Green(contrastValue)*255);
@@ -48,7 +50,7 @@ const RegionLayer = ({ data, visible }) => {
     return (
         <>
             {data.map(( neighbourhood ) => (
-                <Polygon positions={ neighbourhood.coordinates } key={ neighbourhood.id } color={setRegionColour(neighbourhood.avgTemp)} opacity={1} fillOpacity={neighbourhood.avgTemp == "NaN" ? .1 : .5}>
+                <Polygon positions={ neighbourhood.coordinates } key={ neighbourhood.id } color={setRegionColour(neighbourhood.avgTemp)} opacity={neighbourhood.avgTemp === "NaN" ? .4 : 1} fillOpacity={neighbourhood.avgTemp === "NaN" ? .25 : .5}>
                     <Popup>
                         <label className="bold">{ neighbourhood.name }</label> <br />
 
