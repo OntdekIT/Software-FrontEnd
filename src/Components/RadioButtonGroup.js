@@ -8,13 +8,13 @@ const RadioButtonGroup = (props) => {
     return (
         <div>
             <label>
-                <input type="radio" value="regio" checked={selectedOption === 'regio'} onChange={e => { handleChange(e); props.handleToggleShowRegions() }} />
-                Regio's
+                <input type="radio" value="wijk" checked={selectedOption === 'wijk'} onChange={e => { handleChange(e); props.handleToggleShowRegions() }} />
+                Wijken
             </label>
             <br />
             <label>
-                <input type="radio" value="temperatuur" checked={selectedOption === 'temperatuur'} onChange={e => { handleChange(e); props.handleToggleTemp() }} />
-                Temperatuur
+                <input type="radio" value="heatmap" checked={selectedOption === 'heatmap'} onChange={e => { handleChange(e); props.handleToggleTemp() }} />
+                Heatmap
             </label>
             <br />
         </div>

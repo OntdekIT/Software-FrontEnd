@@ -18,10 +18,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.3.1] - 2023-11-15
 
+### Added
+-   Mogelijkheid om te schakelen tussen verschillende typen data binnen de heatmap (SCRUM-137)
+
 ### Fixed
 -   Popup sluit na het selecteren van de datum in calender van de popup (SCRUM-129)
 -   Heatmap blijft staan als je terug naar wijk-view switched (SCRUM-116)
-
 
 ## [0.3.0] - 2023-11-13
 

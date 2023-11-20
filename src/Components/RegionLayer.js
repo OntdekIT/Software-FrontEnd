@@ -1,33 +1,24 @@
 import { Polygon, Popup } from "react-leaflet";
 import { RoundToOneDecimal } from "../Lib/Utility";
 
-const RegionLayer = ({ data, toggleRegion }) => {
+const RegionLayer = ({ data }) => {
+    let mintemp = Number.MAX_VALUE;
+    let maxtemp = Number.MIN_VALUE;
+    let tempDif = 1;
 
-    let mintemp = -10;
-    let tempDif = 40;
-
-    if (toggleRegion === "relatief") {
-        let maxtemp = Number.MIN_VALUE;
-        mintemp = Number.MAX_VALUE;
-        tempDif = 1;
-
-        data.forEach((neighbourhood) => {
-            if (!isNaN(neighbourhood.avgTemp)) {
-                if (neighbourhood.avgTemp < mintemp) {
-                    mintemp = neighbourhood.avgTemp;
-                }
-                if (neighbourhood.avgTemp > maxtemp) {
-                    maxtemp = neighbourhood.avgTemp;
-                }
+    data.forEach((neighbourhood) => {
+        if (!isNaN(neighbourhood.avgTemp)) {
+            if (neighbourhood.avgTemp < mintemp) {
+                mintemp = neighbourhood.avgTemp;
             }
-        });
-
-        if (maxtemp - mintemp !== 0) {
-            tempDif = maxtemp - mintemp;
+            if (neighbourhood.avgTemp > maxtemp) {
+                maxtemp = neighbourhood.avgTemp;
+            }
         }
-        console.log("mintemp" + mintemp);
-        console.log("maxtemp" + maxtemp);
-        console.log("tempDif" + tempDif);
+    });
+
+    if (maxtemp - mintemp !== 0) {
+        tempDif = maxtemp - mintemp;
     }
 
     var colorDictionary = {
@@ -57,7 +48,6 @@ const RegionLayer = ({ data, toggleRegion }) => {
         <>
             {
                 data.map((neighbourhood) => (
-
                     <Polygon positions={neighbourhood.coordinates} key={neighbourhood.id} pathOptions={{ color: setRegionColour(neighbourhood.avgTemp) }} opacity={neighbourhood.avgTemp === "NaN" ? .4 : 1} fillOpacity={neighbourhood.avgTemp === "NaN" ? .25 : .5}>
                         <Popup>
                             <label className="bold">{neighbourhood.name}</label> <br />
