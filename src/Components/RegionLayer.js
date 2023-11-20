@@ -51,7 +51,6 @@ const RegionLayer = ({ data }) => {
                     <Polygon positions={neighbourhood.coordinates} key={neighbourhood.id} pathOptions={{ color: setRegionColour(neighbourhood.avgTemp) }} opacity={neighbourhood.avgTemp === "NaN" ? .4 : 1} fillOpacity={neighbourhood.avgTemp === "NaN" ? .25 : .5}>
                         <Popup>
                             <label className="bold">{neighbourhood.name}</label> <br />
-
                             <div>
                                 <label>
                                     {/* TODO: Netter neerzetten */}
