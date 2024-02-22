@@ -1,0 +1,1308 @@
+[
+    
+        {
+            "id": 512,
+            "timestamp": "06-11-2023 14:00:56",
+            "longitude": 5.38477,
+            "latitude": 52.1659,
+            "temperature": 13.125,
+            "humidity": 77.1875
+        },
+        {
+            "id": 256,
+            "timestamp": "06-11-2023 14:01:03",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.375,
+            "humidity": 96.4375
+        },
+        {
+            "id": 769,
+            "timestamp": "06-11-2023 13:41:51",
+            "longitude": 5.12833,
+            "latitude": 52.0625,
+            "temperature": 11.0,
+            "humidity": 81.875
+        },
+        {
+            "id": 258,
+            "timestamp": "06-11-2023 13:59:00",
+            "longitude": 5.13159,
+            "latitude": 52.0839,
+            "temperature": 10.875,
+            "humidity": 59.0
+        },
+        {
+            "id": 773,
+            "timestamp": "06-11-2023 13:45:13",
+            "longitude": 5.14319,
+            "latitude": 52.1074,
+            "temperature": 11.25,
+            "humidity": 93.375
+        },
+        {
+            "id": 261,
+            "timestamp": "06-11-2023 13:56:14",
+            "longitude": 5.04623,
+            "latitude": 52.0899,
+            "temperature": 10.5,
+            "humidity": 108.125
+        },
+        {
+            "id": 776,
+            "timestamp": "06-11-2023 13:34:56",
+            "longitude": 5.19534,
+            "latitude": 52.0663,
+            "temperature": 11.4375,
+            "humidity": 95.25
+        },
+        {
+            "id": 777,
+            "timestamp": "06-11-2023 13:54:31",
+            "longitude": 5.11548,
+            "latitude": 52.1053,
+            "temperature": 11.125,
+            "humidity": 91.875
+        },
+        {
+            "id": 778,
+            "timestamp": "06-11-2023 14:00:34",
+            "longitude": 5.13794,
+            "latitude": 52.0959,
+            "temperature": 11.375,
+            "humidity": 99.875
+        },
+        {
+            "id": 779,
+            "timestamp": "06-11-2023 13:56:02",
+            "longitude": 5.00421,
+            "latitude": 52.1008,
+            "temperature": 11.125,
+            "humidity": 31.5625
+        },
+        {
+            "id": 2061,
+            "timestamp": "06-11-2023 13:33:45",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.375,
+            "humidity": 20.125
+        },
+        {
+            "id": 782,
+            "timestamp": "06-11-2023 13:48:38",
+            "longitude": 5.12439,
+            "latitude": 52.1092,
+            "temperature": 11.0625,
+            "humidity": 95.0
+        },
+        {
+            "id": 2062,
+            "timestamp": "06-11-2023 13:49:56",
+            "longitude": 5.38995,
+            "latitude": 52.1763,
+            "temperature": 11.0,
+            "humidity": 105.312
+        },
+        {
+            "id": 783,
+            "timestamp": "06-11-2023 13:56:45",
+            "longitude": 5.14337,
+            "latitude": 52.1041,
+            "temperature": 11.0,
+            "humidity": 97.3125
+        },
+        {
+            "id": 786,
+            "timestamp": "06-11-2023 13:37:36",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.125,
+            "humidity": 22.1875
+        },
+        {
+            "id": 2067,
+            "timestamp": "06-11-2023 13:39:10",
+            "longitude": 5.36523,
+            "latitude": 52.1609,
+            "temperature": 11.125,
+            "humidity": 54.6875
+        },
+        {
+            "id": 789,
+            "timestamp": "06-11-2023 13:53:50",
+            "longitude": 5.11554,
+            "latitude": 52.0744,
+            "temperature": 11.3125,
+            "humidity": 101.438
+        },
+        {
+            "id": 22,
+            "timestamp": "06-11-2023 13:45:29",
+            "longitude": 5.38605,
+            "latitude": 52.1901,
+            "temperature": 11.125,
+            "humidity": 62.75
+        },
+        {
+            "id": 790,
+            "timestamp": "06-11-2023 13:51:59",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.0625,
+            "humidity": 49.4375
+        },
+        {
+            "id": 791,
+            "timestamp": "06-11-2023 14:01:22",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.5,
+            "humidity": 95.9375
+        },
+        {
+            "id": 23,
+            "timestamp": "06-11-2023 13:55:31",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.6875,
+            "humidity": 14.25
+        },
+        {
+            "id": 792,
+            "timestamp": "06-11-2023 13:57:38",
+            "longitude": 5.12332,
+            "latitude": 52.0702,
+            "temperature": 11.125,
+            "humidity": 92.375
+        },
+        {
+            "id": 794,
+            "timestamp": "06-11-2023 13:58:12",
+            "longitude": 5.12463,
+            "latitude": 52.0851,
+            "temperature": 11.1875,
+            "humidity": 78.6875
+        },
+        {
+            "id": 2078,
+            "timestamp": "06-11-2023 13:53:12",
+            "longitude": 5.37494,
+            "latitude": 52.1562,
+            "temperature": 11.1875,
+            "humidity": 97.5
+        },
+        {
+            "id": 2080,
+            "timestamp": "06-11-2023 13:48:02",
+            "longitude": 5.38016,
+            "latitude": 52.1719,
+            "temperature": 10.6875,
+            "humidity": 5.25
+        },
+        {
+            "id": 2082,
+            "timestamp": "06-11-2023 14:00:54",
+            "longitude": 5.36456,
+            "latitude": 52.1617,
+            "temperature": 10.75,
+            "humidity": 94.0625
+        },
+        {
+            "id": 547,
+            "timestamp": "06-11-2023 13:46:50",
+            "longitude": 5.38507,
+            "latitude": 60.3433,
+            "temperature": 8.9375,
+            "humidity": 100.5
+        },
+        {
+            "id": 2084,
+            "timestamp": "06-11-2023 13:29:40",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 14.1875,
+            "humidity": 52.9375
+        },
+        {
+            "id": 298,
+            "timestamp": "06-11-2023 13:49:01",
+            "longitude": 5.36603,
+            "latitude": 52.162,
+            "temperature": 11.0625,
+            "humidity": 97.0
+        },
+        {
+            "id": 299,
+            "timestamp": "06-11-2023 13:47:16",
+            "longitude": 5.37766,
+            "latitude": 52.1635,
+            "temperature": 11.0625,
+            "humidity": 68.5625
+        },
+        {
+            "id": 43,
+            "timestamp": "06-11-2023 13:48:59",
+            "longitude": 5.39597,
+            "latitude": 52.173,
+            "temperature": 10.875,
+            "humidity": 40.75
+        },
+        {
+            "id": 555,
+            "timestamp": "06-11-2023 13:55:34",
+            "longitude": 5.26614,
+            "latitude": 60.3277,
+            "temperature": 7.25,
+            "humidity": 19.875
+        },
+        {
+            "id": 2092,
+            "timestamp": "06-11-2023 13:51:33",
+            "longitude": 5.42081,
+            "latitude": 52.1917,
+            "temperature": 11.25,
+            "humidity": 91.375
+        },
+        {
+            "id": 44,
+            "timestamp": "06-11-2023 13:49:37",
+            "longitude": 5.39499,
+            "latitude": 52.1606,
+            "temperature": 11.25,
+            "humidity": 112.938
+        },
+        {
+            "id": 45,
+            "timestamp": "06-11-2023 13:46:36",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.6875,
+            "humidity": 77.375
+        },
+        {
+            "id": 2095,
+            "timestamp": "06-11-2023 13:47:31",
+            "longitude": 5.39798,
+            "latitude": 52.1631,
+            "temperature": 10.3125,
+            "humidity": -1.6875
+        },
+        {
+            "id": 562,
+            "timestamp": "06-11-2023 13:56:09",
+            "longitude": 5.06656,
+            "latitude": 51.5589,
+            "temperature": 11.9375,
+            "humidity": 6.6875
+        },
+        {
+            "id": 567,
+            "timestamp": "06-11-2023 14:01:52",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.3125,
+            "humidity": 89.0625
+        },
+        {
+            "id": 2103,
+            "timestamp": "06-11-2023 13:49:17",
+            "longitude": 5.37921,
+            "latitude": 52.2009,
+            "temperature": 11.25,
+            "humidity": 55.625
+        },
+        {
+            "id": 2104,
+            "timestamp": "06-11-2023 13:59:33",
+            "longitude": 5.37064,
+            "latitude": 52.1907,
+            "temperature": 10.75,
+            "humidity": 39.25
+        },
+        {
+            "id": 569,
+            "timestamp": "06-11-2023 14:00:32",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.125,
+            "humidity": 75.6875
+        },
+        {
+            "id": 60,
+            "timestamp": "06-11-2023 13:50:00",
+            "longitude": 5.38519,
+            "latitude": 52.1678,
+            "temperature": 11.75,
+            "humidity": 102.625
+        },
+        {
+            "id": 2110,
+            "timestamp": "06-11-2023 13:51:51",
+            "longitude": 5.41235,
+            "latitude": 52.212,
+            "temperature": 11.3125,
+            "humidity": 96.4375
+        },
+        {
+            "id": 575,
+            "timestamp": "06-11-2023 13:49:43",
+            "longitude": 5.14789,
+            "latitude": 51.6122,
+            "temperature": 11.625,
+            "humidity": 100.125
+        },
+        {
+            "id": 832,
+            "timestamp": "06-11-2023 13:50:33",
+            "longitude": 5.08899,
+            "latitude": 52.1049,
+            "temperature": 10.75,
+            "humidity": 97.75
+        },
+        {
+            "id": 2113,
+            "timestamp": "06-11-2023 13:48:27",
+            "longitude": 5.36972,
+            "latitude": 52.1611,
+            "temperature": 11.0625,
+            "humidity": 80.6875
+        },
+        {
+            "id": 66,
+            "timestamp": "06-11-2023 13:43:09",
+            "longitude": 6.78937,
+            "latitude": 53.2794,
+            "temperature": 9.875,
+            "humidity": 43.875
+        },
+        {
+            "id": 68,
+            "timestamp": "06-11-2023 13:50:54",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 30.625,
+            "humidity": 26.8125
+        },
+        {
+            "id": 580,
+            "timestamp": "06-11-2023 13:56:09",
+            "longitude": 5.04709,
+            "latitude": 51.5474,
+            "temperature": 10.875,
+            "humidity": 45.4375
+        },
+        {
+            "id": 837,
+            "timestamp": "06-11-2023 13:58:02",
+            "longitude": 5.12195,
+            "latitude": 52.0886,
+            "temperature": 11.1875,
+            "humidity": 51.6875
+        },
+        {
+            "id": 69,
+            "timestamp": "06-11-2023 14:00:15",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.625,
+            "humidity": 52.25
+        },
+        {
+            "id": 840,
+            "timestamp": "06-11-2023 13:53:18",
+            "longitude": 5.07095,
+            "latitude": 52.0902,
+            "temperature": -25.0,
+            "humidity": -25.0
+        },
+        {
+            "id": 842,
+            "timestamp": "06-11-2023 13:51:20",
+            "longitude": 5.00357,
+            "latitude": 52.1659,
+            "temperature": 11.375,
+            "humidity": 116.25
+        },
+        {
+            "id": 587,
+            "timestamp": "06-11-2023 13:53:30",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.875,
+            "humidity": 115.25
+        },
+        {
+            "id": 81,
+            "timestamp": "06-11-2023 13:48:26",
+            "longitude": 5.39774,
+            "latitude": 52.1542,
+            "temperature": 11.1875,
+            "humidity": 96.625
+        },
+        {
+            "id": 849,
+            "timestamp": "06-11-2023 13:49:15",
+            "longitude": 37.1016,
+            "latitude": 18.7677,
+            "temperature": 22.25,
+            "humidity": 38.25
+        },
+        {
+            "id": 851,
+            "timestamp": "06-11-2023 13:52:57",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 24.0625,
+            "humidity": 110.625
+        },
+        {
+            "id": 2135,
+            "timestamp": "06-11-2023 13:57:05",
+            "longitude": 5.40039,
+            "latitude": 52.1634,
+            "temperature": 11.0625,
+            "humidity": 47.8125
+        },
+        {
+            "id": 855,
+            "timestamp": "06-11-2023 13:56:39",
+            "longitude": 37.1176,
+            "latitude": 18.7687,
+            "temperature": 21.625,
+            "humidity": 20.25
+        },
+        {
+            "id": 600,
+            "timestamp": "06-11-2023 13:47:57",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.1875,
+            "humidity": 3.8125
+        },
+        {
+            "id": 857,
+            "timestamp": "06-11-2023 13:53:25",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 25.1875,
+            "humidity": 75.875
+        },
+        {
+            "id": 602,
+            "timestamp": "06-11-2023 13:46:49",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.625,
+            "humidity": 38.25
+        },
+        {
+            "id": 2138,
+            "timestamp": "06-11-2023 13:51:52",
+            "longitude": 5.35303,
+            "latitude": 52.1682,
+            "temperature": 11.0625,
+            "humidity": 104.0
+        },
+        {
+            "id": 2139,
+            "timestamp": "06-11-2023 13:55:44",
+            "longitude": 5.38467,
+            "latitude": 52.1517,
+            "temperature": 11.0625,
+            "humidity": 82.4375
+        },
+        {
+            "id": 2141,
+            "timestamp": "06-11-2023 13:52:02",
+            "longitude": 5.37106,
+            "latitude": 52.1904,
+            "temperature": 11.0625,
+            "humidity": 89.875
+        },
+        {
+            "id": 606,
+            "timestamp": "06-11-2023 13:52:14",
+            "longitude": 5.08466,
+            "latitude": 52.0788,
+            "temperature": 11.375,
+            "humidity": 8.8125
+        },
+        {
+            "id": 353,
+            "timestamp": "06-11-2023 13:53:07",
+            "longitude": 5.30856,
+            "latitude": 60.3511,
+            "temperature": 7.25,
+            "humidity": 103.375
+        },
+        {
+            "id": 866,
+            "timestamp": "06-11-2023 13:51:20",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.4375,
+            "humidity": 1.0625
+        },
+        {
+            "id": 870,
+            "timestamp": "06-11-2023 13:58:54",
+            "longitude": 5.12549,
+            "latitude": 52.1018,
+            "temperature": 11.0,
+            "humidity": 64.1875
+        },
+        {
+            "id": 871,
+            "timestamp": "06-11-2023 13:39:34",
+            "longitude": 5.11356,
+            "latitude": 52.0753,
+            "temperature": 11.125,
+            "humidity": 45.5625
+        },
+        {
+            "id": 872,
+            "timestamp": "06-11-2023 13:42:52",
+            "longitude": 5.19574,
+            "latitude": 52.1255,
+            "temperature": 11.0,
+            "humidity": 50.0
+        },
+        {
+            "id": 873,
+            "timestamp": "06-11-2023 13:52:03",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.0,
+            "humidity": 88.4375
+        },
+        {
+            "id": 877,
+            "timestamp": "06-11-2023 13:52:37",
+            "longitude": 5.17133,
+            "latitude": 52.0887,
+            "temperature": 11.3125,
+            "humidity": 93.625
+        },
+        {
+            "id": 109,
+            "timestamp": "06-11-2023 14:01:31",
+            "longitude": 5.38666,
+            "latitude": 52.1781,
+            "temperature": 11.0,
+            "humidity": 53.125
+        },
+        {
+            "id": 882,
+            "timestamp": "06-11-2023 13:58:28",
+            "longitude": 5.12515,
+            "latitude": 52.0941,
+            "temperature": 11.375,
+            "humidity": 90.875
+        },
+        {
+            "id": 114,
+            "timestamp": "06-11-2023 13:59:25",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.125,
+            "humidity": 89.375
+        },
+        {
+            "id": 884,
+            "timestamp": "06-11-2023 13:34:59",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 17.875,
+            "humidity": 67.125
+        },
+        {
+            "id": 121,
+            "timestamp": "06-11-2023 13:43:34",
+            "longitude": 5.37286,
+            "latitude": 52.1833,
+            "temperature": 11.25,
+            "humidity": 53.4375
+        },
+        {
+            "id": 634,
+            "timestamp": "06-11-2023 13:58:35",
+            "longitude": 5.38522,
+            "latitude": 52.203,
+            "temperature": 11.0,
+            "humidity": 98.0
+        },
+        {
+            "id": 125,
+            "timestamp": "06-11-2023 13:49:53",
+            "longitude": 5.38922,
+            "latitude": 52.1567,
+            "temperature": 11.1875,
+            "humidity": 105.625
+        },
+        {
+            "id": 894,
+            "timestamp": "06-11-2023 13:50:19",
+            "longitude": 5.06851,
+            "latitude": 51.5671,
+            "temperature": 12.375,
+            "humidity": 44.6875
+        },
+        {
+            "id": 638,
+            "timestamp": "06-11-2023 13:58:11",
+            "longitude": 5.39795,
+            "latitude": 52.1541,
+            "temperature": 13.25,
+            "humidity": 84.5625
+        },
+        {
+            "id": 386,
+            "timestamp": "06-11-2023 13:52:09",
+            "longitude": 5.31329,
+            "latitude": 60.3947,
+            "temperature": 9.125,
+            "humidity": -2.375
+        },
+        {
+            "id": 644,
+            "timestamp": "06-11-2023 13:56:30",
+            "longitude": 5.12051,
+            "latitude": 52.1046,
+            "temperature": 16.0,
+            "humidity": 95.9375
+        },
+        {
+            "id": 132,
+            "timestamp": "06-11-2023 13:43:25",
+            "longitude": 5.38818,
+            "latitude": 52.1429,
+            "temperature": 11.0625,
+            "humidity": 101.75
+        },
+        {
+            "id": 391,
+            "timestamp": "06-11-2023 13:56:31",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 6.625,
+            "humidity": 96.375
+        },
+        {
+            "id": 392,
+            "timestamp": "06-11-2023 13:36:47",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 22.5,
+            "humidity": 84.9375
+        },
+        {
+            "id": 648,
+            "timestamp": "06-11-2023 13:48:00",
+            "longitude": 5.38986,
+            "latitude": 52.1762,
+            "temperature": 10.6875,
+            "humidity": 58.25
+        },
+        {
+            "id": 649,
+            "timestamp": "06-11-2023 13:56:32",
+            "longitude": 5.3898,
+            "latitude": 52.1762,
+            "temperature": 10.75,
+            "humidity": 92.25
+        },
+        {
+            "id": 650,
+            "timestamp": "06-11-2023 13:57:06",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.9375,
+            "humidity": -2.375
+        },
+        {
+            "id": 651,
+            "timestamp": "06-11-2023 14:00:47",
+            "longitude": 5.09286,
+            "latitude": 51.5539,
+            "temperature": 10.5,
+            "humidity": 75.5625
+        },
+        {
+            "id": 141,
+            "timestamp": "06-11-2023 13:57:13",
+            "longitude": 5.40009,
+            "latitude": 52.1693,
+            "temperature": 10.75,
+            "humidity": 82.9375
+        },
+        {
+            "id": 914,
+            "timestamp": "06-11-2023 14:00:04",
+            "longitude": 5.07434,
+            "latitude": 51.5616,
+            "temperature": 11.4375,
+            "humidity": 91.0625
+        },
+        {
+            "id": 915,
+            "timestamp": "06-11-2023 13:48:52",
+            "longitude": 5.07553,
+            "latitude": 51.5722,
+            "temperature": 11.3125,
+            "humidity": 92.375
+        },
+        {
+            "id": 151,
+            "timestamp": "06-11-2023 13:53:47",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.0625,
+            "humidity": 7.0
+        },
+        {
+            "id": 922,
+            "timestamp": "06-11-2023 14:00:42",
+            "longitude": 5.12952,
+            "latitude": 51.563,
+            "temperature": 10.875,
+            "humidity": 111.375
+        },
+        {
+            "id": 410,
+            "timestamp": "06-11-2023 13:49:06",
+            "longitude": 5.03778,
+            "latitude": 51.6557,
+            "temperature": 11.0625,
+            "humidity": 100.5
+        },
+        {
+            "id": 156,
+            "timestamp": "06-11-2023 13:51:11",
+            "longitude": 5.08627,
+            "latitude": 52.1104,
+            "temperature": 11.375,
+            "humidity": 44.3125
+        },
+        {
+            "id": 925,
+            "timestamp": "06-11-2023 14:01:49",
+            "longitude": 5.1243,
+            "latitude": 51.5895,
+            "temperature": 11.0625,
+            "humidity": 89.6875
+        },
+        {
+            "id": 669,
+            "timestamp": "06-11-2023 13:46:46",
+            "longitude": 5.09988,
+            "latitude": 51.582,
+            "temperature": 11.5,
+            "humidity": 39.5625
+        },
+        {
+            "id": 927,
+            "timestamp": "06-11-2023 13:50:14",
+            "longitude": 5.06604,
+            "latitude": 51.5455,
+            "temperature": 11.3125,
+            "humidity": 95.4375
+        },
+        {
+            "id": 165,
+            "timestamp": "06-11-2023 13:54:59",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 13.0625,
+            "humidity": 59.625
+        },
+        {
+            "id": 934,
+            "timestamp": "06-11-2023 13:57:15",
+            "longitude": 5.08765,
+            "latitude": 51.5705,
+            "temperature": 11.125,
+            "humidity": 92.5
+        },
+        {
+            "id": 679,
+            "timestamp": "06-11-2023 13:31:39",
+            "longitude": 5.07336,
+            "latitude": 51.6905,
+            "temperature": 11.5625,
+            "humidity": 90.4375
+        },
+        {
+            "id": 935,
+            "timestamp": "06-11-2023 13:57:50",
+            "longitude": 5.08173,
+            "latitude": 52.0851,
+            "temperature": 11.1875,
+            "humidity": 7.0625
+        },
+        {
+            "id": 427,
+            "timestamp": "06-11-2023 13:49:41",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.875,
+            "humidity": 106.438
+        },
+        {
+            "id": 939,
+            "timestamp": "06-11-2023 13:49:23",
+            "longitude": 5.00256,
+            "latitude": 51.5823,
+            "temperature": 11.0,
+            "humidity": 48.125
+        },
+        {
+            "id": 685,
+            "timestamp": "06-11-2023 13:47:31",
+            "longitude": 5.07098,
+            "latitude": 51.5569,
+            "temperature": 10.75,
+            "humidity": 118.188
+        },
+        {
+            "id": 686,
+            "timestamp": "06-11-2023 13:56:28",
+            "longitude": 5.07648,
+            "latitude": 51.5793,
+            "temperature": 11.1875,
+            "humidity": 117.875
+        },
+        {
+            "id": 943,
+            "timestamp": "06-11-2023 13:35:34",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.875,
+            "humidity": 111.75
+        },
+        {
+            "id": 687,
+            "timestamp": "06-11-2023 13:42:38",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.0625,
+            "humidity": 39.1875
+        },
+        {
+            "id": 947,
+            "timestamp": "06-11-2023 13:56:29",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 18.4375,
+            "humidity": 80.0
+        },
+        {
+            "id": 949,
+            "timestamp": "06-11-2023 13:52:10",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 9.9375,
+            "humidity": 116.688
+        },
+        {
+            "id": 954,
+            "timestamp": "06-11-2023 13:52:22",
+            "longitude": 5.13123,
+            "latitude": 52.0587,
+            "temperature": 11.25,
+            "humidity": 89.8125
+        },
+        {
+            "id": 955,
+            "timestamp": "06-11-2023 13:48:50",
+            "longitude": 5.1026,
+            "latitude": 52.095,
+            "temperature": 11.6875,
+            "humidity": 89.625
+        },
+        {
+            "id": 958,
+            "timestamp": "06-11-2023 13:28:11",
+            "longitude": 4.9754,
+            "latitude": 51.5871,
+            "temperature": 11.3125,
+            "humidity": 20.9375
+        },
+        {
+            "id": 959,
+            "timestamp": "06-11-2023 13:50:38",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.6875,
+            "humidity": 18.1875
+        },
+        {
+            "id": 704,
+            "timestamp": "06-11-2023 13:48:35",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.125,
+            "humidity": 42.5
+        },
+        {
+            "id": 961,
+            "timestamp": "06-11-2023 13:53:28",
+            "longitude": 4.99725,
+            "latitude": 51.5916,
+            "temperature": 11.375,
+            "humidity": 93.3125
+        },
+        {
+            "id": 708,
+            "timestamp": "06-11-2023 14:00:57",
+            "longitude": 5.08691,
+            "latitude": 51.5803,
+            "temperature": 11.0625,
+            "humidity": 37.3125
+        },
+        {
+            "id": 964,
+            "timestamp": "06-11-2023 13:52:35",
+            "longitude": 5.0162,
+            "latitude": 51.5843,
+            "temperature": 11.4375,
+            "humidity": 109.375
+        },
+        {
+            "id": 970,
+            "timestamp": "06-11-2023 14:00:17",
+            "longitude": 5.10068,
+            "latitude": 51.5587,
+            "temperature": 10.75,
+            "humidity": 56.8125
+        },
+        {
+            "id": 972,
+            "timestamp": "06-11-2023 13:49:49",
+            "longitude": 4.99289,
+            "latitude": 51.5781,
+            "temperature": 13.375,
+            "humidity": 14.875
+        },
+        {
+            "id": 973,
+            "timestamp": "06-11-2023 13:42:18",
+            "longitude": 5.00568,
+            "latitude": 51.5732,
+            "temperature": 11.8125,
+            "humidity": 88.25
+        },
+        {
+            "id": 976,
+            "timestamp": "06-11-2023 13:59:53",
+            "longitude": 5.13855,
+            "latitude": 51.5932,
+            "temperature": 11.375,
+            "humidity": 92.9375
+        },
+        {
+            "id": 977,
+            "timestamp": "06-11-2023 13:51:30",
+            "longitude": 5.05908,
+            "latitude": 51.5512,
+            "temperature": 11.625,
+            "humidity": 93.25
+        },
+        {
+            "id": 722,
+            "timestamp": "06-11-2023 14:00:32",
+            "longitude": 5.11282,
+            "latitude": 52.0796,
+            "temperature": 10.375,
+            "humidity": 43.375
+        },
+        {
+            "id": 2002,
+            "timestamp": "06-11-2023 13:52:06",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.375,
+            "humidity": 58.5625
+        },
+        {
+            "id": 978,
+            "timestamp": "06-11-2023 13:53:37",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 17.8125,
+            "humidity": 63.875
+        },
+        {
+            "id": 979,
+            "timestamp": "06-11-2023 13:54:45",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 20.375,
+            "humidity": 68.5
+        },
+        {
+            "id": 725,
+            "timestamp": "06-11-2023 13:48:22",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.25,
+            "humidity": 101.875
+        },
+        {
+            "id": 469,
+            "timestamp": "06-11-2023 13:34:17",
+            "longitude": 6.00137,
+            "latitude": 52.225,
+            "temperature": 14.6875,
+            "humidity": 80.3125
+        },
+        {
+            "id": 471,
+            "timestamp": "06-11-2023 13:48:20",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.625,
+            "humidity": 100.688
+        },
+        {
+            "id": 983,
+            "timestamp": "06-11-2023 13:56:06",
+            "longitude": 5.04681,
+            "latitude": 51.5674,
+            "temperature": 11.4375,
+            "humidity": 97.0625
+        },
+        {
+            "id": 729,
+            "timestamp": "06-11-2023 13:51:52",
+            "longitude": 5.1171,
+            "latitude": 52.0598,
+            "temperature": 10.4375,
+            "humidity": 53.875
+        },
+        {
+            "id": 985,
+            "timestamp": "06-11-2023 13:40:43",
+            "longitude": 5.09766,
+            "latitude": 51.5583,
+            "temperature": 11.1875,
+            "humidity": 95.75
+        },
+        {
+            "id": 730,
+            "timestamp": "06-11-2023 13:51:40",
+            "longitude": 5.15204,
+            "latitude": 52.0946,
+            "temperature": 11.0625,
+            "humidity": 80.4375
+        },
+        {
+            "id": 731,
+            "timestamp": "06-11-2023 13:45:49",
+            "longitude": 5.15292,
+            "latitude": 52.094,
+            "temperature": 11.0625,
+            "humidity": 79.9375
+        },
+        {
+            "id": 475,
+            "timestamp": "06-11-2023 13:56:42",
+            "longitude": 5.10031,
+            "latitude": 51.5817,
+            "temperature": 13.875,
+            "humidity": 99.0
+        },
+        {
+            "id": 2012,
+            "timestamp": "06-11-2023 13:59:53",
+            "longitude": 5.37079,
+            "latitude": 52.1963,
+            "temperature": 10.75,
+            "humidity": 95.25
+        },
+        {
+            "id": 2013,
+            "timestamp": "06-11-2023 13:51:31",
+            "longitude": 5.39392,
+            "latitude": 52.1648,
+            "temperature": 11.125,
+            "humidity": 71.4375
+        },
+        {
+            "id": 735,
+            "timestamp": "06-11-2023 13:51:14",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.0625,
+            "humidity": 91.125
+        },
+        {
+            "id": 482,
+            "timestamp": "06-11-2023 13:51:32",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 13.0,
+            "humidity": 43.4375
+        },
+        {
+            "id": 2020,
+            "timestamp": "06-11-2023 13:55:27",
+            "longitude": 5.39084,
+            "latitude": 52.1404,
+            "temperature": 10.75,
+            "humidity": 106.188
+        },
+        {
+            "id": 229,
+            "timestamp": "06-11-2023 13:35:53",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.4375,
+            "humidity": 67.3125
+        },
+        {
+            "id": 742,
+            "timestamp": "06-11-2023 14:01:05",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 10.75,
+            "humidity": 49.75
+        },
+        {
+            "id": 230,
+            "timestamp": "06-11-2023 13:48:02",
+            "longitude": 5.34558,
+            "latitude": 60.3416,
+            "temperature": 8.5625,
+            "humidity": 97.5
+        },
+        {
+            "id": 487,
+            "timestamp": "06-11-2023 13:52:43",
+            "longitude": 5.32196,
+            "latitude": 60.4068,
+            "temperature": 10.6875,
+            "humidity": -4.875
+        },
+        {
+            "id": 744,
+            "timestamp": "06-11-2023 13:54:06",
+            "longitude": 5.04962,
+            "latitude": 52.1235,
+            "temperature": 11.25,
+            "humidity": 106.312
+        },
+        {
+            "id": 745,
+            "timestamp": "06-11-2023 13:50:53",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 11.25,
+            "humidity": 93.8125
+        },
+        {
+            "id": 237,
+            "timestamp": "06-11-2023 13:56:40",
+            "longitude": 5.34039,
+            "latitude": 60.3624,
+            "temperature": 6.625,
+            "humidity": 24.1875
+        },
+        {
+            "id": 751,
+            "timestamp": "06-11-2023 13:57:38",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 12.6875,
+            "humidity": 0.875
+        },
+        {
+            "id": 2032,
+            "timestamp": "06-11-2023 13:50:10",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 13.0625,
+            "humidity": 96.5
+        },
+        {
+            "id": 496,
+            "timestamp": "06-11-2023 13:53:19",
+            "longitude": 4.79614,
+            "latitude": 51.5725,
+            "temperature": 11.0625,
+            "humidity": 14.75
+        },
+        {
+            "id": 242,
+            "timestamp": "06-11-2023 13:56:52",
+            "longitude": 5.23245,
+            "latitude": 60.4308,
+            "temperature": 5.75,
+            "humidity": 99.3125
+        },
+        {
+            "id": 755,
+            "timestamp": "06-11-2023 13:47:55",
+            "longitude": 0.0,
+            "latitude": 0.0,
+            "temperature": 13.3125,
+            "humidity": 64.3125
+        },
+        {
+            "id": 499,
+            "timestamp": "06-11-2023 13:58:08",
+            "longitude": 5.05679,
+            "latitude": 51.5193,
+            "temperature": 11.625,
+            "humidity": 31.5
+        },
+        {
+            "id": 249,
+            "timestamp": "06-11-2023 13:56:58",
+            "longitude": 5.32428,
+            "latitude": 60.4085,
+            "temperature": 7.625,
+            "humidity": 110.25
+        },
+        {
+            "id": 762,
+            "timestamp": "06-11-2023 13:49:05",
+            "longitude": 5.186,
+            "latitude": 52.1224,
+            "temperature": 11.1875,
+            "humidity": 108.938
+        },
+        {
+            "id": 2044,
+            "timestamp": "06-11-2023 13:42:15",
+            "longitude": 5.3869,
+            "latitude": 52.1782,
+            "temperature": 11.0,
+            "humidity": 94.75
+        },
+        {
+            "id": 254,
+            "timestamp": "06-11-2023 13:58:52",
+            "longitude": 5.04465,
+            "latitude": 52.0804,
+            "temperature": 11.125,
+            "humidity": 80.125
+        },
+        {
+            "id": 255,
+            "timestamp": "06-11-2023 13:59:42",
+            "longitude": 4.48926,
+            "latitude": 51.5323,
+            "temperature": 11.625,
+            "humidity": 96.125
+        },
+        {
+            "id": 767,
+            "timestamp": "06-11-2023 13:48:59",
+            "longitude": 5.09045,
+            "latitude": 52.0791,
+            "temperature": 11.25,
+            "humidity": 95.5
+        }
+    
+    ]

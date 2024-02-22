@@ -1,0 +1,28 @@
+# ---- Base Node ----
+FROM node:21 AS base
+ENV APP_PATH app/climatechecker/client
+
+
+# ---- Dependencies ----
+FROM base AS dependencies
+# development: install ALL node_modules, including 'devDependencies'
+# production: install ONLY production node_modules
+WORKDIR /${APP_PATH}
+COPY package*.json .
+RUN npm ci
+# RUN npm ci --only=production
+
+
+# ---- Build Stage ----
+FROM base AS build
+WORKDIR /${APP_PATH}
+# copy climatechecker dependencies
+COPY --from=dependencies /${APP_PATH}/ .
+# copy climatechecker sources
+WORKDIR /${APP_PATH}/public
+COPY public/ .
+WORKDIR /${APP_PATH}/src
+COPY src/ .
+
+# start the application
+CMD [ "npm", "start" ]

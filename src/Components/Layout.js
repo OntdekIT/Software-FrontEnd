@@ -1,11 +1,13 @@
 import { Outlet } from "react-router-dom";
+import NavBar from "./NavBar";
 
 const Layout = () => {
     return (
-        <main className="App">
+        <div className="layout-container">
+            <NavBar />
             {/* represents all the children of the layout component, header and footer component can be added! */}
-            <Outlet/>
-        </main>
+            <Outlet />
+        </div>
     )
 }
 

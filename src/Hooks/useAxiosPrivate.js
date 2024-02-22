@@ -1,8 +1,14 @@
 //hook to attach the interceptors to axios instance
-import { axiosPrivate } from "../api/axios";
 import { useEffect } from "react";
 import useRefreshToken from "./useRefreshToken";
 import useAuth from "./useAuth";
+import axios from "axios";
+
+const axiosPrivate = axios.create({
+    baseURL: "http://localhost:8082/api",
+    headers: { 'Content-Type': 'application/JSON' },
+    withCredentials: true
+});
 
 const useAxiosPrivate = () => {
     const refresh = useRefreshToken();

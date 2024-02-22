@@ -1,5 +1,3 @@
-import RegisterStation from "../../src/Components/RegisterStation";
-
 describe("Register station page tests", () => {
   it("Should POST the correct json WITHOUT public check", () => {
     const userId = 1;

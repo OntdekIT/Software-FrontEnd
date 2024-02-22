@@ -3,32 +3,37 @@
 /*///////////////////////////////////////////////////*/
 /* Declare color variables for global use */
 :root {
-  --yellow: #FECB3D;
-  --dark-yellow: #F1C13A;
+  --yellow: #fecb3d;
+  --dark-yellow: #f1c13a;
   --dark-grey: #424043;
-  --red: #F42D21;
+  --red: #f42d21;
   --light-red: #dc3545;
-  --green: #33A567;
+  --green: #33a567;
 }
+
 body {
-  font-family: "Roboto", "Segoe UI", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    "sans-serif" !important;
+  font-family: "Roboto", "Segoe UI", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", "sans-serif" !important;
 }
+
 /* Setting general spacing for all content in main */
 main {
   margin: 0 auto;
   max-width: 1280px;
 }
+
 main section {
   margin-top: 1.6rem !important;
 }
+
 .bold {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .offscreen {
   display: none;
 }
+
 .button {
   background-color: var(--yellow);
   color: var(--dark-grey);
@@ -68,12 +73,14 @@ main section {
 }
 
 .button2Inline:hover {
-  background-color: var(--yellow); /* Green */
+  background-color: var(--yellow);
+  /* Green */
 }
 
 .button:active {
   transform: scale(0.98);
 }
+
 /*///////////////////////////////////////////////////*/
 /*                  Specific classes                 */
 /*///////////////////////////////////////////////////*/
@@ -81,49 +88,129 @@ main section {
 .navbar-section {
   background-color: var(--yellow);
 }
-.navbar-section nav a, .navbar-section nav div ul li a  {
+
+.navbar-section nav a,
+.navbar-section nav div ul li a {
   color: var(--dark-grey);
 }
+
 nav.navbar {
   max-width: 1280px;
   margin: 0 auto;
 }
+
 .navbar-toggler:focus {
   box-shadow: none !important;
 }
+
 .navbar-toggler-icon {
   color: var(--dark-grey);
 }
+
 /* End navbar */
 
 /* Home */
 .map-container {
   position: relative;
 }
-.leaflet-container{
-  width: 100%;
-  height: 40rem;
-  border-radius: 0.5rem;
+
+.layer-control {
+  position: absolute;
+  bottom: 0%;
+  left: 0%;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-weight: 300;
+  padding: 8px;
+  border-radius: 8px;
+  z-index: 1;
+  margin-left: 12px;
+  margin-bottom: 12px;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 750ms;
+}
+
+.heatmapRadio {
+  margin-left: 10px;
+}
+
+.layer-control:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 2px 2px 2px rgb(0, 0, 0, 0.1);
+}
+
+.color-legend-container {
+  display: flex;
+  flex-direction: row;
+  right: 0;
+  top: 0;
+  margin: 12px;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  padding: 8px;
+  z-index: 1;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.color-legend-item {
+  display: flex;
+  flex-direction: column;
+  width: 60px;
+}
+
+.color-legend-color {
+  margin-right: 0.25rem;
+  width: full;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.color-legend-label {
+  display: flex;
+  font-size: 13px;
+  justify-content: center;
+}
+
+.color-legend-label p {
+  margin: 0;
+  color: white;
+}
+
+.layout-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.leaflet-container {
+  width: 100vw;
+  height: calc(100vh - 56px);
+  outline: none;
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
-.errorOverlay {
-  width: 100%;
-  height: 40rem;
+
+.error-overlay {
+  width: 100vw;
+  height: calc(100vh - 56px);
   background-color: rgba(66, 64, 67, 0.8);
-  border-radius: 0.5rem;
   position: absolute;
-  z-index: 999;
+  z-index: 50;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
 }
-.errorOverlay p, .errorOverlay a {
+
+.error-overlay p,
+.error-overlay a {
   font-size: 2rem;
-  color: #FFFFFF !important;
+  color: #ffffff !important;
   margin: 0 5px;
 }
+
 /* End home */
 
 /* Form */
@@ -132,6 +219,7 @@ form {
   flex-direction: column;
   padding-bottom: 1rem;
 }
+
 .form-section {
   width: 100%;
   margin: auto;
@@ -139,28 +227,34 @@ form {
   display: flex;
   flex-direction: column;
 }
+
 .form-section h1 {
   text-align: center;
   color: var(--dark-grey);
   margin-bottom: 1.6rem;
 }
+
 .form-section form input {
-  background-color: #F5F3F3;
+  background-color: #f5f3f3;
   border: none;
   border-radius: 10px;
   padding: 1rem 1.2rem;
   margin-bottom: 0.6rem;
 }
+
 .form-section form input:focus {
   outline-color: var(--dark-grey);
 }
+
 .form-section .form-redirect {
   display: flex;
   justify-content: center;
 }
+
 .form-section .form-redirect p {
   margin-right: 0.2rem;
 }
+
 /* End form */
 
 /* Alerts */
@@ -173,6 +267,7 @@ form {
   padding: 1rem 1.2rem;
   margin-bottom: 1.2rem;
 }
+
 .success-msg {
   color: #1e4620;
   background-color: #edf7ed;
@@ -182,6 +277,7 @@ form {
   padding: 0.8rem;
   margin-bottom: 0.5rem;
 }
+
 /* End alerts */
 /*///////////////////////////////////////////////////*/
 /*                 Responsive changes                */
@@ -190,24 +286,27 @@ form {
   main {
     padding: 12px;
   }
+
   nav.navbar {
     padding-left: 12px;
     padding-right: 12px;
   }
 }
+
 @media only screen and (max-width: 650px) {
   .errorOverlay p {
     font-size: 1.5rem;
     text-align: center;
   }
 }
+
 /*///////////////////////////////////////////////////*/
 /*                       Fonts                       */
 /*///////////////////////////////////////////////////*/
 @font-face {
-  font-family: 'Roboto';
-  src: url('./fonts/Roboto-Regular.woff2') format('woff2'),
-      url('./fonts/Roboto-Regular.woff') format('woff');
+  font-family: "Roboto";
+  src: url("./Assets/Roboto-Regular.woff2") format("woff2"),
+    url("./Assets/Roboto-Regular.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -216,14 +315,14 @@ form {
 /*///////////////////////////////////////////////////*/
 /*              Meetstation toevoegen               */
 /*///////////////////////////////////////////////////*/
-.color{
+.color {
   margin: 3rem;
   outline-style: solid;
   outline-color: #ffc107;
   outline-offset: 1rem;
 }
 
-.labelMargin{
+.labelMargin {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
