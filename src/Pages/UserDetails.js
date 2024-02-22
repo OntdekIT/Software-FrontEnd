@@ -101,6 +101,7 @@ const UserDetails = () => {
 
   return (
     <section className="form-section">
+      <title>Mijn informatie</title>
       {
         errMsg && (
           <div ref={errRef} className="error-msg">{errMsg}</div>

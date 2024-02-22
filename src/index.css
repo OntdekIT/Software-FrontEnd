@@ -114,7 +114,7 @@ nav.navbar {
   position: relative;
 }
 
-.legend {
+.layer-control {
   position: absolute;
   bottom: 0%;
   left: 0%;
@@ -131,9 +131,51 @@ nav.navbar {
   transition-duration: 750ms;
 }
 
-.legend:hover {
+.heatmapRadio {
+  margin-left: 10px;
+}
+
+.layer-control:hover {
   background-color: rgba(0, 0, 0, 0.8);
   box-shadow: 2px 2px 2px rgb(0, 0, 0, 0.1);
+}
+
+.color-legend-container {
+  display: flex;
+  flex-direction: row;
+  right: 0;
+  top: 0;
+  margin: 12px;
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  padding: 8px;
+  z-index: 1;
+  border-radius: 8px;
+  height: fit-content;
+}
+
+.color-legend-item {
+  display: flex;
+  flex-direction: column;
+  width: 60px;
+}
+
+.color-legend-color {
+  margin-right: 0.25rem;
+  width: full;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.color-legend-label {
+  display: flex;
+  font-size: 13px;
+  justify-content: center;
+}
+
+.color-legend-label p {
+  margin: 0;
+  color: white;
 }
 
 .layout-container {

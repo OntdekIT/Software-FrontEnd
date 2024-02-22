@@ -71,6 +71,7 @@ const Login = () => {
 
   return (
     <section className="form-section">
+      <title>Login</title>
       {
         errMsg && (
           <div ref={errRef} className="error-msg">{errMsg}</div>

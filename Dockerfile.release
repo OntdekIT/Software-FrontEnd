@@ -1,0 +1,42 @@
+# ---- Base Node ----
+FROM node:21 AS base
+ENV APP_PATH app/climatechecker/client
+
+# ---- Dependencies ----
+FROM base AS dependencies
+WORKDIR /${APP_PATH}
+
+# Copy package.json which contains information about the dependencies we need
+COPY package*.json .
+
+# Install the dependencies listed in package.json
+RUN npm ci --only=production
+
+# ---- Build Stage ----
+FROM base AS build
+WORKDIR /${APP_PATH}
+
+# Copy climatechecker dependencies
+COPY --from=dependencies /${APP_PATH}/ .
+
+# copy climatechecker sources
+WORKDIR /${APP_PATH}/public
+COPY public/ .
+WORKDIR /${APP_PATH}/src
+COPY src/ .
+RUN npm run build
+
+# ---- Release with NGINX ----
+FROM nginx:alpine AS release
+# the relative path to the app as seen from this file
+ENV APP_PATH app/climatechecker/client
+
+# copy the built React app
+WORKDIR /usr/share/nginx/html
+COPY --from=build /${APP_PATH}/build/ .
+
+# start the application
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+# to run exec following command:
+# sudo docker run -p 3000:80 --name mynginx ontdekstation-client-release:latest

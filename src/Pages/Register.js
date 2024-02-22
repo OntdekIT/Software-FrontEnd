@@ -100,6 +100,7 @@ const Register = () => {
 
   return (
     <section className="form-section">
+      <title>Register</title>
       {
         errMsg && (
           <div ref={errRef} className="error-msg">{errMsg}</div>

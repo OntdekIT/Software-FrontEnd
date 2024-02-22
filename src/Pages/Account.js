@@ -28,6 +28,7 @@ export default function Account() {
 
   return (
     <div className="Account">
+      <title>Account</title>
       <h1>Stations</h1>
       {
         loading && (

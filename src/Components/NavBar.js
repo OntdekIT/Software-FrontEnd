@@ -7,7 +7,7 @@ const NavBar = () => {
     <header className="navbar-section">
       <nav className="navbar navbar-expand-lg justify-content-between">
         {/* Brand */}
-        <a className="navbar-brand" href="/">Ontdekstation</a>
+        <a className="navbar-brand" href="/">MB Ontdekt</a>
 
         {/* Collapse button */}
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar"
