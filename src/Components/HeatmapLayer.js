@@ -3,8 +3,8 @@ import HeatmapOverlay from 'leaflet-heatmap/leaflet-heatmap.js';
 import { spectralColors } from '../Lib/Utility.js';
 
 const HeatmapLayer = ({ data, visible, type }) => {
-    let maxval = Number.MIN_VALUE;
-    let minval = Number.MAX_VALUE;
+    let maxval = -1000;
+    let minval = 1000;
 
     data.forEach(meting => {
         if (meting[type]) {
