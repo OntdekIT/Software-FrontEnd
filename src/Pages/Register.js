@@ -12,14 +12,16 @@ const Register = () => {
 
   const firstnameRef = useRef();
   const surnameRef = useRef();
-  const usernameRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
   const emailRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
 
   const [firstname, setFirstname] = useState('');
   const [surname, setSurname] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -31,14 +33,14 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg('');
-  }, [firstname, surname, username, email])
+  }, [firstname, surname, password, confirmPassword, email])
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, userName: username, mailAddress: email }),
+      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, Password: password, ConfirmPassword: confirmPassword, mailAddress: email }),
         {
           headers: { 'Content-Type': 'application/JSON' },
           withCredentials: false
@@ -49,12 +51,13 @@ const Register = () => {
       const roles = response?.data?.roles;
 
       //save all of our info in auth object, which is saved in global context
-      setAuth({ firstname, surname, username, email, roles, accessToken });
+      setAuth({ firstname, surname, password, confirmPassword, email, roles, accessToken });
 
       setFirstname('');
       setSurname('');
-      setUsername('');
       setEmail('');
+      setPassword('');
+      setConfirmPassword('');
 
       if (response?.status === 201) {
         setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
@@ -69,18 +72,12 @@ const Register = () => {
       } else if (err.response?.status === 400) {
         setErrMsg('De ingevulde gegevens zijn te lang');
       } else if (err.response?.status === 409) {
-        if (err.response?.data === 1) {
-          setErrMsg('De gebruikersnaam is al in gebruik');
-        }
-        else if (err.response?.data === 2) {
+        if (err.response?.data === 2) {
           setErrMsg('Het email adres is al in gebruik');
         }
         setErrMsg('De ingevulde gegevens zijn incorrect');
       } else if (err.response?.status === 422) {
-        if (err.response?.data === 1) {
-          setErrMsg('De gebruikersnaam ontbreekt');
-        }
-        else if (err.response?.data === 2) {
+        if (err.response?.data === 2) {
           setErrMsg('Het email adres ontbreekt');
         }
         else if (err.response?.data === 3) {
@@ -88,6 +85,12 @@ const Register = () => {
         }
         else if (err.response?.data === 4) {
           setErrMsg('Achternaam ontbreekt');
+        }
+        else if (err.response?.data === 5) {
+          setErrMsg('Wachtwoord ontbreekt');
+        }
+        else if (err.response?.data === 6) {
+          setErrMsg('Herhaal wachtwoord ontbreekt');
         }
         setErrMsg('Er ontbreken nog gegevens');
       } else {
@@ -135,16 +138,6 @@ const Register = () => {
           placeholder="Achternaam"
         />
         <input
-          type="text"
-          id="username"
-          ref={usernameRef}
-          autoComplete="off"
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-          required
-          placeholder="Gebruikersnaam"
-        />
-        <input
           type="email"
           id="email"
           ref={emailRef}
@@ -153,6 +146,26 @@ const Register = () => {
           value={email}
           required
           placeholder="Email"
+        />
+        <input
+          type="password"
+          id="password"
+          ref={passwordRef}
+          autoComplete="off"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          required
+          placeholder="Wachtwoord"
+        />
+        <input
+          type="password"
+          id="confirmPassword"
+          ref={confirmPasswordRef}
+          autoComplete="off"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          value={confirmPassword}
+          required
+          placeholder="Herhaal Wachtwoord"
         />
         <button className="button">Registreren</button>
       </form>
