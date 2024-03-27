@@ -40,7 +40,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, Password: password, ConfirmPassword: confirmPassword, mailAddress: email }),
+      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, password: password, confirmPassword: confirmPassword, mailAddress: email }),
         {
           headers: { 'Content-Type': 'application/JSON' },
           withCredentials: false
