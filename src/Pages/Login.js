@@ -14,10 +14,13 @@ const Login = () => {
   const mailRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
+  const passwordRef = useRef();
 
   const [mail, setMail] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [password, setPassword] = useState('');
+
 
   //put focus on user input box
   useEffect(() => {
@@ -33,7 +36,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post(LOGIN_URL, JSON.stringify({ mailAddress: mail }),
+      const response = await api.post(LOGIN_URL, JSON.stringify({ mailAddress: mail, password: password }),
         {
           headers: { 'Content-Type': 'application/JSON' },
           withCredentials: false
@@ -44,8 +47,9 @@ const Login = () => {
       const roles = response?.data?.roles;
 
       //save all of our info in auth object, which is saved in global context
-      setAuth({ mail, roles, accessToken });
+      setAuth({ mail, password, roles, accessToken });
       setMail('');
+      setPassword('');
       if (response?.status === 200) {
         setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
       }
@@ -94,6 +98,16 @@ const Login = () => {
           value={mail}
           required
           placeholder="Email"
+        />
+        <input
+          type="password"
+          id="password"
+          ref={passwordRef}
+          autoComplete="off"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          required
+          placeholder="Password"
         />
         <button className="button">Inloggen</button>
       </form>
