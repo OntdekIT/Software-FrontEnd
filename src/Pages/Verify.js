@@ -20,7 +20,7 @@ const Verify = () => {
         try {
             response = await api.post(VERIFY_URL, JSON.stringify({ linkHash, email }), {
                 headers: { 'Content-Type': 'application/json' },
-                withCredentials: false
+                withCredentials: true
             });
 
             if (response?.status === 200) {
