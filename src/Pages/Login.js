@@ -18,7 +18,6 @@ const Login = () => {
 
   const [mail, setMail] = useState('');
   const [errMsg, setErrMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   const [password, setPassword] = useState('');
 
 
@@ -29,7 +28,6 @@ const Login = () => {
 
   useEffect(() => {
     setErrMsg('');
-    setSuccessMsg('');
   }, [mail])
 
 
@@ -42,16 +40,15 @@ const Login = () => {
           withCredentials: false
         });
 
-      console.log(JSON.stringify(response?.data));
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
-
       //save all of our info in auth object, which is saved in global context
       setAuth({ mail, password, roles, accessToken });
       setMail('');
       setPassword('');
       if (response?.status === 200) {
-        setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
+        sessionStorage.setItem("email", mail);
+        window.location.href = "http://localhost:3000/verify";
       }
     } catch (err) {
       if (!err?.response) {
@@ -59,7 +56,7 @@ const Login = () => {
       } else if (err.response?.status === 400) {
         setErrMsg('De ingevulde gegevens zijn te lang');
       } else if (err.response?.status === 404) {
-        setErrMsg('Het email adres kon niet gevonden worden');
+        setErrMsg('Gegevens zijn onjuist ingevuld');
       } else if (err.response?.status === 422) {
         if (err.response?.data === 2) {
           setErrMsg('Het email adres ontbreekt');
@@ -79,11 +76,6 @@ const Login = () => {
       {
         errMsg && (
           <div ref={errRef} className="error-msg">{errMsg}</div>
-        )
-      }
-      {
-        successMsg && (
-          <div ref={successRef} className="success-msg">{successMsg}</div>
         )
       }
       <h1>Inloggen</h1>

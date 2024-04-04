@@ -58,7 +58,6 @@ const Register = () => {
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-
       if (response?.status === 201) {
         setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
       }
