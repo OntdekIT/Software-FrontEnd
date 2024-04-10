@@ -44,8 +44,6 @@ const Login = () => {
       const roles = response?.data?.roles;
       //save all of our info in auth object, which is saved in global context
       setAuth({ mail, password, roles, accessToken });
-      setMail('');
-      setPassword('');
       if (response?.status === 200) {
         sessionStorage.setItem("email", mail);
         window.location.href = "http://localhost:3000/verify";

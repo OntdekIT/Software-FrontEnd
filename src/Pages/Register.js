@@ -59,7 +59,8 @@ const Register = () => {
       setPassword('');
       setConfirmPassword('');
       if (response?.status === 201) {
-        setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
+        sessionStorage.setItem("email", email);
+        window.location.href = "http://localhost:3000/verify";
       }
 
       // Navigates to home page
