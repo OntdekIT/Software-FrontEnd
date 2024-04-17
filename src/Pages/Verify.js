@@ -20,6 +20,9 @@ const Verify = () => {
 
     //put focus on user input box
     useEffect(() => {
+        if (mail == null){
+            window.location.href = "http://localhost:3000/login";
+        }
         setErrMsg('');
     }, [mail])
 
@@ -32,8 +35,8 @@ const Verify = () => {
                     headers: { 'Content-Type': 'application/JSON' },
                     withCredentials: false
                 });
-
-            console.log(JSON.stringify(response?.data));
+            sessionStorage.setItem("name", response.data);
+            sessionStorage.removeItem("email");
             const accessToken = response?.data?.accessToken;
             const roles = response?.data?.roles;
 

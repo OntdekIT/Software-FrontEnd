@@ -53,11 +53,6 @@ const Register = () => {
       //save all of our info in auth object, which is saved in global context
       setAuth({ firstname, surname, password, confirmPassword, email, roles, accessToken });
 
-      setFirstname('');
-      setSurname('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
       if (response?.status === 201) {
         sessionStorage.setItem("email", email);
         window.location.href = "http://localhost:3000/verify";

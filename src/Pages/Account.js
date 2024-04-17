@@ -7,6 +7,7 @@ export default function Account() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
+  const name = sessionStorage.getItem("name");
 
   useEffect(() => {
     const getData = async () => {
@@ -29,7 +30,7 @@ export default function Account() {
   return (
     <div className="Account">
       <title>Account</title>
-      <h1>Stations</h1>
+      <h1>Welkom op je account {name}</h1>
       {
         loading && (
           <div>A moment please...</div>
