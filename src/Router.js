@@ -12,6 +12,8 @@ import Account from "./Pages/Account";
 import UserDetails from "./Pages/UserDetails";
 import RegisterStationCode from "./Pages/RegisterStationCode";
 import Verify from "./Pages/Verify"
+import AdminPage from "./Pages/AdminPage";
+
 function Router() {
     return (
         <Routes>
@@ -28,6 +30,11 @@ function Router() {
                 <Route path="/Userdetails" element={<UserDetails />} />
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
                 <Route path="/Station/Edit:id" element={<EditStation />} />
+
+                {/* admin routes */}
+                <Route path="/Admin/workshopcode/create" element={<AdminPage />} />
+                <Route path="/Admin/workshopcode/show" element={<AdminPage />} />
+
 
                 {/* catch all , 404 page*/}
                 <Route path="*" element={<ErrorPage />} />
