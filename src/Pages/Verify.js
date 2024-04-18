@@ -30,7 +30,7 @@ const Verify = () => {
             const response = await api.post(VERIFY_URL, JSON.stringify({ mailAddress: mail, code: code }),
                 {
                     headers: { 'Content-Type': 'application/JSON' },
-                    withCredentials: false
+                    withCredentials: true
                 });
 
             console.log(JSON.stringify(response?.data));
@@ -83,6 +83,7 @@ const Verify = () => {
                         value={code}
                         required
                         placeholder="Code"
+                        autoFocus={true}
                     />
                     <button className="button">Verify</button>
                 </form>

@@ -7,14 +7,18 @@ export default function Account() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
+  const [naam, setNaam] = useState(null);
 
   useEffect(() => {
     const getData = async () => {
       try {
         const response = await api.get(
-          `/Station/user/1` 
-        );
-        setData(response.data);
+          `/User/getID`,
+            {
+              withCredentials: true
+            });
+        console.log(response.data);
+        setNaam(response.data);
         setErrMsg(null);
       } catch (err) {
         setErrMsg(err.message);
@@ -29,7 +33,8 @@ export default function Account() {
   return (
     <div className="Account">
       <title>Account</title>
-      <h1>Stations</h1>
+        <h1>Welkom {naam}!</h1>
+      <h2>Stations</h2>
       {
         loading && (
           <div>A moment please...</div>
