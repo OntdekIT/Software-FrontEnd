@@ -11,6 +11,9 @@ import Layout from "./Components/Layout";
 import Account from "./Pages/Account";
 import UserDetails from "./Pages/UserDetails";
 import RegisterStationCode from "./Pages/RegisterStationCode";
+import AdminPage from "./Pages/AdminPage";
+import ShowWorkshopCode from "./Pages/ShowWorkshopCode";
+
 function Router() {
     return (
         <Routes>
@@ -26,6 +29,11 @@ function Router() {
                 <Route path="/Userdetails" element={<UserDetails />} />
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
                 <Route path="/Station/Edit:id" element={<EditStation />} />
+
+                {/* admin routes */}
+                <Route path="/Admin/workshopcode/create" element={<AdminPage />} />
+                <Route path="/Admin/workshopcode/show" element={<ShowWorkshopCode />} />
+
 
                 {/* catch all , 404 page*/}
                 <Route path="*" element={<ErrorPage />} />
