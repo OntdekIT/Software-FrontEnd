@@ -6,29 +6,26 @@ import { api } from "../App";
 const ADMIN_URL = '/Admin/createworkshopcode';
 
 const AdminPage = () => {
-    const [workshopCode, setWorkshopCode] = useState('')
-    const [duration, setDuration] = useState(10)
-    // const [currentDateTime, setCurrentDateTime] = useState(new Date())
-    // const [expDateTime, setExpDateTime] = useState(new Date())
-    const [length, setLength] = useState(6)
-
+    const [workshopCode, setWorkshopCode] = useState('');
+    const [duration, setDuration] = useState(10);
+    const [length, setLength] = useState(6);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const response = await api.get(ADMIN_URL, JSON.stringify({ duration: duration, length: length }),
+            const response = await api.post(ADMIN_URL, { duration, length },
                 {
-                    headers: {'Content-Type': 'application/JSON'},
+                    headers: { 'Content-Type': 'application/json' },
                     withCredentials: true
                 });
 
             console.log(JSON.stringify(response?.data));
+        } catch (err) {
+            console.error('Error:', err);
         }
-        catch (err) {
+    };
 
-        }
-    }
     return (
         <section className="form-section">
             <div>
