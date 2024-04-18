@@ -13,6 +13,7 @@ const Register = () => {
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
   const emailRef = useRef();
+  const meetstationCodeRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
 
@@ -21,6 +22,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
+  const [meetstationCode, setMeetstationCode] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [verify, setVerify] = useState(false); // Add verify state
@@ -31,27 +33,39 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg('');
-  }, [firstname, surname, password, confirmPassword, email]);
+  }, [firstname, surname, password, confirmPassword, email, meetstationCode])
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, password: password, confirmPassword: confirmPassword, mailAddress: email }), {
-        headers: { 'Content-Type': 'application/JSON' },
-        withCredentials: false
-      });
+      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, password: password, confirmPassword: confirmPassword, mailAddress: email, meetstationCode: meetstationCode }),
+        {
+          headers: { 'Content-Type': 'application/JSON' },
+          withCredentials: false
+        });
 
       const accessToken = response?.data?.accessToken;
       const roles = response?.data?.roles;
 
-      setAuth({ firstname, surname, password, confirmPassword, email, roles, accessToken });
+      //save all of our info in auth object, which is saved in global context
+      setAuth({ firstname, surname, password, confirmPassword, email, meetstationCode, roles, accessToken });
 
       if (response?.status === 201) {
         setVerify(true);
       }
     } catch (err) {
-
+      if (!err?.response) {
+        setErrMsg('Kon geen verbinding maken, probeer het later opnieuw');
+        }
+      else {
+        setErrMsg(err.response.data);
+        
+        console.log(err);
+        console.log(err.response);
+        console.log(err.errMsg);
+      }
     }
   }
 
@@ -115,6 +129,16 @@ const Register = () => {
                     value={confirmPassword}
                     required
                     placeholder="Herhaal Wachtwoord"
+                />
+                <label htmlFor="meetstationCode">Meetstation Code</label>
+                <input
+                  type="number"
+                  id="meetstationCode"
+                  ref={meetstationCodeRef}
+                  autoComplete="off"
+                  onChange={(e) => setMeetstationCode(e.target.value)}
+                  value={meetstationCode}
+                  placeholder="123456"
                 />
                 <button className="button">Registreren</button>
               </form>
