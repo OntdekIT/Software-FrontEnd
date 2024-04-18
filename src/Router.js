@@ -13,6 +13,7 @@ import UserDetails from "./Pages/UserDetails";
 import RegisterStationCode from "./Pages/RegisterStationCode";
 import Verify from "./Pages/Verify"
 import AdminPage from "./Pages/AdminPage";
+import ShowWorkshopCode from "./Pages/ShowWorkshopCode";
 
 function Router() {
     return (
@@ -33,7 +34,7 @@ function Router() {
 
                 {/* admin routes */}
                 <Route path="/Admin/workshopcode/create" element={<AdminPage />} />
-                <Route path="/Admin/workshopcode/show" element={<AdminPage />} />
+                <Route path="/Admin/workshopcode/show" element={<ShowWorkshopCode />} />
 
 
                 {/* catch all , 404 page*/}
