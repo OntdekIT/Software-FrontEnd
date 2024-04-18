@@ -11,7 +11,6 @@ import Layout from "./Components/Layout";
 import Account from "./Pages/Account";
 import UserDetails from "./Pages/UserDetails";
 import RegisterStationCode from "./Pages/RegisterStationCode";
-import Verify from "./Pages/Verify"
 function Router() {
     return (
         <Routes>
@@ -23,7 +22,6 @@ function Router() {
                 <Route path="/Register" element={<Register />} />
                 <Route path="/Unauthorized" element={<Unauthorized />} />
                 <Route path="/Account" element={<Account />} />
-                <Route path="/Verify" element={<Verify />} />
                 {/* we want to protect these routes */}
                 <Route path="/Userdetails" element={<UserDetails />} />
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
