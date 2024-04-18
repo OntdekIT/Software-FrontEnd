@@ -20,7 +20,10 @@ const AdminPage = () => {
                     withCredentials: true
                 });
 
-            console.log(JSON.stringify(response?.data));
+            if (response?.status === 200) {
+                localStorage.setItem('workshopcode', response.data);
+                window.location.href = "http://localhost:3000/Admin/workshopcode/show";
+            }
         } catch (err) {
             console.error('Error:', err);
         }
