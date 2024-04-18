@@ -22,7 +22,7 @@ const Verify = ({ mail }) => {
         try {
             const response = await api.post(VERIFY_URL, JSON.stringify({ mailAddress: mail, code: code }), {
                 headers: { 'Content-Type': 'application/JSON' },
-                withCredentials: false
+                withCredentials: true
             });
             sessionStorage.setItem("name", response.data);
             const accessToken = response?.data?.accessToken;

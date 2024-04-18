@@ -11,10 +11,11 @@ const NavBar = () => {
   const loggedIn = async () => {
     console.log("Navbar test 1: ");
     try{
-      const response = await api.post(CHECKLOGIN_URL, {
-        headers: { 'Content-Type': 'application/JSON' },
-        withCredentials: true
-      });
+      const response = await api.get(
+          CHECKLOGIN_URL,
+          {
+            withCredentials: true
+          });
       setIsLoggedIn(response.data);
     }
     catch(err){
