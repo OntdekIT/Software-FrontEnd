@@ -80,6 +80,7 @@ const Register = () => {
             <div>
               <h1>Registreren</h1>
               <form onSubmit={handleSubmit}>
+                <label htmlFor="firstname">First name</label>
                 <input
                     type="text"
                     id="firstname"
@@ -87,9 +88,9 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setFirstname(e.target.value)}
                     value={firstname}
-                    required
                     placeholder="Voornaam"
                 />
+                <label htmlFor="surname">Last name</label>
                 <input
                     type="text"
                     id="surname"
@@ -97,19 +98,19 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setSurname(e.target.value)}
                     value={surname}
-                    required
                     placeholder="Achternaam"
                 />
+                <label htmlFor="email">Email</label>
                 <input
-                    type="email"
+                    type="text"
                     id="email"
                     ref={emailRef}
                     autoComplete="off"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
-                    required
                     placeholder="Email"
                 />
+                <label htmlFor="password">Password</label>
                 <input
                     type="password"
                     id="password"
@@ -117,9 +118,9 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setPassword(e.target.value)}
                     value={password}
-                    required
                     placeholder="Wachtwoord"
                 />
+                <label htmlFor="confirmPassword">Confirm Password</label>
                 <input
                     type="password"
                     id="confirmPassword"
@@ -127,18 +128,17 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     value={confirmPassword}
-                    required
                     placeholder="Herhaal Wachtwoord"
                 />
                 <label htmlFor="meetstationCode">Meetstation Code</label>
                 <input
-                  type="number"
-                  id="meetstationCode"
-                  ref={meetstationCodeRef}
-                  autoComplete="off"
-                  onChange={(e) => setMeetstationCode(e.target.value)}
-                  value={meetstationCode}
-                  placeholder="123456"
+                    type="number"
+                    id="meetstationCode"
+                    ref={meetstationCodeRef}
+                    autoComplete="off"
+                    onChange={(e) => setMeetstationCode(e.target.value)}
+                    value={meetstationCode}
+                    placeholder="123456"
                 />
                 <button className="button">Registreren</button>
               </form>

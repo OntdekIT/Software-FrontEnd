@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import useAuth from '../Hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { api } from "../App";
@@ -29,31 +29,81 @@ const AdminPage = () => {
         }
     };
 
+    const handleChangeDuration = (event) => {
+        setDuration(event.target.value);
+    }
+
+    const handleChangeLength = (event) => {
+        setLength(event.target.value);
+    }
+
     return (
-        <section className="form-section">
-            <div>
-                <title>Admin Page</title>
-                <h1>New workshop code</h1>
-                <form onSubmit={handleSubmit}>
-                    <label>Lengte code: </label>
-                    <input
-                        type="number"
-                        required
-                        value={length}
-                        onChange={(e) => setLength(e.target.value)}
-                    />
-                    <label>Geldig (min):</label>
-                    <input
-                        type="number"
-                        required
-                        value={duration}
-                        onChange={(e) => setDuration(e.target.value)}
-                    />
-                    <button>Create code</button>
-                </form>
-                <h3>{workshopCode}</h3>
+            <div className={"color"}>
+                <br/>
+                <div className={"container gy-5"}>
+                    <div>
+                        <div className={"row"}>
+                            <div className={"col-4"}></div>
+                            <div className={"col-4"}>
+                                <h4><b>Workshop code aanmaken</b></h4>
+                                <label className={"labelMargin"}>
+                                    <div className={"form-text"}> Hier kan een workshopcode aangemaakt worden.</div>
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div className={"row mt-1"}>
+                            <div className={"col-4"}></div>
+                            <div className={"col-2"}>
+                                <select className={"form-select"} value={duration} onChange={handleChangeDuration}
+                                        required>
+                                    <option selected={true}>Kies geldigheids duur</option>
+                                    <option value={15}>15 min</option>
+                                    <option value={30}>30 min</option>
+                                    <option value={60}>60 min</option>
+                                    <option value={120}>2 uur</option>
+                                    <option value={240}>4 uur</option>
+                                    <option value={720}>12 uur</option>
+                                    <option value={1440}>1 dag</option>
+                                    <option value={4320}>3 dagen</option>
+                                    <option value={2880}>1 week</option>
+                                </select>
+                            </div>
+                            <div className={"col-2"}>
+                                <select className={"form-select"} value={length} onChange={handleChangeLength}
+                                        required>
+                                    <option selected={true}>Kies aantal cijfers</option>
+                                    <option value={3}>3 cijfers</option>
+                                    <option value={4}>4 cijfers</option>
+                                    <option value={5}>5 cijfers</option>
+                                    <option value={6}>6 cijfers</option>
+                                    <option value={7}>7 cijfers</option>
+                                    <option value={8}>8 cijfers</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className={"row"}>
+                            <div className={"col-4"}></div>
+                            <div className={"col-4"}>
+                                <br/>
+                                {/*{errorMessage && <label className={"error-msg"}>{errorMessage}</label>}*/}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={"row mt-5"}>
+                        <div className={"col-4"}></div>
+                        <div className={"col-5"}>
+                            <Link to={"/Account"}>
+                                <button className={"button2Inline"}>Annuleren</button>
+                            </Link>
+                            {/*<Link to={"/station/create/name"} state={registrationCode}>*/}
+                            <button className={"button2"} onClick={handleSubmit}>Volgende</button>
+                            {/*</Link>*/}
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
     )
 }
 export default AdminPage;

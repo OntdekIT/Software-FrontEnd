@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as Menu } from '../Assets/menu.svg';
 import {api} from "../App";
+import Cookies from 'js-cookie';
 
 const CHECKLOGIN_URL = '/Authentication/checkLogin';
+const LOGOUT_URL = '/Authentication/logout';
 
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +23,21 @@ const NavBar = () => {
     catch(err){
       console.log(err);
     }
+  }
+
+  const logout = async () => {
+    try {
+      const response = await api.delete(
+          LOGOUT_URL,
+          {
+            withCredentials: true
+          });
+    }
+    catch(err){
+      console.log(err);
+    }
+
+    window.location.href = "http://localhost:3000/";
   }
 
   useEffect(() => {
@@ -56,7 +73,7 @@ const NavBar = () => {
                       <Link className="nav-link" to="/Userdetails">Mijn gegevens</Link>
                     </li>
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-                      <Link className="nav-link" to="/Logout">Uitloggen</Link>
+                      <Link className="nav-link" onClick={logout}>Uitloggen</Link>
                     </li>
                   </>
               ) : (
