@@ -14,6 +14,7 @@ const Register = () => {
   const confirmPasswordRef = useRef();
   const emailRef = useRef();
   const meetstationCodeRef = useRef();
+  const workshopCodeRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
 
@@ -23,6 +24,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [meetstationCode, setMeetstationCode] = useState('');
+  const [workshopCode, setWorkshopCode] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [verify, setVerify] = useState(false); // Add verify state
@@ -33,14 +35,22 @@ const Register = () => {
 
   useEffect(() => {
     setErrMsg('');
-  }, [firstname, surname, password, confirmPassword, email, meetstationCode])
+  }, [firstname, surname, password, confirmPassword, email, meetstationCode, workshopCode])
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, password: password, confirmPassword: confirmPassword, mailAddress: email, meetstationCode: meetstationCode }),
+      const response = await api.post(REGISTER_URL, JSON.stringify({
+            firstName: firstname,
+            lastName: surname,
+            password: password,
+            confirmPassword: confirmPassword,
+            mailAddress: email,
+            meetstationCode: meetstationCode,
+            workshopCode: workshopCode,
+          }),
         {
           headers: { 'Content-Type': 'application/JSON' },
           withCredentials: false
@@ -50,7 +60,7 @@ const Register = () => {
       const roles = response?.data?.roles;
 
       //save all of our info in auth object, which is saved in global context
-      setAuth({ firstname, surname, password, confirmPassword, email, meetstationCode, roles, accessToken });
+      setAuth({ firstname, surname, password, confirmPassword, email, meetstationCode, workshopCode, roles, accessToken });
 
       if (response?.status === 201) {
         setVerify(true);
@@ -138,6 +148,16 @@ const Register = () => {
                     autoComplete="off"
                     onChange={(e) => setMeetstationCode(e.target.value)}
                     value={meetstationCode}
+                    placeholder="123456"
+                />
+                <label htmlFor="workshopCode">Workshop Code</label>
+                <input
+                    type="number"
+                    id="workshopCode"
+                    ref={workshopCodeRef}
+                    autoComplete="off"
+                    onChange={(e) => setWorkshopCode(e.target.value)}
+                    value={workshopCode}
                     placeholder="123456"
                 />
                 <button className="button">Registreren</button>
