@@ -13,7 +13,7 @@ export default function Account() {
     const getData = async () => {
       try {
         const response = await api.get(
-          '/User/getID',
+          '/User/getName',
             {
               withCredentials: true
             });
