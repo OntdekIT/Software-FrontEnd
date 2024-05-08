@@ -17,6 +17,7 @@ const GrantUserAdmin = () => {
     useEffect(() => {
         const getData = async () => {
           try {
+            console.log(document.cookie);
             const isAdminResponse = await api.get(
               '/User/checkAdmin',
                 {
@@ -110,7 +111,7 @@ const GrantUserAdmin = () => {
                         <div className={"row mt-1"}>
                             <div className={"col-4"}></div>
                             <div className={"col-2"}>
-                                <select className={"form-select"} value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)} required>
+                                <select id="selectUserDropdown" className={"form-select"} value={selectedUserId} onChange={(e) => setSelectedUserId(e.target.value)} required>
                                     <option value="" hidden>Kies een gebruiker</option>
                                     {users.map(user => (
                                         <option key={user.id} value={user.id}>
@@ -124,7 +125,7 @@ const GrantUserAdmin = () => {
                         <div className={"row mt-1"}>
                             <div className={"col-4"}></div>
                             <div className={"col-2"}>
-                                <select className={"form-select"} value={adminRights} onChange={(e) => setAdminRights(e.target.value === 'true')} required>
+                                <select id="selectAdminRightsDropdown" className={"form-select"} value={adminRights} onChange={(e) => setAdminRights(e.target.value === 'true')} required>
                                     <option value="" hidden>Admin Rechten?</option>
                                     <option value="true">Admin</option>
                                     <option value="false">Geen admin</option>
@@ -136,7 +137,7 @@ const GrantUserAdmin = () => {
                             <div className={"col-4"}></div>
                             <div className={"col-4"}>
                                 <br/>
-                                {errMsg && <label className={"error-msg"}>{errMsg}</label>}
+                                {errMsg && <label id='error-message'className={"error-msg"}>{errMsg}</label>}
                             </div>
                         </div>
                     </div>
@@ -146,7 +147,7 @@ const GrantUserAdmin = () => {
                             <Link to={"/Admin"}>
                                 <button className={"button2Inline"}>Annuleren</button>
                             </Link>
-                            <button className={"button2"} onClick={handleSubmit}>Volgende</button>
+                            <button id="submitbutton" className={"button2"} onClick={handleSubmit}>Volgende</button>
                         </div>
                     </div>
                 </div>
