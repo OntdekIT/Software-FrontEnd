@@ -15,10 +15,12 @@ import CreateWorkshopCode from "./Pages/CreateWorkshopCode";
 import ShowWorkshopCode from "./Pages/ShowWorkshopCode";
 import AdminPage from './Pages/AdminPage';
 import GrantUserAdmin from './Pages/GrantUserAdmin';
+import { LoginCheckProvider } from './Components/LoginCheck';
 
 function Router() {
     return (
-        <Routes>
+        <LoginCheckProvider>
+            <Routes>
             <Route className="container" path="/" element={<Layout />}>
                 {/* public routes */}
                 <Route path="/" element={<Home />} />
@@ -42,7 +44,8 @@ function Router() {
                 {/* catch all , 404 page*/}
                 <Route path="*" element={<ErrorPage />} />
             </Route>
-        </Routes>
+            </Routes>
+        </LoginCheckProvider>
     )
 }
 

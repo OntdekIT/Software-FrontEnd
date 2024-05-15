@@ -12,47 +12,40 @@ const GrantUserAdmin = () => {
     const [errMsg, setErrMsg] = useState(null);
     const [isAdmin, setIsAdmin] = useState(null);
     const [users, setUsers] = useState(null);
+
+    const getData = async () => {
+        try {
+          console.log(document.cookie);
+          const getUsersResponse = await api.get(
+            '/User',
+              {
+                withCredentials: true
+              });
+          const getUserId = await api.get(
+              '/User/getID',
+              {
+                withCredentials: true
+              });
+          ;
+          console.log(getUserId.data);
+          console.log(getUsersResponse.data);
+
+          //zodat je eigen adminrechten niet kan wijzigen
+          const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data);
+          console.log(filteredUsers);
+
+          setUsers(filteredUsers);
+          
+          setErrMsg(null);
+        } catch (err) {
+          setErrMsg(err.message);
+        } finally {
+          setLoading(false);
+        }
+    };
     
     
     useEffect(() => {
-        const getData = async () => {
-          try {
-            console.log(document.cookie);
-            const isAdminResponse = await api.get(
-              '/User/checkAdmin',
-                {
-                  withCredentials: true
-                });
-            const getUsersResponse = await api.get(
-              '/User',
-                {
-                  withCredentials: true
-                });
-            const getUserId = await api.get(
-                '/User/getID',
-                {
-                  withCredentials: true
-                });
-            ;
-            console.log(getUserId.data);
-            console.log(getUsersResponse.data);
-            console.log(isAdminResponse.data);
-
-            //zodat je eigen adminrechten niet kan wijzigen
-            const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data);
-            console.log(filteredUsers);
-
-            setUsers(filteredUsers);
-            setIsAdmin(isAdminResponse.data);
-            
-            setErrMsg(null);
-          } catch (err) {
-            setErrMsg(err.message);
-          } finally {
-            setLoading(false);
-          }
-        };
-
         getData();
       }, []);
 
@@ -147,7 +140,7 @@ const GrantUserAdmin = () => {
                             <Link to={"/Admin"}>
                                 <button className={"button2Inline"}>Annuleren</button>
                             </Link>
-                            <button id="submitbutton" className={"button2"} onClick={handleSubmit}>Volgende</button>
+                            <button id="submitbutton" className={"button2"} onClick={handleSubmit}>Opslaan</button>
                         </div>
                     </div>
                 </div>
