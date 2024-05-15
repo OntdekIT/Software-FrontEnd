@@ -1,30 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as Menu } from '../Assets/menu.svg';
 import {api} from "../App";
 import Cookies from 'js-cookie';
+import LoginCheckContext from "./LoginCheck";
 
 const CHECKLOGIN_URL = '/Authentication/checkLogin';
 const LOGOUT_URL = '/Authentication/logout';
 
 const NavBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const loggedIn = async () => {
-    console.log("Navbar test 1: ");
-    try{
-      const response = await api.get(
-          CHECKLOGIN_URL,
-          {
-            withCredentials: true
-          });
-      setIsLoggedIn(response.data);
-    }
-    catch(err){
-      console.log(err);
-    }
-  }
-
+  const { isLoggedIn, isAdmin } = useContext(LoginCheckContext);
   const logout = async () => {
     try {
       const response = await api.delete(
@@ -41,7 +26,6 @@ const NavBar = () => {
   }
 
   useEffect(() => {
-    loggedIn();
   }, []);
 
   return (
@@ -72,6 +56,11 @@ const NavBar = () => {
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/Userdetails">Mijn gegevens</Link>
                     </li>
+                    {isAdmin && (
+                    <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                      <Link className="nav-link" to="/admin">Admin Page</Link>
+                    </li>
+                    )}
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" onClick={logout}>Uitloggen</Link>
                     </li>
