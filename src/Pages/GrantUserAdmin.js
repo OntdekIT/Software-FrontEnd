@@ -1,7 +1,8 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import useAuth from '../Hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { api } from "../App";
+import LoginCheck from "../Components/LoginCheck";
 
 const ADMIN_URL = '/Admin/grantuseradmin';
 
@@ -10,7 +11,7 @@ const GrantUserAdmin = () => {
     const [adminRights, setAdminRights] = useState();
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(null);
+    const { isAdmin } = useContext(LoginCheck);
     const [users, setUsers] = useState(null);
 
     const getData = async () => {

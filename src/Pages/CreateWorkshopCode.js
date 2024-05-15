@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import useAuth from '../Hooks/useAuth';
 import { Link } from 'react-router-dom';
 import { api } from "../App";
+import LoginCheck from "../Components/LoginCheck";
 
 const ADMIN_URL = '/Admin/createworkshopcode';
 
@@ -11,7 +12,7 @@ const CreateWorkshopCode = () => {
     const [length, setLength] = useState(6);
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(null);
+    const { isAdmin } = useContext(LoginCheck);
     
     useEffect(() => {
         const getData = async () => {

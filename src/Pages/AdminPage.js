@@ -2,11 +2,12 @@ import React from 'react';
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { api } from "../App";
+import LoginCheck from '../Components/LoginCheck';
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(null);
+  const { isAdmin } = useContext(LoginCheck);
 
   useEffect(() => {
     const getData = async () => {
