@@ -1,37 +1,16 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { api } from "../App";
 import LoginCheck from '../Components/LoginCheck';
 
 export default function AdminPage() {
-  const [loading, setLoading] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
   const { isAdmin } = useContext(LoginCheck);
 
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await api.get(
-          '/User/checkAdmin',
-            {
-              withCredentials: true
-            });
-        console.log(response.data);
-        setIsAdmin(response.data)
-        setErrMsg(null);
-      } catch (err) {
-        setErrMsg(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="Account">
