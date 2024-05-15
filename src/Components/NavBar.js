@@ -56,14 +56,14 @@ const NavBar = () => {
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/Userdetails">Mijn gegevens</Link>
                     </li>
-                    <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-                      <Link className="nav-link" onClick={logout}>Uitloggen</Link>
-                    </li>
                     {isAdmin && (
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/admin">Admin Page</Link>
                     </li>
                     )}
+                    <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                      <Link className="nav-link" onClick={logout}>Uitloggen</Link>
+                    </li>
                   </>
               ) : (
                   <>
