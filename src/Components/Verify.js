@@ -31,6 +31,7 @@ const Verify = ({ mail }) => {
             setAuth({ mail, code, roles, accessToken });
 
             if (response?.status === 200) {
+                console.log("Test login 2");
                 window.location.href = "http://localhost:3000/Account";
             }
         } catch (err) {

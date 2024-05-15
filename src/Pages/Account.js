@@ -14,11 +14,7 @@ export default function Account() {
   const { isLoggedIn } = useContext(LoginCheck);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      setRedirecting(true);
-      window.location.href = '/Login';
-    }
-    else {
+
     const getData = async () => {
       try {
         const response = await api.get('/User/getUser', { withCredentials: true });
@@ -36,14 +32,16 @@ export default function Account() {
     };
 
     getData();
-  }
+
   }, []);
 
-  if(!isLoggedIn) {
-    return null;
-  }
+  // if(!isLoggedIn) {
+  //   console.log(isLoggedIn);
+  //   window.location.href = '/Login';
+  //   return null;
+  // }
 
-  else {
+  //else {
     return (
       <div className="Account" style={{margin: '10px'}}>
         <title>Account</title>
@@ -64,5 +62,5 @@ export default function Account() {
         {meetstations.length % 3 !== 0 && <div className="w-100"></div>}
       </div>
   );
-  }
+  //}
 }

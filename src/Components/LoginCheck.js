@@ -17,6 +17,7 @@ export const LoginCheckProvider = ({ children }) => {
             withCredentials: true
           });
       setIsLoggedIn(response.data);
+      console.log("test login 1");
     }
     catch(err){
       console.log(err);
