@@ -55,7 +55,6 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
             date.setMonth(date.getMonth() - 1);
             setStartDate(date);
         }
-
         setSelectedStation(e.target.options.id);
     }
 

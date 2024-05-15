@@ -50,6 +50,7 @@ const Home = () => {
             // Get measurements data
             api.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
+                    //console.log(resp.data);
                     setTempMeasurements(resp.data)
                 })
                 .catch(function (error) {

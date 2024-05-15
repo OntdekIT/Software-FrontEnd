@@ -32,7 +32,7 @@ function Router() {
                 {/* we want to protect these routes */}
                 <Route path="/Userdetails" element={<UserDetails />} />
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
-                <Route path="/Station/Edit:id" element={<EditStation />} />
+                <Route path="/Station/Edit" element={<EditStation />} />
 
                 {/* admin routes */}
                 <Route path="/Admin" element={<AdminPage />} />
