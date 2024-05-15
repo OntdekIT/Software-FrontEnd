@@ -3,6 +3,7 @@ import { useState, useEffect, useContext } from "react";
 import { Link } from 'react-router-dom';
 import { api } from "../App";
 import MeetStationView from "../Components/MeetStationView";
+import LoginCheck from '../Components/LoginCheck';
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
