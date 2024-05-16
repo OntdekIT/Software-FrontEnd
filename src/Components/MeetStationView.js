@@ -148,14 +148,12 @@ const MeetStationLayer = ({ meetstation }) => {
                         title="Dit meetstation bewerken" // Tooltip text
                     />
                 </div>
-                <label className="bold d-block fs-6">Station ID: {meetstation.stationid}</label>
+                <label className="bold d-block fs-6">Station Nummer: {meetstation.stationid}</label>
 
                 <div key={meetstation.stationid}>
-                    <label>Meetstation name: {meetstation.name}</label>
+                    <label>Meetstation naam: {meetstation.name}</label>
                     <br/>
-                    <label>Meetstation database tag: {meetstation.database_tag}</label>
-                    <br/>
-                    <label>Meetstation public: {meetstation.is_public?.toString()}</label>
+                    <label>Meetstation zichtbaarheids niveau: {meetstation.is_public?.toString()}</label>
                     <br/>
                 </div>
 

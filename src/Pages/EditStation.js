@@ -15,7 +15,7 @@ const EditStation = () => {
   };
 
   const [station, setStation] = useState(inputvalues);
-  const [isChecked, setIsChecked] = useState(false);
+  const [visibility, setVisibility] = useState('private');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,13 +25,15 @@ const EditStation = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setStation({ ...station, [name]: value });
+    console.log("value change test: ", station);
   };
 
-  const checkboxHandler = (event) => {
+  const dropdownHandler = (event) => {
     const { name, checked } = event.target;
     setStation({ ...station, [name]: checked });
-    setIsChecked(checked);
+    setVisibility(checked);
   };
+
 
   useEffect(() => {
     const fetchStation = async () => {
@@ -44,7 +46,7 @@ const EditStation = () => {
 
         setStation(response.data);
         console.log(station);
-        setIsChecked(response.data.is_public);
+        setVisibility(response.data.is_public.toString());
       } catch (err) {
         console.error("error: ", err);
       }
@@ -112,7 +114,7 @@ const EditStation = () => {
             <div className={"row"}>
               <div className={"col-4"}></div>
               <div className={"col-4"}>
-                <h4><b>Edit Station</b></h4>
+                <h4><b>Aanpassen station nummer {station.stationid}</b></h4>
                 <label className={"labelMargin"}>
                   <div className={"form-text"}>Hier kunnen de meetstation gegevens aangepast worden</div>
                 </label>
@@ -123,15 +125,6 @@ const EditStation = () => {
               <div className={"row mt-1"}>
                 <div className={"col-4"}></div>
                 <div className={"col-4"}>
-                  <label className={"label"}>Station nummer</label>
-                  <input
-                      onChange={handleChange}
-                      className={"form-control"}
-                      value={station.stationid}
-                      name="stationid"
-                      type="text"
-                      readOnly
-                  />
                   <label className={"label"}>Station naam</label>
                   <input
                       onChange={handleChange}
@@ -140,59 +133,29 @@ const EditStation = () => {
                       name="name"
                       type="text"
                   />
-                  <label className={"label"}>Database tag</label>
-                  <input
-                      onChange={handleChange}
-                      value={station.database_tag}
-                      className={"form-control"}
-                      name="database_tag"
-                      type="text"
-                  />
-                  <label className={"label"}>Registratie code</label>
-                  <input
-                      onChange={handleChange}
-                      value={station.registrationCode}
-                      className={"form-control"}
-                      name="registrationCode"
-                      type="text"
-                      readOnly
-                  />
-                  <label className={"label"}>Locatie id (wordt longitude/latitude)</label>
-                  <input
-                      onChange={handleChange}
-                      value={station.location_locationid}
-                      className={"form-control"}
-                      name="location_locationid"
-                      type="text"
-                      readOnly
-                  />
-                  <label className={"label"}>Gebruikers Id (wordt voornaam)</label>
-                  <input
-                      onChange={handleChange}
-                      value={station.userid}
-                      className={"form-control"}
-                      name="userid"
-                      type="text"
-                      readOnly
-                  />
-                  <div className={"form-check"}>
-                    <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={checkboxHandler}
-                        className={"form-check-input"}
-                        name="is_public"
-                    />
-                    <label className={"form-check-label"}>I want this station to be publicly visible</label>
+                  <div className={"form-group"}>
+                    <label className={"form-label"}>Visibility</label>
+                    <select
+                        value={visibility}
+                        onChange={dropdownHandler}
+                        className={"form-control"}
+                        name="visibility"
+                    >
+                      <option value="private">Private</option>
+                      <option value="public">Public</option>
+                      <option value="restricted">Restricted</option>
+                    </select>
                   </div>
-                </div>
               </div>
+          </div>
 
-              <div className={"row mt-5"}>
-                <div className={"col-4"}></div>
-                <div className={"col-5"}>
-                  <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Back</button>
-                  <button size="sm" color="danger" type="button" className={"button2Inline"} onClick={handleDelete}>Delete</button>
+          <div className={"row mt-5"}>
+            <div className={"col-4"}></div>
+            <div className={"col-5"}>
+              <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Back</button>
+              <button size="sm" color="danger" type="button" className={"button2Inline"}
+                      onClick={handleDelete}>Delete
+                  </button>
                   <button className={"button2"} type="submit">Submit</button>
                 </div>
               </div>
