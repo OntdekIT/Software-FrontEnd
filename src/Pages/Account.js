@@ -10,6 +10,7 @@ export default function Account() {
   const [redirecting, setRedirecting] = useState(false);
   const [errMsg, setErrMsg] = useState(null);
   const [naam, setNaam] = useState(null);
+  const [meetstations, setMeetstations] = useState(null);
   const { isLoggedIn } = useContext(LoginCheck);
 
   useEffect(() => {

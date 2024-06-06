@@ -16,6 +16,7 @@ const EditStation = () => {
 
   const [station, setStation] = useState(inputvalues);
   const [isChecked, setIsChecked] = useState(false);
+  const [visibility, setVisibility] = useState(null);
   const navigate = useNavigate();
   const { stationId } = useParams();
   console.log(stationId);
