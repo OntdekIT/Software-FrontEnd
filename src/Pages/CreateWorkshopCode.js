@@ -33,6 +33,10 @@ const CreateWorkshopCode = () => {
             }
         } catch (err) {
             console.error('Error:', err);
+            
+            if (err.response?.status === 401) {
+              window.location.href = "/login";
+            }
         }
     };
 

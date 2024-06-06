@@ -16,30 +16,43 @@ const GrantUserAdmin = () => {
 
     const getData = async () => {
         try {
-          console.log(document.cookie);
-          const getUsersResponse = await api.get(
-            '/User',
-              {
-                withCredentials: true
-              });
-          const getUserId = await api.get(
-              '/User/getID',
-              {
-                withCredentials: true
-              });
-          ;
-          console.log(getUserId.data);
-          console.log(getUsersResponse.data);
+            console.log(document.cookie);
+            const getUsersResponse = await api.get(
+                '/User',
+                {
+                    withCredentials: true
+                });
+            const getUserId = await api.get(
+                '/User/getID',
+                {
+                    withCredentials: true
+                });
+
+            const checkAdmin = await api.get(
+                '/User/checkAdmin',
+                {
+                    withCredentials: true
+                });
+
+            
+            console.log(checkAdmin.data);
+            console.log(getUserId.data);
+            console.log(getUsersResponse.data);
 
           //zodat je eigen adminrechten niet kan wijzigen
           const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data);
           console.log(filteredUsers);
 
+          setIsAdmin(checkAdmin.data);
           setUsers(filteredUsers);
           
           setErrMsg(null);
         } catch (err) {
           setErrMsg(err.message);
+            
+          if (err.response?.status === 401) {
+            window.location.href = "/login";
+          }
         } finally {
           setLoading(false);
         }

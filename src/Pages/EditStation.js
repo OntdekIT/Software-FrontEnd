@@ -45,6 +45,9 @@ const EditStation = () => {
         setVisibility(response.data.is_public ? '1' : '0');
       } catch (err) {
         console.error("error: ", err);
+        if (err.response?.status === 401) {
+          window.location.href = "/login";
+        }
       }
     };
     if (stationId) {
