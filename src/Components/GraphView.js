@@ -30,13 +30,24 @@ const GraphView = ({ graphData, dataType }) => {
     }, [graphData]);
 
     const getLastTenMeasurements = () => {
-        return filteredMeasurements.slice(-10).map((measurement, index) => (
+        // Filter out measurements without min, max, and avg
+        const validMeasurements = filteredMeasurements.filter(measurement =>
+            measurement.min != null && measurement.max != null && measurement.avg != null
+        );
+
+        // If there are no valid measurements, display the message
+        if (validMeasurements.length === 0) {
+            return <div>Er zijn geen measurements voor deze datum</div>;
+        }
+
+        // Return the last 10 valid measurements
+        return validMeasurements.slice(-10).map((measurement, index) => (
             <div key={index}>
-                <b>Measurement {filteredMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
-                <p>Min: {measurement.min}</p>
-                <p>Max: {measurement.max}</p>
-                <p>Avg: {measurement.avg}</p>
-                <hr style={{margin: "2"}}></hr>
+                <b>Measurement {validMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
+                <p>Min: {measurement.min}<br/>
+                    Max: {measurement.max}<br/>
+                    Avg: {measurement.avg}</p>
+                <hr style={{ margin: "2px" }} />
             </div>
         ));
     };

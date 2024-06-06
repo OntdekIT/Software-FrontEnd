@@ -18,6 +18,7 @@ const InfoStation = () => {
     // data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
+    const [stofGraphData, setStofGraphData] = useState([]);
     const EditIcon = process.env.PUBLIC_URL + '/editButton.ico';
     const infoIcon = process.env.PUBLIC_URL + '/infoButton.ico';
     const dateTime = new Date();
@@ -49,6 +50,17 @@ const InfoStation = () => {
     }, [stationId]);
 
     useEffect(() => {
+        function formatDate(date) {
+            const padZero = (num) => num.toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const day = padZero(date.getDate());
+            const hours = padZero(date.getHours());
+            const minutes = padZero(date.getMinutes());
+
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
         if (startDate.getTime() === endDate.getTime()) {
             let date = startDate;
             date.setMonth(date.getMonth() - 6);
@@ -56,21 +68,18 @@ const InfoStation = () => {
         }
         const fetchGraphData = async () => {
             try {
-                const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
                 const response = await api.get("/measurement/history/average/" + meetstation.stationid, {
                     params: {
-                        startDate: startDate.toLocaleString("nl-NL", options),
-                        endDate: endDate.toLocaleString("nl-NL", options)
+                        startDate: formatDate(startDate),
+                        endDate: formatDate(endDate)
                     }
                 });
-                console.log(response);
                 const tempData = response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     avg: meting.avgTemp,
                     min: meting.minTemp,
                     max: meting.maxTemp
                 }));
-                console.log(tempData);
                 setTempGraphData(tempData);
                 const humData = response.data.map((meting) => ({
                     timestamp: meting.timestamp,
@@ -78,8 +87,14 @@ const InfoStation = () => {
                     min: meting.minHum,
                     max: meting.maxHum
                 }));
-                console.log(humData);
                 setHumGraphData(humData);
+                const stofData = response.data.map((meting) => ({
+                    timestamp: meting.timestamp,
+                    avg: meting.avgStof,
+                    min: meting.minStof,
+                    max: meting.maxStof
+                }))
+                setStofGraphData(stofData);
 
             } catch (err) {
                 console.error("error: ", err);
@@ -212,7 +227,7 @@ const InfoStation = () => {
                         <hr style={{margin: "2"}}></hr>
                         <GraphView graphData={humGraphData} dataType={"luchtvochtigheid"}></GraphView>
                         <hr style={{margin: "2"}}></hr>
-                        <GraphView graphData={tempGraphData} dataType={"fijnstof"}></GraphView>
+                        <GraphView graphData={stofGraphData} dataType={"fijnstof"}></GraphView>
                         <hr style={{margin: "2"}}></hr>
                     </div>
 

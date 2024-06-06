@@ -27,11 +27,21 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
 
         setLoading(true);
 
-        const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
+        function formatDate(date) {
+            const padZero = (num) => num.toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const day = padZero(date.getDate());
+            const hours = padZero(date.getHours());
+            const minutes = padZero(date.getMinutes());
+
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
         api.get("/measurement/history/average/" + selectedStation, {
             params: {
-                startDate: startDate.toLocaleString("nl-NL", options),
-                endDate: endDate.toLocaleString("nl-NL", options)
+                startDate: formatDate(startDate),
+                endDate: formatDate(endDate)
             }
         }).then((response) => {
             const data = response.data.map((meting) => ({

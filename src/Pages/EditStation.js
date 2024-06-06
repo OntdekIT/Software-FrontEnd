@@ -78,7 +78,6 @@ const EditStation = () => {
             console.error("Error", error.message);
           }
         });
-
   };
 
   const handleDelete = (e) => {
