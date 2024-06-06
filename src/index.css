@@ -326,3 +326,15 @@ form {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+
+  /* For WebKit-based browsers like Chrome, Safari, and Edge */
+  overflow: auto;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

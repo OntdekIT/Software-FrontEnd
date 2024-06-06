@@ -48,6 +48,7 @@ const Home = () => {
     useEffect(() => {
         try {
             // Get measurements data
+            console.log(dateTime.toISOString());
             api.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
                     //console.log(resp.data);

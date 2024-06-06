@@ -7,7 +7,7 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 
-const MeetStationLayer = ({ meetstation }) => {
+const MeetStationView = ({ meetstation }) => {
     //use states for what to show and what not to show
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
@@ -20,12 +20,24 @@ const MeetStationLayer = ({ meetstation }) => {
     const [loading, setLoading] = useState(false);
     //data to be shown
     const [graphData, setGraphData] = useState([]);
+    const [graphVisible, setGraphVisible] = useState(true);
     const EditIcon =  process.env.PUBLIC_URL + '/editButton.ico';
     const infoIcon =  process.env.PUBLIC_URL + '/infoButton.ico';
     const dateTime = new Date();
     const navigate = useNavigate(); // Initialize useNavigate
 
     useEffect(() => {
+        function formatDate(date) {
+            const padZero = (num) => num.toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const day = padZero(date.getDate());
+            const hours = padZero(date.getHours());
+            const minutes = padZero(date.getMinutes());
+
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
         if (startDate.getTime() === endDate.getTime()) {
             let date = startDate;
             date.setMonth(date.getMonth() - 1);
@@ -34,11 +46,10 @@ const MeetStationLayer = ({ meetstation }) => {
 
         setLoading(true);
 
-        const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
         api.get("/measurement/history/average/" + selectedStation, {
             params: {
-                startDate: startDate.toLocaleString("nl-NL", options),
-                endDate: endDate.toLocaleString("nl-NL", options)
+                startDate: formatDate(startDate),
+                endDate: formatDate(endDate)
             }
         }).then((response) => {
             const data = response.data.map((meting) => ({
@@ -95,120 +106,144 @@ const MeetStationLayer = ({ meetstation }) => {
         navigate(`/Station/Info?id=${meetstation.stationid}`);
     }
 
+    const toggleGraphVisibility = () => {
+        setGraphVisible(!graphVisible);
+    };
+
     return (
         <>
-            <div className="p-3 border bg-light position-relative" style={{minWidth: "150px"}}>
-                <div style={{position: "relative"}}>
-                    <img
-                        src={infoIcon}
-                        alt="Info"
-                        className="custom-icon"
-                        style={{
-                            width: "30px",
-                            height: "30px",
-                            transition: "transform 0.3s",
-                            cursor: "pointer",
-                            position: "absolute",
-                            top: "0",
-                            right: "40px"
-                        }}
-                        onClick={handleInfoClick}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.transform = "scale(1.1)";
-                            document.body.style.cursor = "pointer";
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.transform = "scale(1)";
-                            document.body.style.cursor = "auto";
-                        }}
-                        title="Meer informatie over dit meetstation" // Tooltip text
-                    />
-                    <img
-                        src={EditIcon}
-                        alt="Edit"
-                        className="custom-icon"
-                        style={{
-                            width: "30px",
-                            height: "30px",
-                            transition: "transform 0.3s",
-                            cursor: "pointer",
-                            position: "absolute",
-                            top: "0",
-                            right: "0"
-                        }}
-                        onClick={handleEditClick}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.transform = "scale(1.1)";
-                            document.body.style.cursor = "pointer";
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.transform = "scale(1)";
-                            document.body.style.cursor = "auto";
-                        }}
-                        title="Dit meetstation bewerken" // Tooltip text
-                    />
-                </div>
-                <label className="bold d-block fs-6">Station Nummer: {meetstation.stationid}</label>
-
-                <div key={meetstation.stationid}>
-                    <label>Meetstation naam: {meetstation.name}</label>
-                    <br/>
-                    <label>Meetstation zichtbaarheids niveau: {meetstation.is_public?.toString()}</label>
-                    <br/>
-                </div>
-
-                <label className="fst-italic mt-1">Meting van: {dateTime.toLocaleString('nl-NL')}</label>
-
-                <hr></hr>
-
-                <label className="bold mt-2">Historische temperatuur data</label>
-                {/*{loading && (*/}
-                {/*    <div>*/}
-                {/*        <p className={'text-warning m-0'}>Data wordt opgehaald...</p>*/}
-                {/*    </div>*/}
-                {/*)}*/}
-                <ResponsiveContainer minWidth={250} minHeight={250}>
-                    <LineChart key={meetstation.stationid} data={graphData}>
-                        <XAxis dataKey="timestamp"/>
-                        <YAxis width={20}/>
-                        <CartesianGrid stroke="#ccc"/>
-                        <Legend onClick={handleLegendChange}/>
-                        <Line type="monotone" dataKey="minTemp" name="Min" stroke="#0000ff" hide={showMinTemp}
-                              dot={false}/>
-                        <Line type="monotone" dataKey="maxTemp" name="Max" stroke="#ff0000" hide={showMaxTemp}
-                              dot={false}/>
-                        <Line type="monotone" dataKey="avgTemp" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp}
-                              dot={false}/>
-                    </LineChart>
-                </ResponsiveContainer>
-                <div className="container text-center">
-                    <div className="row gy-2">
-                        <div className="col">
-                            <label className="me-2">Start datum</label>
-                            <ReactDatePicker
-                                className="border border-secondary"
-                                dateFormat="dd-MM-yyyy"
-                                selected={startDate}
-                                onChange={handleStartDateChange}
-                                maxDate={endDate}
-                            />
-                        </div>
-                        <div className="col">
-                            <label className="me-2">Eind datum</label>
-                            <ReactDatePicker
-                                className="border border-secondary"
-                                dateFormat="dd-MM-yyyy"
-                                selected={endDate}
-                                onChange={handleEndDateChange}
-                                minDate={startDate}
-                                maxDate={new Date()}
-                            />
-                        </div>
+            <div className="border bg-light position-relative rounded" style={{minWidth: "150px"}}>
+                <div className="row align-items-center" style={{backgroundColor: "#e9ecef", margin: "0", padding: "10px", borderTopLeftRadius: "0.375rem", borderTopRightRadius: "0.375rem"}}>
+                    <div className="col">
+                        <label className="bold fs-6">{meetstation.name}: {meetstation.stationid}</label>
                     </div>
+                    <div className="col-auto">
+                        <img
+                            src={infoIcon}
+                            alt="Info"
+                            className="custom-icon"
+                            style={{
+                                width: "30px",
+                                height: "30px",
+                                transition: "transform 0.3s",
+                                cursor: "pointer",
+                                position: "relative"
+                            }}
+                            onClick={handleInfoClick}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = "scale(1.1)";
+                                document.body.style.cursor = "pointer";
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                document.body.style.cursor = "auto";
+                            }}
+                            title="Meer informatie over dit meetstation" // Tooltip text
+                        />
+                    </div>
+                    <div className="col-auto">
+                        <img
+                            src={EditIcon}
+                            alt="Edit"
+                            className="custom-icon"
+                            style={{
+                                width: "30px",
+                                height: "30px",
+                                transition: "transform 0.3s",
+                                cursor: "pointer",
+                                position: "relative"
+                            }}
+                            onClick={handleEditClick}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = "scale(1.1)";
+                                document.body.style.cursor = "pointer";
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = "scale(1)";
+                                document.body.style.cursor = "auto";
+                            }}
+                            title="Dit meetstation bewerken" // Tooltip text
+                        />
+                    </div>
+                </div>
+
+                <div className="p-0">
+                    <div key={meetstation.stationid} style={{padding: "5%"}}>
+                        {meetstation.is_public === false && (
+                            <div className={"form-text"}>Het station is onzichtbaar, maar de data wordt gebruikt binnen
+                                de metingen van een wijk.</div>
+                        )}
+                        {meetstation.is_public === true && (
+                            <div className={"form-text"}>Het station is zichtbaar en kan door iedereen bekeken
+                                worden.</div>
+                        )}
+                    </div>
+
+
+
+                    <hr style={{margin: "0"}}></hr>
+
+                    <div className="d-flex justify-content-center" onClick={toggleGraphVisibility}
+                         style={{cursor: 'pointer'}}>
+                        {/* Toggle button */}
+                        {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                    </div>
+
+                    {graphVisible && (
+                        <div style={{padding: "5%", paddingTop: "0"}}>
+                            <label className="fst-italic mt-1">Meting van: {dateTime.toLocaleString('nl-NL')}</label>
+                            <br></br>
+                            <label className="bold mt-2">Historische temperatuur data</label>
+
+                            <ResponsiveContainer minWidth={250} minHeight={250}>
+                                <LineChart key={meetstation.stationid} data={graphData}>
+                                    <XAxis dataKey="timestamp"/>
+                                    <YAxis width={20}/>
+                                    <CartesianGrid stroke="#ccc"/>
+                                    <Legend onClick={handleLegendChange}/>
+                                    <Line type="monotone" dataKey="minTemp" name="Min" stroke="#0000ff"
+                                          hide={showMinTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="maxTemp" name="Max" stroke="#ff0000"
+                                          hide={showMaxTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="avgTemp" name="Gemiddeld" stroke="#00ee00"
+                                          hide={showGemTemp}
+                                          dot={false}/>
+                                </LineChart>
+                            </ResponsiveContainer>
+                            <div className="container text-center">
+                                <div className="row gy-2">
+                                    <div className="col-12 col-md-6">
+                                        <label className="me-2">Start datum</label>
+                                        <ReactDatePicker
+                                            className="border border-secondary"
+                                            dateFormat="dd-MM-yyyy"
+                                            selected={startDate}
+                                            onChange={handleStartDateChange}
+                                            maxDate={endDate}
+                                        />
+                                    </div>
+                                    <div className="col-12 col-md-6">
+                                        <label className="me-2">Eind datum</label>
+                                        <ReactDatePicker
+                                            className="border border-secondary"
+                                            dateFormat="dd-MM-yyyy"
+                                            selected={endDate}
+                                            onChange={handleEndDateChange}
+                                            minDate={startDate}
+                                            maxDate={new Date()}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>
     )
+
 }
 
-export default MeetStationLayer;
+export default MeetStationView;
