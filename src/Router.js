@@ -16,6 +16,7 @@ import ShowWorkshopCode from "./Pages/ShowWorkshopCode";
 import AdminPage from './Pages/AdminPage';
 import GrantUserAdmin from './Pages/GrantUserAdmin';
 import { LoginCheckProvider } from './Components/LoginCheck';
+import InfoStation from "./Pages/InfoStation";
 
 function Router() {
     return (
@@ -33,6 +34,7 @@ function Router() {
                 <Route path="/Userdetails" element={<UserDetails />} />
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
                 <Route path="/Station/Edit" element={<EditStation />} />
+                <Route path="/Station/Info" element={<InfoStation />} />
 
                 {/* admin routes */}
                 <Route path="/Admin" element={<AdminPage />} />

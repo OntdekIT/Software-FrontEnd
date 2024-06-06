@@ -53,7 +53,9 @@ export default function Account() {
         {/*  <button className={"button2"}>Station toevoegen</button>*/}
         {/*</Link>*/}
         <div className="row g-2">
-          {meetstations.map((meetstation, index) => (
+          {meetstations
+              .sort((a, b) => a.stationid - b.stationid)
+              .map((meetstation, index) => (
               <div className="col-4" key={meetstation.stationid}>
                 <MeetStationView meetstation={meetstation}></MeetStationView>
               </div>

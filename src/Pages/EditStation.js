@@ -15,7 +15,7 @@ const EditStation = () => {
   };
 
   const [station, setStation] = useState(inputvalues);
-  const [visibility, setVisibility] = useState('private');
+  const [visibility, setVisibility] = useState('0');
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,15 +25,13 @@ const EditStation = () => {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setStation({ ...station, [name]: value });
-    console.log("value change test: ", station);
   };
 
   const dropdownHandler = (event) => {
-    const { name, checked } = event.target;
-    setStation({ ...station, [name]: checked });
-    setVisibility(checked);
+    const value = event.target.value;
+    setVisibility(value);
+    setStation({ ...station, is_public: value === '1' });
   };
-
 
   useEffect(() => {
     const fetchStation = async () => {
@@ -42,11 +40,9 @@ const EditStation = () => {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: false
         });
-        console.log("Response: ", response);
 
         setStation(response.data);
-        console.log(station);
-        setVisibility(response.data.is_public.toString());
+        setVisibility(response.data.is_public ? '1' : '0');
       } catch (err) {
         console.error("error: ", err);
       }
@@ -56,21 +52,22 @@ const EditStation = () => {
     }
   }, [stationId]);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const currentStation = {
-      stationid: station.id,
+      stationid: station.stationid,
       name: station.name,
       database_tag: station.database_tag,
       registrationCode: station.registrationCode,
       location_locationid: station.location_locationid,
       userid: station.userid,
-      is_public: station.is_public,
+      is_public: visibility === '1',
     };
 
-    api.put('/Station/', currentStation)
+    console.log(currentStation);
+    api.put('/Meetstation/', currentStation)
         .then((response) => {
-          navigate('/');
+          navigate('/Account');
         })
         .catch((error) => {
           if (error.response) {
@@ -81,6 +78,7 @@ const EditStation = () => {
             console.error("Error", error.message);
           }
         });
+
   };
 
   const handleDelete = (e) => {
@@ -90,7 +88,7 @@ const EditStation = () => {
       api.delete('/Station/' + stationId)
           .then((response) => {
             console.log(response);
-            navigate('/');
+            navigate('/Account');
           })
           .catch((error) => {
             if (error.response) {
@@ -108,7 +106,7 @@ const EditStation = () => {
 
   return (
       <div className={"color"}>
-        <br/>
+        <br />
         <div className={"container gy-5"}>
           <div>
             <div className={"row"}>
@@ -134,28 +132,31 @@ const EditStation = () => {
                       type="text"
                   />
                   <div className={"form-group"}>
-                    <label className={"form-label"}>Visibility</label>
+                    <label className={"form-label"}>Zichtbaarheid van meetstation</label>
                     <select
                         value={visibility}
                         onChange={dropdownHandler}
-                        className={"form-control"}
+                        className={"form-select"}
                         name="visibility"
                     >
-                      <option value="private">Private</option>
-                      <option value="public">Public</option>
-                      <option value="restricted">Restricted</option>
+                      <option value="0">Onzichtbaar</option>
+                      <option value="1">Zichtbaar</option>
                     </select>
+                    {visibility === '0' && (
+                        <div className={"form-text"}>Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.</div>
+                    )}
+                    {visibility === '1' && (
+                        <div className={"form-text"}>Het station is zichtbaar en kan door iedereen bekeken worden.</div>
+                    )}
                   </div>
+                </div>
               </div>
-          </div>
 
-          <div className={"row mt-5"}>
-            <div className={"col-4"}></div>
-            <div className={"col-5"}>
-              <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Back</button>
-              <button size="sm" color="danger" type="button" className={"button2Inline"}
-                      onClick={handleDelete}>Delete
-                  </button>
+              <div className={"row mt-5"}>
+                <div className={"col-4"}></div>
+                <div className={"col-5"}>
+                  <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Back</button>
+                  <button size="sm" color="danger" type="button" className={"button2Inline"} onClick={handleDelete}>Delete</button>
                   <button className={"button2"} type="submit">Submit</button>
                 </div>
               </div>
