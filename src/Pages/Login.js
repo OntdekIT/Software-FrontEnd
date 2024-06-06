@@ -54,6 +54,7 @@ const Login = () => {
             <Verify mail={mail} />
         ) : (
             <div>
+              <p></p>
               <h1>Inloggen</h1>
               <form onSubmit={handleSubmit}>
                 <input

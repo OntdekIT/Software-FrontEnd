@@ -39,6 +39,10 @@ const GrantUserAdmin = () => {
           setErrMsg(null);
         } catch (err) {
           setErrMsg(err.message);
+            
+          if (err.response?.status === 401) {
+            window.location.href = "/login";
+          }
         } finally {
           setLoading(false);
         }

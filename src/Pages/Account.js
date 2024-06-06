@@ -13,30 +13,30 @@ export default function Account() {
   const { isLoggedIn } = useContext(LoginCheck);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      setRedirecting(true);
-      window.location.href = '/Login';
-    }
-    else {
-      const getData = async () => {
-        try {
-          const response = await api.get(
-            '/User/getName',
-              {
-                withCredentials: true
-              });
-          console.log(response.data);
-          setNaam(response.data);
-          setErrMsg(null);
-        } catch (err) {
-          setErrMsg(err.message);
-          setData(null);
-        } finally {
-          setLoading(false);
+
+    const getData = async () => {
+      try {
+        const response = await api.get('/User/getUser', { withCredentials: true });
+
+        setMeetstations(response.data.meetstations);
+
+        setNaam(response.data.firstName);
+        setErrMsg(null);
+      } catch (err) {
+        setErrMsg(err.message);
+
+        if (err.response?.status === 401) {
+          window.location.href = "/login";
+
         }
-      };
-      getData();
-    }
+
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getData();
+
   }, []);
 
   if(!isLoggedIn) {

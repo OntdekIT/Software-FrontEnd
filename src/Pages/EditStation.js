@@ -32,11 +32,28 @@ const EditStation = () => {
   };
 
   useEffect(() => {
-    api.get('/Station/'+ (stationId))
-    .then(resp => {
-      const { id, name, locationName, height, longitude, latitude, ispublic} = resp.data
-      setStation({ id, name, height, locationName, longitude, latitude, ispublic })
-    })
+    const fetchStation = async () => {
+      try {
+        const response = await api.get(`/Meetstation/${stationId}`, {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: false
+        });
+        console.log("Response: ", response);
+
+        setStation(response.data);
+        console.log(station);
+        setVisibility(response.data.is_public.toString());
+      } catch (err) {
+        console.error("error: ", err);
+            
+        if (err.response?.status === 401) {
+          window.location.href = "/login";
+        }
+      }
+    };
+    if (stationId) {
+      fetchStation();
+    }
   }, [stationId]);
 
   const handleSubmit = e => {
