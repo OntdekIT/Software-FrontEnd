@@ -5,6 +5,7 @@ import { api } from "../App";
 import LoginCheck from "../Components/LoginCheck";
 
 const ADMIN_URL = '/Admin/grantuseradmin';
+const SUPERADMINID = 1;
 
 const GrantUserAdmin = () => {
     const [selectedUserId, setSelectedUserId] = useState();
@@ -28,22 +29,13 @@ const GrantUserAdmin = () => {
                     withCredentials: true
                 });
 
-            const checkAdmin = await api.get(
-                '/User/checkAdmin',
-                {
-                    withCredentials: true
-                });
-
-            
-            console.log(checkAdmin.data);
             console.log(getUserId.data);
             console.log(getUsersResponse.data);
 
-          //zodat je eigen adminrechten niet kan wijzigen
-          const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data);
+          //zodat je eigen adminrechten niet kan wijzigen en SUPERADMIN id omdat die geen rechten niet mag verliezen
+          const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data && user.id !== SUPERADMINID);
           console.log(filteredUsers);
 
-          setIsAdmin(checkAdmin.data);
           setUsers(filteredUsers);
           
           setErrMsg(null);
