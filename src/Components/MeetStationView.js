@@ -19,8 +19,11 @@ const MeetStationView = ({ meetstation }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     //data to be shown
-    const [graphData, setGraphData] = useState([]);
+    const [tempGraphData, setTempGraphData] = useState([]);
+    const [humGraphData, setHumGraphData] = useState([]);
+    const [stofGraphData, setStofGraphData] = useState([]);
     const [graphVisible, setGraphVisible] = useState(true);
+    const [selectedGraph, setSelectedGraph] = useState('tempGraph'); // New state for selected graph type
     const EditIcon =  process.env.PUBLIC_URL + '/editButton.ico';
     const infoIcon =  process.env.PUBLIC_URL + '/infoButton.ico';
     const dateTime = new Date();
@@ -52,13 +55,27 @@ const MeetStationView = ({ meetstation }) => {
                 endDate: formatDate(endDate)
             }
         }).then((response) => {
-            const data = response.data.map((meting) => ({
+            const tempData = response.data.map((meting) => ({
                 timestamp: meting.timestamp,
-                avgTemp: meting.avgTemp,
-                minTemp: meting.minTemp,
-                maxTemp: meting.maxTemp
+                avg: meting.avgTemp,
+                min: meting.minTemp,
+                max: meting.maxTemp
             }));
-            setGraphData(data);
+            setTempGraphData(tempData);
+            const humData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgHum,
+                min: meting.minHum,
+                max: meting.maxHum
+            }));
+            setHumGraphData(humData);
+            const stofData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgStof,
+                min: meting.minStof,
+                max: meting.maxStof
+            }))
+            setStofGraphData(stofData);
             setLoading(false);
         }).catch(handleError);
     }, [selectedStation, startDate, endDate]);
@@ -109,6 +126,12 @@ const MeetStationView = ({ meetstation }) => {
     const toggleGraphVisibility = () => {
         setGraphVisible(!graphVisible);
     };
+
+    const handleGraphChange = (event) => {
+        setSelectedGraph(event.target.value);
+    };
+
+    const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
 
     return (
         <>
@@ -179,8 +202,6 @@ const MeetStationView = ({ meetstation }) => {
                         )}
                     </div>
 
-
-
                     <hr style={{margin: "0"}}></hr>
 
                     <div className="d-flex justify-content-center" onClick={toggleGraphVisibility}
@@ -193,7 +214,17 @@ const MeetStationView = ({ meetstation }) => {
                         <div style={{padding: "5%", paddingTop: "0"}}>
                             <label className="fst-italic mt-1">Meting van: {dateTime.toLocaleString('nl-NL')}</label>
                             <br></br>
-                            <label className="bold mt-2">Historische temperatuur data</label>
+                            <label className="bold mt-2">Historische data</label>
+
+                            {/* Dropdown for graph selection */}
+                            <div className="mb-3">
+                                <label htmlFor="graphType" className="form-label">Kies het type grafiek</label>
+                                <select id="graphType" className="form-select" value={selectedGraph} onChange={handleGraphChange}>
+                                    <option value="tempGraph">Temperatuur</option>
+                                    <option value="humGraph">Vochtigheid</option>
+                                    <option value="stofGraph">FijnStof</option>
+                                </select>
+                            </div>
 
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart key={meetstation.stationid} data={graphData}>
@@ -201,13 +232,13 @@ const MeetStationView = ({ meetstation }) => {
                                     <YAxis width={20}/>
                                     <CartesianGrid stroke="#ccc"/>
                                     <Legend onClick={handleLegendChange}/>
-                                    <Line type="monotone" dataKey="minTemp" name="Min" stroke="#0000ff"
+                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
                                           hide={showMinTemp}
                                           dot={false}/>
-                                    <Line type="monotone" dataKey="maxTemp" name="Max" stroke="#ff0000"
+                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
                                           hide={showMaxTemp}
                                           dot={false}/>
-                                    <Line type="monotone" dataKey="avgTemp" name="Gemiddeld" stroke="#00ee00"
+                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
                                           hide={showGemTemp}
                                           dot={false}/>
                                 </LineChart>
@@ -243,7 +274,6 @@ const MeetStationView = ({ meetstation }) => {
             </div>
         </>
     )
-
 }
 
 export default MeetStationView;
