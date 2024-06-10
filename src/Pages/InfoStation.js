@@ -7,10 +7,12 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAx
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import GraphView from "../Components/GraphView";
+import {end} from "@popperjs/core";
 
 const InfoStation = () => {
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
+    const [startDatePDF, setStartDatePDF] = useState(new Date());
     const [meetstation, setMeetstation] = useState({});
     const errRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
@@ -66,6 +68,11 @@ const InfoStation = () => {
             date.setMonth(date.getMonth() - 6);
             setStartDate(date);
         }
+        if (startDatePDF.getTime() === endDate.getTime()) {
+            let date = startDatePDF;
+            date.setMonth(date.getMonth() - 1);
+            setStartDatePDF(date);
+        }
         const fetchGraphData = async () => {
             try {
                 const response = await api.get("/measurement/history/average/" + meetstation.stationid, {
@@ -95,7 +102,6 @@ const InfoStation = () => {
                     max: meting.maxStof
                 }))
                 setStofGraphData(stofData);
-
             } catch (err) {
                 console.error("error: ", err);
             }
@@ -105,7 +111,46 @@ const InfoStation = () => {
             fetchGraphData();
         }
     }, [meetstation, startDate, endDate]);
+    function formatDate(date) {
+        const padZero = (num) => num.toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const month = padZero(date.getMonth() + 1);
+        const day = padZero(date.getDate());
+        const hours = padZero(date.getHours());
+        const minutes = padZero(date.getMinutes());
 
+        return `${day}-${month}-${year} ${hours}:${minutes}`;
+    }
+
+    const getPDF = () => {
+        api.get("/Meetstation/measurements/" + meetstation.stationid, {
+            params: {
+                startDate: formatDate(startDatePDF),
+                endDate: formatDate(endDate)
+            },
+            responseType: 'blob'
+        }).then((response) => {
+            console.log("pdf response: ", )
+
+            const contentType = response.headers['content-type'];
+            const contentDisposition = response.headers['content-disposition'];
+
+            const blob = new Blob([response.data], { type: contentType });
+
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+
+            const fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            const matches = fileNameRegex.exec(contentDisposition);
+            const fileName = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : `measurements ${formatDate(startDatePDF)} tot ${formatDate(endDate)}.pdf`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).catch((error) => {
+            console.error(error);
+        });
+    };
 
     const handleStartDateChange = (date) => {
         if (date.getDate() === endDate.getDate()) {
@@ -118,6 +163,13 @@ const InfoStation = () => {
             date.setDate(date.getDate() + 1)
         }
         setEndDate(date);
+        let date2 = new Date(date);
+        date2.setMonth(date2.getMonth() - 1);
+        setStartDatePDF(date2);
+    }
+
+    const handleEditClick = () => {
+        navigate(`/Station/Edit?id=${meetstation.stationid}`);
     }
 
     return (
@@ -135,30 +187,6 @@ const InfoStation = () => {
                     </div>
                     <div className="col-auto">
                         <img
-                            src={infoIcon}
-                            alt="Info"
-                            className="custom-icon"
-                            style={{
-                                width: "30px",
-                                height: "30px",
-                                transition: "transform 0.3s",
-                                cursor: "pointer",
-                                position: "relative"
-                            }}
-                            // onClick={handleInfoClick}
-                            onMouseOver={(e) => {
-                                e.currentTarget.style.transform = "scale(1.1)";
-                                document.body.style.cursor = "pointer";
-                            }}
-                            onMouseOut={(e) => {
-                                e.currentTarget.style.transform = "scale(1)";
-                                document.body.style.cursor = "auto";
-                            }}
-                            title="Meer informatie over dit meetstation" // Tooltip text
-                        />
-                    </div>
-                    <div className="col-auto">
-                        <img
                             src={EditIcon}
                             alt="Edit"
                             className="custom-icon"
@@ -169,7 +197,7 @@ const InfoStation = () => {
                                 cursor: "pointer",
                                 position: "relative"
                             }}
-                            // onClick={handleEditClick}
+                            onClick={handleEditClick}
                             onMouseOver={(e) => {
                                 e.currentTarget.style.transform = "scale(1.1)";
                                 document.body.style.cursor = "pointer";
@@ -184,7 +212,7 @@ const InfoStation = () => {
                 </div>
 
                 <div className="p-0">
-                    <div key={meetstation.stationid} style={{padding: "5%"}}>
+                    <div key={meetstation.stationid} style={{padding: "1%"}}>
                         {meetstation.is_public === false && (
                             <div className={"form-text"}>Het station is onzichtbaar, maar de data wordt gebruikt binnen
                                 de metingen van een wijk.</div>
@@ -197,8 +225,9 @@ const InfoStation = () => {
 
 
                     <div style={{padding: "5%", paddingTop: "0"}}>
+                        <hr style={{margin: "2"}}></hr>
                         <div className="container text-center">
-                            <div className="row gy-2">
+                            <div className="row gy-2" style={{paddingBottom: "1%"}}>
                                 <div className="col-12 col-md-6">
                                     <label className="me-2">Start datum</label>
                                     <ReactDatePicker
@@ -221,6 +250,9 @@ const InfoStation = () => {
                                     />
                                 </div>
                             </div>
+                            <a href="#" onClick={getPDF}>
+                                Download measurements van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}
+                            </a>
                         </div>
                         <hr style={{margin: "2"}}></hr>
                         <GraphView graphData={tempGraphData} dataType={"temperatuur"}></GraphView>

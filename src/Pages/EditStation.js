@@ -70,7 +70,7 @@ const EditStation = () => {
     console.log(currentStation);
     api.put('/Meetstation/', currentStation)
         .then((response) => {
-          navigate('/Account');
+          navigate(-1);
         })
         .catch((error) => {
           if (error.response) {

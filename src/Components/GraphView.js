@@ -29,6 +29,7 @@ const GraphView = ({ graphData, dataType }) => {
         };
     }, [graphData]);
 
+
     const getLastTenMeasurements = () => {
         // Filter out measurements without min, max, and avg
         const validMeasurements = filteredMeasurements.filter(measurement =>
@@ -43,7 +44,7 @@ const GraphView = ({ graphData, dataType }) => {
         // Return the last 10 valid measurements
         return validMeasurements.slice(-10).map((measurement, index) => (
             <div key={index}>
-                <b>Measurement {validMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
+                <b>Meting {validMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
                 <p>Min: {measurement.min}<br/>
                     Max: {measurement.max}<br/>
                     Avg: {measurement.avg}</p>
@@ -90,7 +91,7 @@ const GraphView = ({ graphData, dataType }) => {
             </div>
             <div ref={secondColorDivRef} className={"color hide-scrollbar"} style={{ flex: "1", overflowY: "auto" }}>
                 <div className={"container gy-5"} style={{ width: "calc(100%) - 20px" }}>
-                    <label className="bold mt-2">Last 10 Measurements</label>
+                    <label className="bold mt-2">Laatste 10 Metingen</label>
                     <div>
                         {getLastTenMeasurements()}
                     </div>
