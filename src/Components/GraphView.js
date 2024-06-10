@@ -38,7 +38,7 @@ const GraphView = ({ graphData, dataType }) => {
 
         // If there are no valid measurements, display the message
         if (validMeasurements.length === 0) {
-            return <div>Er zijn geen measurements voor deze datum</div>;
+            return <div>Er zijn geen metingen voor deze datum</div>;
         }
 
         // Return the last 10 valid measurements

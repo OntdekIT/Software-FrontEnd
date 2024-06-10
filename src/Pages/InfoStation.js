@@ -251,7 +251,7 @@ const InfoStation = () => {
                                 </div>
                             </div>
                             <a href="#" onClick={getPDF}>
-                                Download measurements van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}
+                                Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}
                             </a>
                         </div>
                         <hr style={{margin: "2"}}></hr>
