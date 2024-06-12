@@ -199,7 +199,7 @@ const RegionLayer = ({ data }) => {
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart data={graphData}>
                                     <XAxis dataKey="timestamp" />
-                                    <YAxis width={20} />
+                                    <YAxis width={30} />
                                     <CartesianGrid stroke="#ccc" />
                                     <Legend onClick={handleLegendChange} />
                                     <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
