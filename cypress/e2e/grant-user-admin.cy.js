@@ -1,7 +1,24 @@
+const get2FACode = require('../scripts/get2FACode.js');
+
 describe('Test empty fields', () => {
     beforeEach(() => {
-        cy.setCookie('user-id', '34');
-        cy.visit('/Admin/grantUserAdmin');
+        cy.clearCookies();
+        cy.visit('/login');
+        cy.get("#email").type("ontdekstation013tests@gmail.com");
+        cy.get("#password").type("Superww@1");
+        cy.get('form').submit();
+        cy.url().should('include', '/login');
+        cy.get('title').should('contain', 'Verify');
+        
+        // Fetch the 2FA code and use it in the test
+        cy.wrap(null).then(() => {
+          // Listen for the emitted code event
+          get2FACode.once('code', (code) => {
+            cy.get("#code").type(code); // Type the received code
+            cy.get('form').submit();
+            cy.visit('/Admin/grantUserAdmin');
+          });
+        });
     });
     
     it('should show error if all fields are empty', () => {
@@ -24,8 +41,10 @@ describe('Test empty fields', () => {
     });
 });
 
+
 describe('Test admin', () => {
     beforeEach(() => {
+        cy.clearCookies();
         cy.setCookie('user-id', '34');
         cy.visit('/Admin/grantUserAdmin');
     });

@@ -19,7 +19,10 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     //data to be shown
-    const [graphData, setGraphData] = useState([]);
+    const [tempGraphData, setTempGraphData] = useState([]);
+    const [humGraphData, setHumGraphData] = useState([]);
+    const [stofGraphData, setStofGraphData] = useState([]);
+    const [selectedGraph, setSelectedGraph] = useState('tempGraph'); // New state for selected graph type
 
     useEffect(() => {
         if (selectedStation === null)
@@ -44,13 +47,27 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
                 endDate: formatDate(endDate)
             }
         }).then((response) => {
-            const data = response.data.map((meting) => ({
+            const tempData = response.data.map((meting) => ({
                 timestamp: meting.timestamp,
-                avgTemp: meting.avgTemp,
-                minTemp: meting.minTemp,
-                maxTemp: meting.maxTemp
+                avg: meting.avgTemp,
+                min: meting.minTemp,
+                max: meting.maxTemp
             }));
-            setGraphData(data);
+            setTempGraphData(tempData);
+            const humData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgHum,
+                min: meting.minHum,
+                max: meting.maxHum
+            }));
+            setHumGraphData(humData);
+            const stofData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgStof,
+                min: meting.minStof,
+                max: meting.maxStof
+            }))
+            setStofGraphData(stofData);
             setLoading(false);
         }).catch(handleError);
     }, [selectedStation, startDate, endDate]);
@@ -90,6 +107,12 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
         setEndDate(date);
     }
 
+    const handleGraphChange = (event) => {
+        setSelectedGraph(event.target.value);
+    };
+
+    const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
+
     if (!visible) return (<></>);
 
     return (
@@ -109,7 +132,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
 
                         <hr></hr>
 
-                        <label className="bold mt-2">Historische temperatuur data</label>
+                        <label className="bold mt-2">Historische data</label>
 
                         {
                             errorMessage && (
@@ -127,15 +150,25 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
                             )
                         }
 
+                        {/* Dropdown for graph selection */}
+                        <div className="mb-3">
+                            <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type grafiek</label>
+                            <select id={`graphType-${meting.id}`} className="form-select" value={selectedGraph} onChange={handleGraphChange}>
+                                <option value="tempGraph">Temperatuur</option>
+                                <option value="humGraph">Vochtigheid</option>
+                                <option value="stofGraph">Fijnstof</option>
+                            </select>
+                        </div>
+
                         <ResponsiveContainer minWidth={250} minHeight={250}>
                             <LineChart data={graphData}>
                                 <XAxis dataKey="timestamp" />
-                                <YAxis width={20} />
+                                <YAxis width={30} />
                                 <CartesianGrid stroke="#ccc" />
                                 <Legend onClick={handleLegendChange} />
-                                <Line type="monotone" dataKey="minTemp" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
-                                <Line type="monotone" dataKey="maxTemp" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
-                                <Line type="monotone" dataKey="avgTemp" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
+                                <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
+                                <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
+                                <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
                             </LineChart>
                         </ResponsiveContainer>
 

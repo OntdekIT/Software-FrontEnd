@@ -45,6 +45,9 @@ const EditStation = () => {
         setVisibility(response.data.is_public ? '1' : '0');
       } catch (err) {
         console.error("error: ", err);
+        if (err.response?.status === 401) {
+          window.location.href = "/login";
+        }
       }
     };
     if (stationId) {
@@ -67,7 +70,7 @@ const EditStation = () => {
     console.log(currentStation);
     api.put('/Meetstation/', currentStation)
         .then((response) => {
-          navigate('/Account');
+          navigate(-1);
         })
         .catch((error) => {
           if (error.response) {
@@ -154,9 +157,9 @@ const EditStation = () => {
               <div className={"row mt-5"}>
                 <div className={"col-4"}></div>
                 <div className={"col-5"}>
-                  <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Back</button>
-                  <button size="sm" color="danger" type="button" className={"button2Inline"} onClick={handleDelete}>Delete</button>
-                  <button className={"button2"} type="submit">Submit</button>
+                  <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Terug</button>
+                  {/*<button size="sm" color="danger" type="button" className={"button2Inline"} onClick={handleDelete}>Verwijderen</button>*/}
+                  <button className={"button2"} type="submit">Opslaan</button>
                 </div>
               </div>
             </form>

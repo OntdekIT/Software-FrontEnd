@@ -5,6 +5,7 @@ import { api } from "../App";
 import LoginCheck from "../Components/LoginCheck";
 
 const ADMIN_URL = '/Admin/grantuseradmin';
+const SUPERADMINID = 1;
 
 const GrantUserAdmin = () => {
     const [selectedUserId, setSelectedUserId] = useState();
@@ -16,23 +17,23 @@ const GrantUserAdmin = () => {
 
     const getData = async () => {
         try {
-          console.log(document.cookie);
-          const getUsersResponse = await api.get(
-            '/User',
-              {
-                withCredentials: true
-              });
-          const getUserId = await api.get(
-              '/User/getID',
-              {
-                withCredentials: true
-              });
-          ;
-          console.log(getUserId.data);
-          console.log(getUsersResponse.data);
+            console.log(document.cookie);
+            const getUsersResponse = await api.get(
+                '/User',
+                {
+                    withCredentials: true
+                });
+            const getUserId = await api.get(
+                '/User/getID',
+                {
+                    withCredentials: true
+                });
 
-          //zodat je eigen adminrechten niet kan wijzigen
-          const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data);
+            console.log(getUserId.data);
+            console.log(getUsersResponse.data);
+
+          //zodat je eigen adminrechten niet kan wijzigen en SUPERADMIN id omdat die geen rechten niet mag verliezen
+          const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data && user.id !== SUPERADMINID);
           console.log(filteredUsers);
 
           setUsers(filteredUsers);
@@ -40,6 +41,10 @@ const GrantUserAdmin = () => {
           setErrMsg(null);
         } catch (err) {
           setErrMsg(err.message);
+            
+          if (err.response?.status === 401) {
+            window.location.href = "/login";
+          }
         } finally {
           setLoading(false);
         }

@@ -18,13 +18,13 @@ const Login = () => {
     const [verify, setVerify] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false); // State to manage form submission status
 
-    useEffect(() => {
-        mailRef.current.focus();
-    }, []);
+  useEffect(() => {
+    mailRef.current.focus();
+  }, []);
 
-    useEffect(() => {
-        setErrMsg('');
-    }, [mail]);
+  useEffect(() => {
+    setErrMsg('');
+  }, [mail]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
