@@ -8,6 +8,11 @@ export default function AdminPage() {
   const [errMsg, setErrMsg] = useState(null);
   const { isAdmin } = useContext(LoginCheck);
 
+  if (!isAdmin)
+    {
+      window.location.href = "/";
+    }
+
   useEffect(() => {
   }, []);
 
@@ -22,13 +27,16 @@ export default function AdminPage() {
     <Link to={"/Admin/workshopcode/create"}>
       <button className={"button2"}>Workshopcode aanmaken</button>
     </Link>
+    <Link to={"/Admin/workshopcode/show"}>
+      <button className={"button2"}>Workshopcodes zien</button>
+    </Link>
     <Link to={"/Admin/grantUserAdmin"}>
       <button className={"button2"}>Gebruiker adminrechten geven</button>
     </Link>
   </div>
 ) : (
   <div>
-    <h1>Nuh uh</h1>
+    
   </div>
 )}
 

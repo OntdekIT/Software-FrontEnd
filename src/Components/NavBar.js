@@ -53,9 +53,9 @@ const NavBar = () => {
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/Account">Mijn stations</Link>
                     </li>
-                    <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                    {/* <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/Userdetails">Mijn gegevens</Link>
-                    </li>
+                    </li> */}
                     {isAdmin && (
                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/admin">Admin Page</Link>

@@ -15,6 +15,11 @@ const GrantUserAdmin = () => {
     const { isAdmin } = useContext(LoginCheck);
     const [users, setUsers] = useState(null);
 
+    if (!isAdmin)
+    {
+      window.location.href = "/";
+    }
+
     const getData = async () => {
         try {
             console.log(document.cookie);
@@ -52,7 +57,13 @@ const GrantUserAdmin = () => {
     
     
     useEffect(() => {
-        getData();
+        if(isAdmin)
+            {
+                getData();
+            }
+            else {
+                loading = false;
+            }
       }, []);
 
     const handleSubmit = async () => {
@@ -153,7 +164,7 @@ const GrantUserAdmin = () => {
             </div>
           ) : (
             <div>
-              <h1>Nuh uh</h1>
+              
             </div>
           )}
           </div>

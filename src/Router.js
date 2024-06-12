@@ -31,7 +31,7 @@ function Router() {
                 <Route path="/Unauthorized" element={<Unauthorized />} />
                 <Route path="/Account" element={<Account />} />
                 {/* we want to protect these routes */}
-                <Route path="/Userdetails" element={<UserDetails />} />
+                {/* <Route path="/Userdetails" element={<UserDetails />} /> */}
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
                 <Route path="/Station/Edit" element={<EditStation />} />
                 <Route path="/Station/Info" element={<InfoStation />} />

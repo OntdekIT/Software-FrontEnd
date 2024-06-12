@@ -15,6 +15,11 @@ const CreateWorkshopCode = () => {
     const { isAdmin } = useContext(LoginCheck);
     const errRef = useRef(null);
 
+    if (!isAdmin)
+        {
+          window.location.href = "/";
+        }
+
     useEffect(() => {
         setErrMsg('');
     }, []);
@@ -115,7 +120,7 @@ const CreateWorkshopCode = () => {
                 </div>
             ) : (
                 <div>
-                    <h1>Nuh uh</h1>
+                    
                 </div>
             )}
         </div>
