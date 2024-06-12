@@ -250,9 +250,9 @@ const InfoStation = () => {
                                     />
                                 </div>
                             </div>
-                            <a href="#" onClick={getPDF}>
-                                Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}
-                            </a>
+                            {/*<a href="#" onClick={getPDF}>*/}
+                            {/*    Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}*/}
+                            {/*</a>*/}
                         </div>
                         <hr style={{margin: "2"}}></hr>
                         <GraphView graphData={tempGraphData} dataType={"temperatuur"}></GraphView>
