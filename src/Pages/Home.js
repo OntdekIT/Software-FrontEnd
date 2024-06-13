@@ -65,7 +65,7 @@ const Home = () => {
             api.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
                     console.log(resp.data);
-                    setTempMeasurements(resp.data);
+                    setTempMeasurements(resp.data.filter(station => station.is_public === true)); //laat ze alleen zien als ze true zijn
                 })
                 .catch(function (error) {
                     handleAxiosError(error);
