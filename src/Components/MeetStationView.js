@@ -6,7 +6,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAx
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate } from "react-router-dom";
-import Loading from "./Loading"; // Import useNavigate
+import LoadingComponent from "./LoadingComponent"; // Import useNavigate
 
 const MeetStationView = ({ meetstation }) => {
     //use states for what to show and what not to show
@@ -229,7 +229,7 @@ const MeetStationView = ({ meetstation }) => {
                             </div>
                             <div className="position-relative">
                                 {loading && (
-                                    <Loading></Loading>
+                                    <LoadingComponent message="Data aan het ophalen..." isFullScreen={false}></LoadingComponent>
                                 )}
                             </div>
                             <ResponsiveContainer minWidth={250} minHeight={250}>

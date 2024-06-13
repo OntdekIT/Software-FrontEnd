@@ -5,6 +5,7 @@ import { api } from "../App";
 import MeetStationView from "../Components/MeetStationView";
 import LoginCheck from '../Components/LoginCheck';
 import {Oval} from "react-loader-spinner";
+import LoadingComponent from "../Components/LoadingComponent";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
@@ -49,17 +50,10 @@ export default function Account() {
         <h1>Welkom {naam}!</h1>
         <h2>Stations</h2>
         {loading && (
-            <div className="loading-overlay-center">
-              <Oval
-                  height={40}
-                  width={40}
-                  color="#4fa94d"
-                  visible={true}
-                  ariaLabel='oval-loading'
-                  secondaryColor="#4fa94d"
-                  strokeWidth={2}
-                  strokeWidthSecondary={2}
-              />
+            <div className="position-relative">
+              {loading && (
+                  <LoadingComponent message="Account data aan het ophalen..." isFullScreen={true}></LoadingComponent>
+              )}
             </div>
         )}
         {errMsg && <div className="error-msg">{errMsg}</div>}

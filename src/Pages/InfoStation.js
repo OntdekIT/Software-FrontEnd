@@ -7,7 +7,8 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAx
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import GraphView from "../Components/GraphView";
-import { Oval } from 'react-loader-spinner'; // Import the Oval loader
+import { Oval } from 'react-loader-spinner';
+import LoadingComponent from "../Components/LoadingComponent"; // Import the Oval loader
 
 const InfoStation = () => {
     const [endDate, setEndDate] = useState(new Date());
@@ -16,7 +17,7 @@ const InfoStation = () => {
     const [meetstation, setMeetstation] = useState({});
     const errRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false); // Loading state
+    const [loading, setLoading] = useState(false); // LoadingComponent state
     // data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
@@ -180,20 +181,9 @@ const InfoStation = () => {
     return (
         <>
             <div className="component-container border bg-light position-relative rounded" style={{minWidth: "150px"}}>
-                {loading && (
-                    <div className="loading-overlay-center">
-                        <Oval
-                            height={40}
-                            width={40}
-                            color="#4fa94d"
-                            visible={true}
-                            ariaLabel='oval-loading'
-                            secondaryColor="#4fa94d"
-                            strokeWidth={2}
-                            strokeWidthSecondary={2}
-                        />
-                    </div>
-                )}
+                    {loading && (
+                        <LoadingComponent message="Data aan het ophalen..." isFullScreen={true}></LoadingComponent>
+                    )}
                 <div className="row align-items-center" style={{
                     backgroundColor: "#e9ecef",
                     margin: "0",
