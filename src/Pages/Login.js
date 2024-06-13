@@ -1,8 +1,9 @@
-import {useRef, useState, useEffect} from "react";
+import React, {useRef, useState, useEffect} from "react";
 import useAuth from '../Hooks/useAuth';
 import {Link} from 'react-router-dom';
 import Verify from "../Components/Verify";
 import {api} from "../App";
+import {Oval} from "react-loader-spinner";
 
 const LOGIN_URL = '/Authentication/login';
 
@@ -16,7 +17,7 @@ const Login = () => {
     const [errMsg, setErrMsg] = useState('');
     const [password, setPassword] = useState('');
     const [verify, setVerify] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false); // State to manage form submission status
+    const [loading, setLoading] = useState(false); // State to manage form submission status
 
   useEffect(() => {
     mailRef.current.focus();
@@ -28,7 +29,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Disable form on submit
+        setLoading(true); // Disable form on submit
         try {
             const response = await api.post(LOGIN_URL, JSON.stringify({mailAddress: mail, password: password}), {
                 headers: {'Content-Type': 'application/JSON'},
@@ -44,15 +45,28 @@ const Login = () => {
             }
         } catch (err) {
             setErrMsg('Login failed');
-            setIsSubmitting(false); // Re-enable form if there's an error
         }
+        setLoading(false); // Re-enable form if there's an error
     }
 
     return (
-        <section className="form-section">
+        <section className="form-section position-relative">
             <title>Login</title>
             {errMsg && <div ref={errRef} className="error-msg">{errMsg}</div>}
-
+            {loading && (
+                <div className="loading-overlay-center">
+                    <Oval
+                        height={40}
+                        width={40}
+                        color="#4fa94d"
+                        visible={true}
+                        ariaLabel='oval-loading'
+                        secondaryColor="#4fa94d"
+                        strokeWidth={2}
+                        strokeWidthSecondary={2}
+                    />
+                </div>
+            )}
             {verify ? (
                 <Verify mail={mail}/>
             ) : (
@@ -68,7 +82,7 @@ const Login = () => {
                             value={mail}
                             required
                             placeholder="Email"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <input
                             type="password"
@@ -79,9 +93,9 @@ const Login = () => {
                             value={password}
                             required
                             placeholder="Password"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
-                        <button className="button" disabled={isSubmitting}>Inloggen</button>
+                        <button className="button" disabled={loading}>Inloggen</button>
                     </form>
                     <div className="form-redirect">
                         <p>Nog geen account?</p>

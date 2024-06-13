@@ -1,8 +1,9 @@
-import {useRef, useState, useEffect} from "react";
+import React, {useRef, useState, useEffect} from "react";
 import useAuth from '../Hooks/useAuth';
 import {Link} from 'react-router-dom';
 import {api} from "../App";
 import Verify from "../Components/Verify";
+import {Oval} from "react-loader-spinner";
 
 const REGISTER_URL = '/Authentication/register';
 
@@ -28,7 +29,7 @@ const Register = () => {
     const [errMsg, setErrMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
     const [verify, setVerify] = useState(false); // Add verify state
-    const [isSubmitting, setIsSubmitting] = useState(false); // State to manage form submission status
+    const [loading, setLoading] = useState(false); // State to manage form submission status
 
     useEffect(() => {
         firstnameRef.current.focus();
@@ -40,7 +41,7 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Disable form on submit
+        setLoading(true); // Disable form on submit
 
         try {
             const response = await api.post(REGISTER_URL, JSON.stringify({
@@ -77,7 +78,6 @@ const Register = () => {
                 setVerify(true);
             }
         } catch (err) {
-            setIsSubmitting(false); // Re-enable form if there's an error
             if (!err?.response) {
                 setErrMsg('Kon geen verbinding maken, probeer het later opnieuw');
             } else {
@@ -88,12 +88,27 @@ const Register = () => {
                 console.log(err.errMsg);
             }
         }
+        setLoading(false); // Re-enable form if there's an error
     }
 
     return (
-        <section className="form-section">
+        <section className="form-section position-relative">
             <title>Register</title>
             {errMsg && <div ref={errRef} className="error-msg">{errMsg}</div>}
+            {loading && (
+                <div className="loading-overlay-center">
+                    <Oval
+                        height={40}
+                        width={40}
+                        color="#4fa94d"
+                        visible={true}
+                        ariaLabel='oval-loading'
+                        secondaryColor="#4fa94d"
+                        strokeWidth={2}
+                        strokeWidthSecondary={2}
+                    />
+                </div>
+            )}
             {successMsg && <div ref={successRef} className="success-msg">{successMsg}</div>}
             {verify ? (
                 <Verify mail={email}/>
@@ -110,7 +125,7 @@ const Register = () => {
                             onChange={(e) => setFirstname(e.target.value)}
                             value={firstname}
                             placeholder="Voornaam"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="surname">Last name</label>
                         <input
@@ -121,7 +136,7 @@ const Register = () => {
                             onChange={(e) => setSurname(e.target.value)}
                             value={surname}
                             placeholder="Achternaam"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="email">Email</label>
                         <input
@@ -132,7 +147,7 @@ const Register = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             value={email}
                             placeholder="Email"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="password">Password</label>
                         <input
@@ -143,7 +158,7 @@ const Register = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             value={password}
                             placeholder="Wachtwoord"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="confirmPassword">Confirm Password</label>
                         <input
@@ -154,7 +169,7 @@ const Register = () => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             value={confirmPassword}
                             placeholder="Herhaal Wachtwoord"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="meetstationCode">Meetstation Code</label>
                         <input
@@ -165,7 +180,7 @@ const Register = () => {
                             onChange={(e) => setMeetstationCode(e.target.value)}
                             value={meetstationCode}
                             placeholder="123456"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
                         <label htmlFor="workshopCode">Workshop Code</label>
                         <input
@@ -176,9 +191,9 @@ const Register = () => {
                             onChange={(e) => setWorkshopCode(e.target.value)}
                             value={workshopCode}
                             placeholder="123456"
-                            disabled={isSubmitting} // Disable input when submitting
+                            disabled={loading} // Disable input when submitting
                         />
-                        <button className="button" disabled={isSubmitting}>Registreren</button>
+                        <button className="button" disabled={loading}>Registreren</button>
                     </form>
                     <div className="form-redirect">
                         <p>Al een account?</p>
