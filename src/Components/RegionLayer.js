@@ -5,6 +5,7 @@ import { api } from "../App";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 import { spectralColors } from '../Lib/Utility.js';
+import Loading from "./Loading";
 
 const RegionLayer = ({ data }) => {
     //use states for what to show and what not to show
@@ -158,7 +159,7 @@ const RegionLayer = ({ data }) => {
                         eventHandlers={{ click: handleClick }}
                     >
                         <Popup>
-                            <label className="bold">{neighbourhood.name}</label> <br />
+                            <label className="bold">{neighbourhood.name}</label> <br/>
 
                             <div>
                                 <label>
@@ -173,38 +174,40 @@ const RegionLayer = ({ data }) => {
                             {
                                 errorMessage && (
                                     <div>
-                                        <p className={'text-danger m-0'} ref={errRef} aria-live="assertive">{errorMessage}</p>
-                                    </div>
-                                )
-                            }
-
-                            {
-                                loading && (
-                                    <div>
-                                        <p className={'text-warning m-0'}>Data wordt opgehaald...</p>
+                                        <p className={'text-danger m-0'} ref={errRef}
+                                           aria-live="assertive">{errorMessage}</p>
                                     </div>
                                 )
                             }
 
                             {/* Dropdown for graph selection */}
                             <div className="mb-3">
-                                <label htmlFor={`graphType-${neighbourhood.id}`} className="form-label">Kies het type grafiek</label>
-                                <select id={`graphType-${neighbourhood.id}`} className="form-select" value={selectedGraph} onChange={handleGraphChange}>
+                                <label htmlFor={`graphType-${neighbourhood.id}`} className="form-label">Kies het type
+                                    grafiek</label>
+                                <select id={`graphType-${neighbourhood.id}`} className="form-select"
+                                        value={selectedGraph} onChange={handleGraphChange}>
                                     <option value="tempGraph">Temperatuur</option>
                                     <option value="humGraph">Vochtigheid</option>
                                     <option value="stofGraph">Fijnstof</option>
                                 </select>
                             </div>
-
+                            <div className="position-relative">
+                                {loading && (
+                                    <Loading></Loading>
+                                )}
+                            </div>
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart data={graphData}>
-                                    <XAxis dataKey="timestamp" />
-                                    <YAxis width={30} />
-                                    <CartesianGrid stroke="#ccc" />
-                                    <Legend onClick={handleLegendChange} />
-                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
-                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
-                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
+                                    <XAxis dataKey="timestamp"/>
+                                    <YAxis width={30}/>
+                                    <CartesianGrid stroke="#ccc"/>
+                                    <Legend onClick={handleLegendChange}/>
+                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
+                                          hide={showGemTemp} dot={false}/>
                                 </LineChart>
                             </ResponsiveContainer>
 

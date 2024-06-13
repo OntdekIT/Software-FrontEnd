@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 
-import "react-datepicker/dist/react-datepicker.css"
+import "react-datepicker/dist/react-datepicker.css";
+import "../index.css";
+import Loading from "./Loading";
 
 const MeetStationLayer = ({ data, visible, selectedDate }) => {
-    //use states for what to show and what not to show
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [selectedStation, setSelectedStation] = useState(null);
@@ -18,22 +19,20 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
     const errRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    //data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
     const [stofGraphData, setStofGraphData] = useState([]);
-    const [selectedGraph, setSelectedGraph] = useState('tempGraph'); // New state for selected graph type
+    const [selectedGraph, setSelectedGraph] = useState('tempGraph');
 
     useEffect(() => {
-        if (selectedStation === null)
-            return;
+        if (selectedStation === null) return;
 
         setLoading(true);
 
         function formatDate(date) {
             const padZero = (num) => num.toString().padStart(2, '0');
             const year = date.getFullYear();
-            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const month = padZero(date.getMonth() + 1);
             const day = padZero(date.getDate());
             const hours = padZero(date.getHours());
             const minutes = padZero(date.getMinutes());
@@ -74,6 +73,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
+        setLoading(false);
     }
 
     const handleClick = (e) => {
@@ -100,6 +100,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
         }
         setStartDate(date);
     }
+
     const handleEndDateChange = (date) => {
         if (date.getDate() === startDate.getDate()) {
             date.setDate(date.getDate() + 1)
@@ -124,7 +125,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
 
                         <div key={meting.id}>
                             <label>{meting.temperature ? "Temperatuur: " + RoundToOneDecimal(meting.temperature) + " °C" : ''}</label>
-                            <br />
+                            <br/>
                             <label>{meting.humidity ? "Luchtvochtigheid: " + RoundToOneDecimal(meting.humidity) + " %" : ''}</label>
                         </div>
 
@@ -142,33 +143,34 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
                             )
                         }
 
-                        {
-                            loading && (
-                                <div>
-                                    <p className={'text-warning m-0'}>Data wordt opgehaald...</p>
-                                </div>
-                            )
-                        }
-
                         {/* Dropdown for graph selection */}
                         <div className="mb-3">
-                            <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type grafiek</label>
-                            <select id={`graphType-${meting.id}`} className="form-select" value={selectedGraph} onChange={handleGraphChange}>
+                            <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type
+                                grafiek</label>
+                            <select id={`graphType-${meting.id}`} className="form-select" value={selectedGraph}
+                                    onChange={handleGraphChange}>
                                 <option value="tempGraph">Temperatuur</option>
                                 <option value="humGraph">Vochtigheid</option>
                                 <option value="stofGraph">Fijnstof</option>
                             </select>
                         </div>
-
+                        <div className="position-relative">
+                            {loading && (
+                                <Loading></Loading>
+                            )}
+                        </div>
                         <ResponsiveContainer minWidth={250} minHeight={250}>
                             <LineChart data={graphData}>
-                                <XAxis dataKey="timestamp" />
-                                <YAxis width={30} />
-                                <CartesianGrid stroke="#ccc" />
-                                <Legend onClick={handleLegendChange} />
-                                <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
-                                <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
-                                <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
+                                <XAxis dataKey="timestamp"/>
+                                <YAxis width={30}/>
+                                <CartesianGrid stroke="#ccc"/>
+                                <Legend onClick={handleLegendChange}/>
+                                <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp}
+                                      dot={false}/>
+                                <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp}
+                                      dot={false}/>
+                                <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp}
+                                      dot={false}/>
                             </LineChart>
                         </ResponsiveContainer>
 
@@ -201,7 +203,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
                 </Marker>
             ))}
         </>
-    )
+    );
 }
 
 export default MeetStationLayer;
