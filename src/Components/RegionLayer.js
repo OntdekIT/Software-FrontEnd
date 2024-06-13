@@ -1,11 +1,11 @@
 import { Polygon, Popup } from "react-leaflet";
 import { RoundToOneDecimal } from "../Lib/Utility";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../App";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 import { spectralColors } from '../Lib/Utility.js';
-import Loading from "./Loading";
+import LoadingComponent from "./LoadingComponent";
 
 const RegionLayer = ({ data }) => {
     //use states for what to show and what not to show
@@ -193,7 +193,7 @@ const RegionLayer = ({ data }) => {
                             </div>
                             <div className="position-relative">
                                 {loading && (
-                                    <Loading></Loading>
+                                    <LoadingComponent message="Data aan het ophalen..." isFullScreen={false}></LoadingComponent>
                                 )}
                             </div>
                             <ResponsiveContainer minWidth={250} minHeight={250}>

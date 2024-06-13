@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom';
 import Verify from "../Components/Verify";
 import {api} from "../App";
 import {Oval} from "react-loader-spinner";
+import LoadingComponent from "../Components/LoadingComponent";
 
 const LOGIN_URL = '/Authentication/login';
 
@@ -54,18 +55,7 @@ const Login = () => {
             <title>Login</title>
             {errMsg && <div ref={errRef} className="error-msg">{errMsg}</div>}
             {loading && (
-                <div className="loading-overlay-center">
-                    <Oval
-                        height={40}
-                        width={40}
-                        color="#4fa94d"
-                        visible={true}
-                        ariaLabel='oval-loading'
-                        secondaryColor="#4fa94d"
-                        strokeWidth={2}
-                        strokeWidthSecondary={2}
-                    />
-                </div>
+                <LoadingComponent message="Gegevens aan het controleren en email aan het sturen..." isFullScreen={true}></LoadingComponent>
             )}
             {verify ? (
                 <Verify mail={mail}/>

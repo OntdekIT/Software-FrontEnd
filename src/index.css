@@ -368,3 +368,19 @@ form {
   justify-content: center;
   z-index: 1000;
 }
+
+.marker-green {
+  background-color: green;
+  width: 25px;
+  height: 41px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.marker-blue {
+  background-color: blue;
+  width: 25px;
+  height: 41px;
+  border-radius: 50%;
+  border: 2px solid white;
+}

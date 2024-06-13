@@ -1,13 +1,13 @@
 import { Marker, Popup } from "react-leaflet";
 import { RoundToOneDecimal } from "../Lib/Utility";
 import { api } from "../App";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
 import "../index.css";
-import Loading from "./Loading";
+import LoadingComponent from "./LoadingComponent";
 
 const MeetStationLayer = ({ data, visible, selectedDate }) => {
     const [endDate, setEndDate] = useState(new Date());
@@ -156,7 +156,7 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
                         </div>
                         <div className="position-relative">
                             {loading && (
-                                <Loading></Loading>
+                                <LoadingComponent message="Data aan het ophalen..." isFullScreen={false}></LoadingComponent>
                             )}
                         </div>
                         <ResponsiveContainer minWidth={250} minHeight={250}>
