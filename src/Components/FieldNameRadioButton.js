@@ -1,6 +1,8 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
+import { api } from "../App";
 
 const Radiobutton = ({data, handleChange, current}) =>{
+
     const [selectedOption, setSelectedOption] = useState(current);
 
     //makes sure there is data

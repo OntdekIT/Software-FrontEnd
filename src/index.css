@@ -368,3 +368,11 @@ form {
   justify-content: center;
   z-index: 1000;
 }
+
+.custom-marker {
+  background-color: red; /* Change color as needed */
+  border-radius: 50%; /* Optional: Makes the marker circular */
+  width: 15px; /* Optional: Adjust size */
+  height: 15px; /* Optional: Adjust size */
+  cursor: pointer; /* Optional: Change cursor on hover */
+}

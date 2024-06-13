@@ -4,12 +4,13 @@ import { api } from "../App";
 import { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
+import L from 'leaflet';
 
 import "react-datepicker/dist/react-datepicker.css";
 import "../index.css";
 import Loading from "./Loading";
 
-const MeetStationLayer = ({ data, visible, selectedDate }) => {
+const MeetStationLayer = ({ data, visible, selectedDate, userId }) => {
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
     const [selectedStation, setSelectedStation] = useState(null);
@@ -24,8 +25,10 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
     const [stofGraphData, setStofGraphData] = useState([]);
     const [selectedGraph, setSelectedGraph] = useState('tempGraph');
 
+
     useEffect(() => {
         if (selectedStation === null) return;
+
 
         setLoading(true);
 
@@ -112,14 +115,40 @@ const MeetStationLayer = ({ data, visible, selectedDate }) => {
         setSelectedGraph(event.target.value);
     };
 
+    // Blue Marker Icon
+const blueMarkerIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    tooltipAnchor: [16, -28],
+    shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+    shadowSize: [60, 60],       // size of the shadow
+    shadowAnchor: [20, 60]      // point from which the shadow should be centered relative to the iconAnchor
+});
+
+// Gold Marker Icon
+const greenMarkerIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    iconSize: [25, 41],         // size of the icon
+    iconAnchor: [12, 41],       // point of the icon which will correspond to marker's location
+    popupAnchor: [1, -34],      // point from which the popup should open relative to the iconAnchor
+    tooltipAnchor: [16, -28],   // point from which the tooltip should open relative to the iconAnchor
+    shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+    shadowSize: [60, 60],       // size of the shadow
+    shadowAnchor: [20, 60]      // point from which the shadow should be centered relative to the iconAnchor
+});
+
+
     const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
 
     if (!visible) return (<></>);
 
+    console.log(selectedStation + "selectedStation");
     return (
         <>
             {data.map((meting) => (
-                <Marker key={meting.id} id={meting.id} position={[meting.latitude, meting.longitude]} eventHandlers={{ click: handleClick }}>
+                <Marker key={meting.id} id={meting.id} position={[meting.latitude, meting.longitude]} icon={meting.userId === userId ? greenMarkerIcon : blueMarkerIcon} eventHandlers={{ click: handleClick }}>
                     <Popup closeOnClick={false}>
                         <label className="bold d-block fs-6">Station ID: {meting.id}</label>
 
