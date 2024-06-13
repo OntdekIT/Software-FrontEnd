@@ -5,7 +5,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
+import Loading from "./Loading"; // Import useNavigate
 
 const MeetStationView = ({ meetstation }) => {
     //use states for what to show and what not to show
@@ -219,13 +220,18 @@ const MeetStationView = ({ meetstation }) => {
                             {/* Dropdown for graph selection */}
                             <div className="mb-3">
                                 <label htmlFor="graphType" className="form-label">Kies het type grafiek</label>
-                                <select id="graphType" className="form-select" value={selectedGraph} onChange={handleGraphChange}>
+                                <select id="graphType" className="form-select" value={selectedGraph}
+                                        onChange={handleGraphChange}>
                                     <option value="tempGraph">Temperatuur</option>
                                     <option value="humGraph">Vochtigheid</option>
                                     <option value="stofGraph">FijnStof</option>
                                 </select>
                             </div>
-
+                            <div className="position-relative">
+                                {loading && (
+                                    <Loading></Loading>
+                                )}
+                            </div>
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart key={meetstation.stationid} data={graphData}>
                                     <XAxis dataKey="timestamp"/>

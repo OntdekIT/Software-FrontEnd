@@ -7,7 +7,7 @@ import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAx
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import GraphView from "../Components/GraphView";
-import {end} from "@popperjs/core";
+import { Oval } from 'react-loader-spinner'; // Import the Oval loader
 
 const InfoStation = () => {
     const [endDate, setEndDate] = useState(new Date());
@@ -16,7 +16,7 @@ const InfoStation = () => {
     const [meetstation, setMeetstation] = useState({});
     const errRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state
     // data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
@@ -32,6 +32,7 @@ const InfoStation = () => {
 
     useEffect(() => {
         const fetchStation = async () => {
+            setLoading(true); // Start loading
             try {
                 const response = await api.get(`/Meetstation/${stationId}`, {
                     headers: { 'Content-Type': 'application/json' },
@@ -40,9 +41,10 @@ const InfoStation = () => {
 
                 setMeetstation(response.data);
                 console.log("Response 1: ", response.data);
-
+                setLoading(false); // End loading
             } catch (err) {
                 console.error("error: ", err);
+                setLoading(false); // End loading
             }
         };
 
@@ -74,6 +76,7 @@ const InfoStation = () => {
             setStartDatePDF(date);
         }
         const fetchGraphData = async () => {
+            setLoading(true); // Start loading
             try {
                 const response = await api.get("/measurement/history/average/" + meetstation.stationid, {
                     params: {
@@ -98,12 +101,13 @@ const InfoStation = () => {
                 const stofData = response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     avg: meting.avgStof,
-                    min: meting.minStof,
-                    max: meting.maxStof
+                    min: meting.minStof
                 }))
                 setStofGraphData(stofData);
+                setLoading(false); // End loading
             } catch (err) {
                 console.error("error: ", err);
+                setLoading(false); // End loading
             }
         };
 
@@ -111,6 +115,7 @@ const InfoStation = () => {
             fetchGraphData();
         }
     }, [meetstation, startDate, endDate]);
+
     function formatDate(date) {
         const padZero = (num) => num.toString().padStart(2, '0');
         const year = date.getFullYear();
@@ -174,7 +179,21 @@ const InfoStation = () => {
 
     return (
         <>
-            <div className="border bg-light position-relative rounded" style={{ minWidth: "150px" }}>
+            <div className="component-container border bg-light position-relative rounded" style={{minWidth: "150px"}}>
+                {loading && (
+                    <div className="loading-overlay-center">
+                        <Oval
+                            height={40}
+                            width={40}
+                            color="#4fa94d"
+                            visible={true}
+                            ariaLabel='oval-loading'
+                            secondaryColor="#4fa94d"
+                            strokeWidth={2}
+                            strokeWidthSecondary={2}
+                        />
+                    </div>
+                )}
                 <div className="row align-items-center" style={{
                     backgroundColor: "#e9ecef",
                     margin: "0",
@@ -210,7 +229,6 @@ const InfoStation = () => {
                         />
                     </div>
                 </div>
-
                 <div className="p-0">
                     <div key={meetstation.stationid} style={{padding: "1%"}}>
                         {meetstation.is_public === false && (
@@ -222,7 +240,6 @@ const InfoStation = () => {
                                 worden.</div>
                         )}
                     </div>
-
 
                     <div style={{padding: "5%", paddingTop: "0"}}>
                         <hr style={{margin: "2"}}></hr>
@@ -250,9 +267,6 @@ const InfoStation = () => {
                                     />
                                 </div>
                             </div>
-                            {/*<a href="#" onClick={getPDF}>*/}
-                            {/*    Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}*/}
-                            {/*</a>*/}
                         </div>
                         <hr style={{margin: "2"}}></hr>
                         <GraphView graphData={tempGraphData} dataType={"temperatuur"}></GraphView>
@@ -262,8 +276,6 @@ const InfoStation = () => {
                         <GraphView graphData={stofGraphData} dataType={"fijnstof"}></GraphView>
                         <hr style={{margin: "2"}}></hr>
                     </div>
-
-
                 </div>
             </div>
         </>
