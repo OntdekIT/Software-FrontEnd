@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { api } from "../App";
 import MeetStationView from "../Components/MeetStationView";
 import LoginCheck from '../Components/LoginCheck';
+import {Oval} from "react-loader-spinner";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
@@ -43,11 +44,24 @@ export default function Account() {
 
   //else {
     return (
-      <div className="Account" style={{margin: '10px'}}>
+      <div className="Account position-relative" style={{margin: '10px'}}>
         <title>Account</title>
         <h1>Welkom {naam}!</h1>
         <h2>Stations</h2>
-        {loading && <div>A moment please...</div>}
+        {loading && (
+            <div className="loading-overlay-center">
+              <Oval
+                  height={40}
+                  width={40}
+                  color="#4fa94d"
+                  visible={true}
+                  ariaLabel='oval-loading'
+                  secondaryColor="#4fa94d"
+                  strokeWidth={2}
+                  strokeWidthSecondary={2}
+              />
+            </div>
+        )}
         {errMsg && <div className="error-msg">{errMsg}</div>}
         {/*<Link to={"/station/create"}>*/}
         {/*  <button className={"button2"}>Station toevoegen</button>*/}
