@@ -49,13 +49,17 @@ const ShowWorkshopCode = () => {
             {loading ? (
                 <div>Loading . . .</div>
             ) : (
-                <div>
-                    <title>Workshop Page</title>
-                    <h1>Workshop code</h1>
-                    {workshopCodes && workshopCodes.map(workshopCode => (
-                        <h2 align="center" key={workshopCode.id}>{workshopCode.code}</h2>
-                    ))}
-                </div>
+    <div>
+        <title>Workshop Page</title>
+        <h1>Workshop code</h1>
+        {workshopCodes && workshopCodes.map(workshopCode => (
+            <h2 align="center" key={workshopCode.id}>{workshopCode.code}</h2>
+        ))}
+        <Link to={"/Admin"}>
+            <button className="button2Inline">Terug</button>
+        </Link>
+    </div>
+
             )}
         </section>
     )
