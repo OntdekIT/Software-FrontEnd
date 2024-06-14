@@ -36,13 +36,14 @@ const ShowWorkshopCode = () => {
             getData();
         } else {
             setLoading(false); // Set loading to false directly if not admin
+            console.log("Admin not true");
         }
     }, [isAdmin]);
 
-    if (!isAdmin) {
-        window.location.href = "/";
-        return null; // Prevent rendering
-    }
+    // if (!isAdmin) {
+    //     window.location.href = "/";
+    //     return null; // Prevent rendering
+    // }
 
     return (
         <section className="form-section">

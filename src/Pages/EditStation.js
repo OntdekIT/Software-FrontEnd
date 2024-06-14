@@ -5,7 +5,7 @@ import { api } from "../App";
 
 const EditStation = () => {
   const inputvalues = {
-    stationid: 0,
+    stationid: '0',
     name: '',
     database_tag: '',
     registrationCode: '',

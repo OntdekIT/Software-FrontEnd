@@ -40,7 +40,7 @@ const CreateWorkshopCode = () => {
 
             if (response?.status === 200) {
                 localStorage.setItem('workshopcode', response.data);
-                window.location.href = "http://localhost:3000/Admin/workshopcode/show";
+                window.location.href = "/Admin/workshopcode/show";
             }
         } catch (err) {
             console.error('Error:', err);

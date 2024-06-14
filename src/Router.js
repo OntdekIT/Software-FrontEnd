@@ -17,6 +17,7 @@ import AdminPage from './Pages/AdminPage';
 import GrantUserAdmin from './Pages/GrantUserAdmin';
 import { LoginCheckProvider } from './Components/LoginCheck';
 import InfoStation from "./Pages/InfoStation";
+import ClaimMeetstation from "./Pages/ClaimMeetstation";
 
 function Router() {
     return (
@@ -35,12 +36,14 @@ function Router() {
                 <Route path="/Station/Create" element={<RegisterStationCode />} />
                 <Route path="/Station/Edit" element={<EditStation />} />
                 <Route path="/Station/Info" element={<InfoStation />} />
+                <Route path="/Station/Claim" element={<ClaimMeetstation />} />
 
                 {/* admin routes */}
                 <Route path="/Admin" element={<AdminPage />} />
                 <Route path="/Admin/grantUserAdmin" element={<GrantUserAdmin />} />
                 <Route path="/Admin/workshopcode/create" element={<CreateWorkshopCode />} />
                 <Route path="/Admin/workshopcode/show" element={<ShowWorkshopCode />} />
+
 
 
                 {/* catch all , 404 page*/}
