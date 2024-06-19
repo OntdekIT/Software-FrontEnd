@@ -15,7 +15,7 @@ const Radiobutton = ({data, handleChange, current}) =>{
     const results = [];
     fieldNames.forEach(fieldName => {
         //excludes fields that should not get shown
-        if (fieldName !== 'id' && fieldName !== 'latitude' && fieldName !== 'longitude' && fieldName !== 'timestamp') {
+        if (fieldName !== 'id' && fieldName !== 'latitude' && fieldName !== 'longitude' && fieldName !== 'timestamp' && fieldName !== 'is_public' && fieldName !== 'userId') {
             results.push(
                 <div>
                     <label>
