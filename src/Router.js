@@ -9,16 +9,13 @@ import Unauthorized from "./Pages/Unauthorized";
 import EditStation from "./Pages/EditStation";
 import Layout from "./Components/Layout";
 import Account from "./Pages/Account";
-import UserDetails from "./Pages/UserDetails";
-import RegisterStationCode from "./Pages/RegisterStationCode";
+import ClaimStation from "./Pages/ClaimStation";
 import CreateWorkshopCode from "./Pages/CreateWorkshopCode";
 import ShowWorkshopCode from "./Pages/ShowWorkshopCode";
 import AdminPage from './Pages/AdminPage';
 import GrantUserAdmin from './Pages/GrantUserAdmin';
 import { LoginCheckProvider } from './Components/LoginCheck';
 import InfoStation from "./Pages/InfoStation";
-import ClaimMeetstation from "./Pages/ClaimMeetstation";
-import RegisterStationSave from "./Pages/RegisterStationSave";
 
 function Router() {
     return (
@@ -34,11 +31,10 @@ function Router() {
                 <Route path="/Account" element={<Account />} />
                 {/* we want to protect these routes */}
                 {/* <Route path="/Userdetails" element={<UserDetails />} /> */}
-                <Route path="/Station/Create" element={<RegisterStationCode />} />
+                {/*<Route path="/Station/Create" element={<ClaimStation />} />*/}
                 <Route path="/Station/Edit" element={<EditStation />} />
                 <Route path="/Station/Info" element={<InfoStation />} />
-                <Route path="/Station/Claim" element={<ClaimMeetstation />} />
-                <Route path="/Station/ClaimSave" element={<RegisterStationSave />} />
+                <Route path="/Station/Claim" element={<ClaimStation />} />
 
                 {/* admin routes */}
                 <Route path="/Admin" element={<AdminPage />} />

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import '../index.css';
 import { api } from "../App";
 
-const RegisterStationCode = () => {
+const ClaimStation = () => {
     const inputvalues = {
         stationid: '0',
         name: '',
@@ -277,4 +277,4 @@ const RegisterStationCode = () => {
     );
 }
 
-export default RegisterStationCode;
+export default ClaimStation;
