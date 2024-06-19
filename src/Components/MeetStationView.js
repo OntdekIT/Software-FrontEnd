@@ -120,9 +120,9 @@ const MeetStationView = ({ meetstation }) => {
         navigate(`/Station/Edit?id=${meetstation.stationid}`);
     }
 
-    const handleInfoClick = () => {
-        navigate(`/Station/Info?id=${meetstation.stationid}`);
-    }
+        const handleInfoClick = () => {
+            navigate(`/Station/Info?id=${meetstation.stationid}`);
+        }
 
     const toggleGraphVisibility = () => {
         setGraphVisible(!graphVisible);

@@ -18,6 +18,7 @@ import GrantUserAdmin from './Pages/GrantUserAdmin';
 import { LoginCheckProvider } from './Components/LoginCheck';
 import InfoStation from "./Pages/InfoStation";
 import ClaimMeetstation from "./Pages/ClaimMeetstation";
+import RegisterStationSave from "./Pages/RegisterStationSave";
 
 function Router() {
     return (
@@ -37,6 +38,7 @@ function Router() {
                 <Route path="/Station/Edit" element={<EditStation />} />
                 <Route path="/Station/Info" element={<InfoStation />} />
                 <Route path="/Station/Claim" element={<ClaimMeetstation />} />
+                <Route path="/Station/ClaimSave" element={<RegisterStationSave />} />
 
                 {/* admin routes */}
                 <Route path="/Admin" element={<AdminPage />} />

@@ -83,29 +83,6 @@ const EditStation = () => {
         });
   };
 
-  const handleDelete = (e) => {
-    e.preventDefault();
-    let confirmDelete = window.confirm('Delete station?');
-    if (confirmDelete) {
-      api.delete('/Station/' + stationId)
-          .then((response) => {
-            console.log(response);
-            navigate('/Account');
-          })
-          .catch((error) => {
-            if (error.response) {
-              console.error(error.response.data);
-              console.error(error.response.status);
-              console.error(error.response.headers);
-            } else if (error.request) {
-              console.error(error.request);
-            } else {
-              console.error("Error", error.message);
-            }
-          });
-    }
-  };
-
   return (
       <div className={"color"}>
         <br />
