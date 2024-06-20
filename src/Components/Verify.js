@@ -32,7 +32,14 @@ const Verify = ({ mail }) => {
 
             if (response?.status === 200) {
                 console.log("Test login 2");
-                window.location.href = "http://localhost:3000/Account";
+                const stationId = localStorage.getItem("stationId");
+                console.log("Logged from local storage: ", stationId);
+                if (stationId != null){
+                    window.location.href = "http://localhost:3000/Station/Claim";
+                }
+                else{
+                    window.location.href = "http://localhost:3000/Account";
+                }
             }
         } catch (err) {
 

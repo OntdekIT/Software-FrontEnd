@@ -5,7 +5,7 @@ import { api } from "../App";
 
 const ClaimStation = () => {
     const inputvalues = {
-        stationid: '0',
+        stationid: localStorage.getItem("stationId"),
         name: '',
         database_tag: '',
         location_locationid: 0,
@@ -29,9 +29,15 @@ const ClaimStation = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        station.stationid = null;
+        console.log(localStorage.getItem("stationId"));
+        console.log(station.stationid);
         station.visibility = '0';
-        SetStepValues(1);
+        if (station.stationid != null){
+            SetStepValues(2);
+        }
+        else{
+            SetStepValues(1);
+        }
     }, []);
 
     const SetStepValues = (num) => {
@@ -146,7 +152,8 @@ const ClaimStation = () => {
             withCredentials: true
         })
             .then((response) => {
-                navigate(-1);
+                localStorage.removeItem("stationId");
+                window.location.href = "http://localhost:3000/Account";
             })
             .catch((error) => {
                 if (error.response) {
@@ -286,7 +293,11 @@ const ClaimStation = () => {
                 <div className="row mt-5">
                     <div className="col-4"></div>
                     <div className="col-5">
-                        <button className="button2Inline" onClick={goBack}>Terug</button>
+                        {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
+                            <button className="button2Inline" onClick={goBack}>
+                                Terug
+                            </button>
+                        )}
                         <button className={"button2"} onClick={() => handleButtonClick(step.num)}>Volgende</button>
                     </div>
                 </div>

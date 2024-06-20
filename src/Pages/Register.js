@@ -77,6 +77,7 @@ const Register = () => {
 
             if (response?.status === 201) {
                 setVerify(true);
+                localStorage.setItem("stationId", meetstationCode);
             }
         } catch (err) {
             if (!err?.response) {
