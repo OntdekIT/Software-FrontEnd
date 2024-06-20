@@ -29,6 +29,7 @@ const Login = () => {
   }, [mail]);
 
     const handleSubmit = async (e) => {
+        localStorage.removeItem("stationId");
         e.preventDefault();
         setLoading(true); // Disable form on submit
         try {

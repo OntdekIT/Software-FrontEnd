@@ -12,6 +12,7 @@ const NavBar = () => {
   const { isLoggedIn, isAdmin } = useContext(LoginCheckContext);
   const logout = async () => {
     try {
+      localStorage.removeItem("stationId");
       const response = await api.delete(
           LOGOUT_URL,
           {
