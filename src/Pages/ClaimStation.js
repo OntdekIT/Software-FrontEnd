@@ -24,13 +24,7 @@ const ClaimStation = () => {
     const [station, setStation] = useState(inputvalues);
     const [errorMessage, setErrorMessage] = useState(null);
     const [step, setStep] = useState(stepvalues);
-    const [success, setSuccess] = useState(false);
-    const [visibility, setVisibility] = useState('0');
-
-    const [stationId, setStationId] = useState('');
-    const [name, setName] = useState('');
-    const [databaseTag, setDatabaseTag] = useState('');
-    const [isPublic, setIsPublic] = useState('');
+    const [workshopCode, setWorkshopCode] = useState(null);
 
     const navigate = useNavigate();
 
@@ -81,21 +75,27 @@ const ClaimStation = () => {
         setErrorMessage(null);
         try {
             if (!station.stationid) {
-                setErrorMessage("Vul een registratie code in.");
-            } else if (!station.databaseTag) {
-                setErrorMessage("Vul een tag in.");
+                setErrorMessage("Vul een station nummer in.");
+            } else if (!workshopCode) {
+                console.log(workshopCode);
+                setErrorMessage("Vul een workshop code in.");
             } else {
-                const response = await api.get(`Meetstation/Availibility/${station.stationid}`, {
+                const response = await api.get(`Meetstation/Availibility/${station.stationid}/${workshopCode}`, {
                     headers: { 'Content-Type': 'application/json' },
                     withCredentials: false
                 });
-                if (response.data) {
+                console.log(response.data);
+                if (response.data == 200) {
                     SetStepValues(step.num + 1);
-                } else {
+                }else if (response.data == 402) {
                     setErrorMessage("Meetstation is niet beschikbaar");
+                }
+                else if (response.data == 403){
+                    setErrorMessage("Workshop code is onjuist")
                 }
             }
         } catch (err) {
+
             console.error(err);
         }
     }
@@ -115,6 +115,10 @@ const ClaimStation = () => {
         const { name, value } = event.target;
         setStation({ ...station, [name]: value });
     };
+
+    const handleWorkshopCodeChange = (event) => {
+        setWorkshopCode(event.target.value);
+    }
 
     const handleButtonClick = (num) => {
         if (num == 1){
@@ -178,10 +182,15 @@ const ClaimStation = () => {
                                     <div className="row mt-1">
                                         <div className="col-4"></div>
                                         <div className="col-2">
-                                            <select className="form-select" value={station.databaseTag} onChange={handleChange} name="databaseTag" required>
-                                                <option value="">Selecteer uw tag</option>
-                                                <option value="MJS">MJS</option>
-                                            </select>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                name="workshopCode"
+                                                placeholder="Workshop Code..."
+                                                onChange={handleWorkshopCodeChange}
+                                                value={workshopCode}
+                                                required
+                                            />
                                         </div>
                                         <div className="col-2">
                                             <input
