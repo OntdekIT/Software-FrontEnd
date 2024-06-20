@@ -249,7 +249,16 @@ const ClaimStation = () => {
                                         <div className="col-4">
                                             <div>Station nummer: {station.stationid}</div>
                                             <div>Station naam: {station.name}</div>
-                                            <div>Station visibility: {station.visibility}</div>
+                                            <div>
+                                                Station visibility:
+                                                {station.visibility === '0' ? (
+                                                    <div className="form-text">Het station is onzichtbaar, maar de data
+                                                        wordt gebruikt binnen de metingen van een wijk.</div>
+                                                ) : station.visibility === '1' ? (
+                                                    <div className="form-text">Het station is zichtbaar en kan door
+                                                        iedereen bekeken worden.</div>
+                                                ) : null}
+                                            </div>
                                         </div>
                                     </div>
                                 </>
