@@ -6,14 +6,12 @@ const UPDATEUSER_URL = '/User';
 const UserDetails = () => {
   const firstNameRef = useRef();
   const lastNameRef = useRef();
-  const userNameRef = useRef();
   const mailAddressRef = useRef();
   const errRef = useRef();
   const successRef = useRef();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [userName, setUserName] = useState('');
   const [mailAddress, setMailAddress] = useState('');
   const [errMsg, setErrMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -28,7 +26,6 @@ const UserDetails = () => {
       .then((response) => {
         setFirstName(response.data.firstName);
         setLastName(response.data.lastName);
-        setUserName(response.data.userName);
         setMailAddress(response.data.mailAddress);
       })
       .catch((error) => {
@@ -43,7 +40,7 @@ const UserDetails = () => {
     setSuccessMsg('');
 
     try {
-      const response = await api.put(UPDATEUSER_URL, JSON.stringify({ firstName, lastName, userName, mailAddress, id: 1 }),
+      const response = await api.put(UPDATEUSER_URL, JSON.stringify({ firstName, lastName, mailAddress, id: 1 }),
         {
           headers: { 'Content-Type': 'application/JSON' },
           withCredentials: false
@@ -59,7 +56,6 @@ const UserDetails = () => {
 
       setFirstName(firstName);
       setLastName(lastName);
-      setUserName(userName);
       setMailAddress(mailAddress);
 
       if (response?.status === 200) {
@@ -79,12 +75,8 @@ const UserDetails = () => {
         setErrMsg('Ingevulde velden zijn incorrect');
       } else if (err.response?.status === 401) {
         setErrMsg('Geen toegang');
-      } else if (err.response?.status === 409 && err.response?.data === 1) {
-        setErrMsg('Gebruikersnaam al in gebruik');
       } else if (err.response?.status === 409 && err.response?.data === 2) {
         setErrMsg('Email al in gebruik');
-      } else if (err.response?.status === 422 && err.response?.data === 1) {
-        setErrMsg('Gebruikersnaam niet ingevuld');
       } else if (err.response?.status === 422 && err.response?.data === 2) {
         setErrMsg('Email niet ingevuld');
       } else if (err.response?.status === 422 && err.response?.data === 3) {
@@ -134,16 +126,6 @@ const UserDetails = () => {
           value={lastName}
           required
           placeholder="Achternaam"
-        />
-        <input
-          type="username"
-          id="username"
-          ref={userNameRef}
-          autoComplete="off"
-          onChange={(e) => setUserName(e.target.value)}
-          value={userName}
-          required
-          placeholder="Gebruikersnaam"
         />
         <input
           type="email"

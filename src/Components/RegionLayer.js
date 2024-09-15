@@ -1,10 +1,11 @@
 import { Polygon, Popup } from "react-leaflet";
 import { RoundToOneDecimal } from "../Lib/Utility";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { api } from "../App";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 import { spectralColors } from '../Lib/Utility.js';
+import LoadingComponent from "./LoadingComponent";
 
 const RegionLayer = ({ data }) => {
     //use states for what to show and what not to show
@@ -14,11 +15,14 @@ const RegionLayer = ({ data }) => {
     const [showMinTemp, setShowMinTemp] = useState(false);
     const [showMaxTemp, setShowMaxTemp] = useState(false);
     const [showGemTemp, setShowGemTemp] = useState(false);
-    const errRef = useRef();
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    //data to be shown
-    const [graphData, setGraphData] = useState([]);
+    const [tempGraphData, setTempGraphData] = useState([]);
+    const [humGraphData, setHumGraphData] = useState([]);
+    const [stofGraphData, setStofGraphData] = useState([]);
+    const [selectedGraph, setSelectedGraph] = useState('tempGraph'); // New state for selected graph type
+
+    const errRef = useRef();
 
     let mintemp = 1000;
     let maxtemp = -1000;
@@ -48,25 +52,49 @@ const RegionLayer = ({ data }) => {
     }
 
     useEffect(() => {
+        function formatDate(date) {
+            const padZero = (num) => num.toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const day = padZero(date.getDate());
+            const hours = padZero(date.getHours());
+            const minutes = padZero(date.getMinutes());
+
+            return `${day}-${month}-${year} ${hours}:${minutes}`;
+        }
+
         if (selectedNeighbourhood === null)
             return;
 
         setLoading(true);
 
-        const options = { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" };
         api.get("/neighbourhood/history/average/" + selectedNeighbourhood, {
             params: {
-                startDate: startDate.toLocaleString("nl-NL", options),
-                endDate: endDate.toLocaleString("nl-NL", options)
+                startDate: formatDate(startDate),
+                endDate: formatDate(endDate)
             }
         }).then((response) => {
-            const data = response.data.map((meting) => ({
+            const tempData = response.data.map((meting) => ({
                 timestamp: meting.timestamp,
-                avgTemp: meting.avgTemp,
-                minTemp: meting.minTemp,
-                maxTemp: meting.maxTemp
+                avg: meting.avgTemp,
+                min: meting.minTemp,
+                max: meting.maxTemp
             }));
-            setGraphData(data);
+            setTempGraphData(tempData);
+            const humData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgHum,
+                min: meting.minHum,
+                max: meting.maxHum
+            }));
+            setHumGraphData(humData);
+            const stofData = response.data.map((meting) => ({
+                timestamp: meting.timestamp,
+                avg: meting.avgStof,
+                min: meting.minStof,
+                max: meting.maxStof
+            }));
+            setStofGraphData(stofData);
             setLoading(false);
         }).catch(handleError);
     }, [selectedNeighbourhood, startDate, endDate]);
@@ -100,12 +128,19 @@ const RegionLayer = ({ data }) => {
         }
         setStartDate(date);
     }
+
     const handleEndDateChange = (date) => {
         if (date.getDate() === startDate.getDate()) {
             date.setDate(date.getDate() + 1)
         }
         setEndDate(date);
     }
+
+    const handleGraphChange = (event) => {
+        setSelectedGraph(event.target.value);
+    };
+
+    const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
 
     return (
         <>
@@ -124,7 +159,7 @@ const RegionLayer = ({ data }) => {
                         eventHandlers={{ click: handleClick }}
                     >
                         <Popup>
-                            <label className="bold">{neighbourhood.name}</label> <br />
+                            <label className="bold">{neighbourhood.name}</label> <br/>
 
                             <div>
                                 <label>
@@ -134,33 +169,45 @@ const RegionLayer = ({ data }) => {
 
                             <hr></hr>
 
-                            <label className="bold mt-2">Historische temperatuur data</label>
+                            <label className="bold mt-2">Historische data</label>
 
                             {
                                 errorMessage && (
                                     <div>
-                                        <p className={'text-danger m-0'} ref={errRef} aria-live="assertive">{errorMessage}</p>
+                                        <p className={'text-danger m-0'} ref={errRef}
+                                           aria-live="assertive">{errorMessage}</p>
                                     </div>
                                 )
                             }
 
-                            {
-                                loading && (
-                                    <div>
-                                        <p className={'text-warning m-0'}>Data wordt opgehaald...</p>
-                                    </div>
-                                )
-                            }
-
+                            {/* Dropdown for graph selection */}
+                            <div className="mb-3">
+                                <label htmlFor={`graphType-${neighbourhood.id}`} className="form-label">Kies het type
+                                    grafiek</label>
+                                <select id={`graphType-${neighbourhood.id}`} className="form-select"
+                                        value={selectedGraph} onChange={handleGraphChange}>
+                                    <option value="tempGraph">Temperatuur</option>
+                                    <option value="humGraph">Vochtigheid</option>
+                                    <option value="stofGraph">Fijnstof</option>
+                                </select>
+                            </div>
+                            <div className="position-relative">
+                                {loading && (
+                                    <LoadingComponent message="Data aan het ophalen..." isFullScreen={false}></LoadingComponent>
+                                )}
+                            </div>
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart data={graphData}>
-                                    <XAxis dataKey="timestamp" />
-                                    <YAxis width={20} />
-                                    <CartesianGrid stroke="#ccc" />
-                                    <Legend onClick={handleLegendChange} />
-                                    <Line type="monotone" dataKey="minTemp" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
-                                    <Line type="monotone" dataKey="maxTemp" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
-                                    <Line type="monotone" dataKey="avgTemp" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
+                                    <XAxis dataKey="timestamp"/>
+                                    <YAxis width={30}/>
+                                    <CartesianGrid stroke="#ccc"/>
+                                    <Legend onClick={handleLegendChange}/>
+                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp}
+                                          dot={false}/>
+                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
+                                          hide={showGemTemp} dot={false}/>
                                 </LineChart>
                             </ResponsiveContainer>
 
@@ -193,8 +240,8 @@ const RegionLayer = ({ data }) => {
                     </Polygon>
                 ))
             }
-        </>)
-
-}
+        </>
+    );
+};
 
 export default RegionLayer;

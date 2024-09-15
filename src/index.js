@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
 
 ReactDOM.render(
+
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>

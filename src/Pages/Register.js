@@ -1,169 +1,201 @@
-import { useRef, useState, useEffect } from "react";
+import React, {useRef, useState, useEffect} from "react";
 import useAuth from '../Hooks/useAuth';
-import { Link } from 'react-router-dom';
-import { api } from "../App";
+import {Link} from 'react-router-dom';
+import {api} from "../App";
+import Verify from "../Components/Verify";
+import {Oval} from "react-loader-spinner";
+import LoadingComponent from "../Components/LoadingComponent";
 
 const REGISTER_URL = '/Authentication/register';
 
 const Register = () => {
+    const {setAuth} = useAuth();
+    const firstnameRef = useRef();
+    const surnameRef = useRef();
+    const passwordRef = useRef();
+    const confirmPasswordRef = useRef();
+    const emailRef = useRef();
+    const meetstationCodeRef = useRef();
+    const workshopCodeRef = useRef();
+    const errRef = useRef();
+    const successRef = useRef();
 
-  //after successfull login, set new auth state to global context (so the whole app?)
-  const { setAuth } = useAuth();
+    const [firstname, setFirstname] = useState('');
+    const [surname, setSurname] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [email, setEmail] = useState('');
+    const [meetstationCode, setMeetstationCode] = useState('');
+    const [workshopCode, setWorkshopCode] = useState('');
+    const [errMsg, setErrMsg] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+    const [verify, setVerify] = useState(false); // Add verify state
+    const [loading, setLoading] = useState(false); // State to manage form submission status
 
-  const firstnameRef = useRef();
-  const surnameRef = useRef();
-  const usernameRef = useRef();
-  const emailRef = useRef();
-  const errRef = useRef();
-  const successRef = useRef();
+    useEffect(() => {
+        firstnameRef.current.focus();
+    }, []);
 
-  const [firstname, setFirstname] = useState('');
-  const [surname, setSurname] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [errMsg, setErrMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+    useEffect(() => {
+        setErrMsg('');
+    }, [firstname, surname, password, confirmPassword, email, meetstationCode, workshopCode])
 
-  //put focus on user input box
-  useEffect(() => {
-    firstnameRef.current.focus();
-  }, [])
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true); // Disable form on submit
 
-  useEffect(() => {
-    setErrMsg('');
-  }, [firstname, surname, username, email])
+        try {
+            const response = await api.post(REGISTER_URL, JSON.stringify({
+                    firstName: firstname,
+                    lastName: surname,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    mailAddress: email,
+                    meetstationCode: meetstationCode,
+                    workshopCode: workshopCode,
+                }),
+                {
+                    headers: {'Content-Type': 'application/JSON'},
+                    withCredentials: false
+                });
 
+            const accessToken = response?.data?.accessToken;
+            const roles = response?.data?.roles;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+            //save all of our info in auth object, which is saved in global context
+            setAuth({
+                firstname,
+                surname,
+                password,
+                confirmPassword,
+                email,
+                meetstationCode,
+                workshopCode,
+                roles,
+                accessToken
+            });
 
-    try {
-      const response = await api.post(REGISTER_URL, JSON.stringify({ firstName: firstname, lastName: surname, userName: username, mailAddress: email }),
-        {
-          headers: { 'Content-Type': 'application/JSON' },
-          withCredentials: false
-        });
+            if (response?.status === 201) {
+                setVerify(true);
+                localStorage.setItem("stationId", meetstationCode);
+            }
+        } catch (err) {
+            if (!err?.response) {
+                setErrMsg('Kon geen verbinding maken, probeer het later opnieuw');
+            } else {
+                setErrMsg(err.response.data);
 
-      console.log(JSON.stringify(response?.data));
-      const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
-
-      //save all of our info in auth object, which is saved in global context
-      setAuth({ firstname, surname, username, email, roles, accessToken });
-
-      setFirstname('');
-      setSurname('');
-      setUsername('');
-      setEmail('');
-
-      if (response?.status === 201) {
-        setSuccessMsg('Gelukt! Bekijk uw mail voor verdere instructies');
-      }
-
-      // Navigates to home page
-      //navigate(from, { replace: true });
-
-    } catch (err) {
-      if (!err?.response) {
-        setErrMsg('Kon geen verbinding maken, probeer het later opnieuw');
-      } else if (err.response?.status === 400) {
-        setErrMsg('De ingevulde gegevens zijn te lang');
-      } else if (err.response?.status === 409) {
-        if (err.response?.data === 1) {
-          setErrMsg('De gebruikersnaam is al in gebruik');
+                console.log(err);
+                console.log(err.response);
+                console.log(err.errMsg);
+            }
         }
-        else if (err.response?.data === 2) {
-          setErrMsg('Het email adres is al in gebruik');
-        }
-        setErrMsg('De ingevulde gegevens zijn incorrect');
-      } else if (err.response?.status === 422) {
-        if (err.response?.data === 1) {
-          setErrMsg('De gebruikersnaam ontbreekt');
-        }
-        else if (err.response?.data === 2) {
-          setErrMsg('Het email adres ontbreekt');
-        }
-        else if (err.response?.data === 3) {
-          setErrMsg('Voornaam ontbreekt');
-        }
-        else if (err.response?.data === 4) {
-          setErrMsg('Achternaam ontbreekt');
-        }
-        setErrMsg('Er ontbreken nog gegevens');
-      } else {
-        setErrMsg('Registreren gefaald, probeer het later opnieuw');
-      }
-      //set focus on error display, so a screenreader can read info
-      errRef.current.focus();
+        setLoading(false); // Re-enable form if there's an error
     }
-  }
 
-  return (
-    <section className="form-section">
-      <title>Register</title>
-      {
-        errMsg && (
-          <div ref={errRef} className="error-msg">{errMsg}</div>
-        )
-      }
-      {
-        successMsg && (
-          <div ref={successRef} className="success-msg">{successMsg}</div>
-        )
-      }
-      <h1>Registreren</h1>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          id="firstname"
-          ref={firstnameRef}
-          autoComplete="off"
-          onChange={(e) => setFirstname(e.target.value)}
-          value={firstname}
-          required
-          placeholder="Voornaam"
-        />
-        <input
-          type="text"
-          id="surname"
-          ref={surnameRef}
-          autoComplete="off"
-          onChange={(e) => setSurname(e.target.value)}
-          value={surname}
-          required
-          placeholder="Achternaam"
-        />
-        <input
-          type="text"
-          id="username"
-          ref={usernameRef}
-          autoComplete="off"
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-          required
-          placeholder="Gebruikersnaam"
-        />
-        <input
-          type="email"
-          id="email"
-          ref={emailRef}
-          autoComplete="off"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          required
-          placeholder="Email"
-        />
-        <button className="button">Registreren</button>
-      </form>
-      <div className="form-redirect">
-        <p>Al een account?</p>
-        <span className="line">
-          <Link to="/login">Inloggen</Link>
-        </span>
-      </div>
-    </section>
-  )
+    return (
+        <section className="form-section position-relative">
+            <title>Register</title>
+            {errMsg && <div ref={errRef} className="error-msg">{errMsg}</div>}
+            {loading && (
+                <LoadingComponent message="Gegevens aan het controleren en email aan het sturen..." isFullScreen={true}></LoadingComponent>
+            )}
+            {successMsg && <div ref={successRef} className="success-msg">{successMsg}</div>}
+            {verify ? (
+                <Verify mail={email}/>
+            ) : (
+                <div>
+                    <h1>Registreren</h1>
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="firstname">First name</label>
+                        <input
+                            type="text"
+                            id="firstname"
+                            ref={firstnameRef}
+                            autoComplete="off"
+                            onChange={(e) => setFirstname(e.target.value)}
+                            value={firstname}
+                            placeholder="Voornaam"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="surname">Last name</label>
+                        <input
+                            type="text"
+                            id="surname"
+                            ref={surnameRef}
+                            autoComplete="off"
+                            onChange={(e) => setSurname(e.target.value)}
+                            value={surname}
+                            placeholder="Achternaam"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="email">Email</label>
+                        <input
+                            type="text"
+                            id="email"
+                            ref={emailRef}
+                            autoComplete="off"
+                            onChange={(e) => setEmail(e.target.value)}
+                            value={email}
+                            placeholder="Email"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            ref={passwordRef}
+                            autoComplete="off"
+                            onChange={(e) => setPassword(e.target.value)}
+                            value={password}
+                            placeholder="Wachtwoord"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="confirmPassword">Confirm Password</label>
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            ref={confirmPasswordRef}
+                            autoComplete="off"
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            value={confirmPassword}
+                            placeholder="Herhaal Wachtwoord"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="meetstationCode">Meetstation Code</label>
+                        <input
+                            type="number"
+                            id="meetstationCode"
+                            ref={meetstationCodeRef}
+                            autoComplete="off"
+                            onChange={(e) => setMeetstationCode(e.target.value)}
+                            value={meetstationCode}
+                            placeholder="123456"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <label htmlFor="workshopCode">Workshop Code</label>
+                        <input
+                            type="number"
+                            id="workshopCode"
+                            ref={workshopCodeRef}
+                            autoComplete="off"
+                            onChange={(e) => setWorkshopCode(e.target.value)}
+                            value={workshopCode}
+                            placeholder="123456"
+                            disabled={loading} // Disable input when submitting
+                        />
+                        <button className="button" disabled={loading}>Registreren</button>
+                    </form>
+                    <div className="form-redirect">
+                        <p>Al een account?</p>
+                        <span className="line">
+                  <Link to="/login">Inloggen</Link>
+                </span>
+                    </div>
+                </div>
+            )}
+        </section>
+    )
 }
 
-export default Register
+export default Register;
