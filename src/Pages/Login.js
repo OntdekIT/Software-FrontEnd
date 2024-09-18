@@ -86,7 +86,7 @@ const Login = () => {
                             placeholder="Password"
                             disabled={loading} // Disable input when submitting
                         />
-                        <button className="button" disabled={loading}>Inloggen</button>
+                        <button className="btn btn-primary" disabled={loading}>Inloggen</button>
                     </form>
                     <div className="form-redirect">
                         <p>Nog geen account?</p>

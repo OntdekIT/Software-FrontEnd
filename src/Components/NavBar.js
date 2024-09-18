@@ -29,7 +29,7 @@ const NavBar = () => {
     }, []);
 
     return (
-        <nav className="navbar bg-warning navbar-expand-lg justify-content-between fixed-top nav-size shadow-sm">
+        <nav className="navbar bg-primary navbar-expand-lg justify-content-between fixed-top nav-size shadow-sm">
             <div className="container-fluid">
                 {/* Brand */}
                 <a className="navbar-brand" href="/">MB Ontdekt</a>

@@ -294,11 +294,11 @@ const ClaimStation = () => {
                     <div className="col-4"></div>
                     <div className="col-5">
                         {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
-                            <button className="button2Inline" onClick={goBack}>
+                            <button className="btn btn-primary" onClick={goBack}>
                                 Terug
                             </button>
                         )}
-                        <button className={"button2"} onClick={() => handleButtonClick(step.num)}>Volgende</button>
+                        <button className={"btn btn-primary"} onClick={() => handleButtonClick(step.num)}>Volgende</button>
                     </div>
                 </div>
             </div>

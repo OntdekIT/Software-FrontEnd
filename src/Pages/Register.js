@@ -184,7 +184,7 @@ const Register = () => {
                             placeholder="123456"
                             disabled={loading} // Disable input when submitting
                         />
-                        <button className="button" disabled={loading}>Registreren</button>
+                        <button className="btn btn-primary" disabled={loading}>Registreren</button>
                     </form>
                     <div className="form-redirect">
                         <p>Al een account?</p>

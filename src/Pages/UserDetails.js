@@ -137,7 +137,7 @@ const UserDetails = () => {
           required
           placeholder="Email"
         />
-        <button class="button">Aanpassen</button>
+        <button class="btn btn-primary">Aanpassen</button>
       </form>
     </section>
   );

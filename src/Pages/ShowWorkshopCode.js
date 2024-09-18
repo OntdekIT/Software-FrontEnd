@@ -57,7 +57,7 @@ const ShowWorkshopCode = () => {
             <h2 align="center" key={workshopCode.id}>{workshopCode.code}</h2>
         ))}
         <Link to={"/Admin"}>
-            <button className="button2Inline">Terug</button>
+            <button className="btn btn-dark">Terug</button>
         </Link>
     </div>
 

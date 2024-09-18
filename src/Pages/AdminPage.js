@@ -17,11 +17,11 @@ export default function AdminPage() {
     }, []);
 
 
-    return (
-        <div className="Account">
+    return (<div className="Account">
             <title>Beheer</title>
             {/* {user.admin ? valueToShowIfTrue : valueToShowIfFalse} */}
-            {isAdmin ? (<div className="container">
+            {isAdmin ? (
+                <div className="container">
                     <div className="row">
                         <h1 className="text-center page-header-margin">Beheer</h1>
                     </div>

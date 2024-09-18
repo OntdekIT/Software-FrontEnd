@@ -155,9 +155,9 @@ const GrantUserAdmin = () => {
                         <div className={"col-4"}></div>
                         <div className={"col-5"}>
                             <Link to={"/Admin"}>
-                                <button className={"button2Inline"}>Annuleren</button>
+                                <button className={"btn btn-dark me-2"}>Annuleren</button>
                             </Link>
-                            <button id="submitbutton" className={"button2"} onClick={handleSubmit}>Opslaan</button>
+                            <button id="submitbutton" className={"btn btn-primary"} onClick={handleSubmit}>Opslaan</button>
                         </div>
                     </div>
                 </div>

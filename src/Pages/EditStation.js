@@ -134,9 +134,9 @@ const EditStation = () => {
               <div className={"row mt-5"}>
                 <div className={"col-4"}></div>
                 <div className={"col-5"}>
-                  <button type="button" className={"button2Inline"} onClick={() => navigate(-1)}>Terug</button>
-                  {/*<button size="sm" color="danger" type="button" className={"button2Inline"} onClick={handleDelete}>Verwijderen</button>*/}
-                  <button className={"button2"} type="submit">Opslaan</button>
+                  <button type="button" className={"btn btn-primary"} onClick={() => navigate(-1)}>Terug</button>
+                  {/*<button size="sm" color="danger" type="button" className={"btn btn-danger"} onClick={handleDelete}>Verwijderen</button>*/}
+                  <button className={"btn btn-primary"} type="submit">Opslaan</button>
                 </div>
               </div>
             </form>

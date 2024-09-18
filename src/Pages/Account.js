@@ -40,7 +40,7 @@ export default function Account() {
         <h1>Welkom {naam}!</h1>
         <h2>Stations</h2>
         <button
-            className="button2Inline"
+            className="btn btn-primary"
             style={{ position: 'absolute', top: '10px', right: '10px' }}
             onClick={handleButtonClick}
         >

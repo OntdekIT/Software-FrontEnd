@@ -109,10 +109,10 @@ const CreateWorkshopCode = () => {
                             <div className={"col-4"}></div>
                             <div className={"col-5"}>
                                 <Link to={"/Admin"}>
-                                    <button className={"button2Inline"}>Terug</button>
+                                    <button className={"btn btn-dark me-2"}>Terug</button>
                                 </Link>
                                 {/*<Link to={"/station/create/name"} state={registrationCode}>*/}
-                                <button className={"button2"} onClick={handleSubmit}>Code genereren</button>
+                                <button className={"btn btn-primary"} onClick={handleSubmit}>Code genereren</button>
                                 {/*</Link>*/}
                             </div>
                         </div>
