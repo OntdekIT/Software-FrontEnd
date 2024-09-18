@@ -29,13 +29,13 @@ const NavBar = () => {
     }, []);
 
     return (
-        <nav className="navbar bg-warning navbar-expand-lg justify-content-between fixed-top nav-size">
+        <nav className="navbar bg-warning navbar-expand-lg justify-content-between fixed-top nav-size shadow-sm">
             <div className="container-fluid">
                 {/* Brand */}
                 <a className="navbar-brand" href="/">MB Ontdekt</a>
 
                 {/* Collapse button */}
-                <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
+                <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
                         aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                     <Menu className="navbar-toggler-icon"/>
                 </button>
@@ -58,7 +58,7 @@ const NavBar = () => {
                     </li> */}
                                 {isAdmin && (
                                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-                                        <Link className="nav-link" to="/admin">Admin Page</Link>
+                                        <Link className="nav-link" to="/admin">Beheer</Link>
                                     </li>
                                 )}
                                 <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">

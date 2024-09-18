@@ -34,52 +34,9 @@ main section {
   display: none;
 }
 
-/*.button {*/
-/*  background-color: var(--yellow);*/
-/*  color: var(--dark-grey);*/
-/*  border-radius: 10px;*/
-/*  border: none;*/
-/*  font-size: 22px;*/
-/*  padding: 0.7rem;*/
-/*  margin-top: 0.8rem;*/
-/*}*/
-
-/*.button:hover {*/
-/*  background-color: var(--dark-yellow);*/
-/*}*/
-
-/*.button2 {*/
-/*  background-color: var(--yellow);*/
-/*  color: var(--dark-grey);*/
-/*  border-radius: 10px;*/
-/*  border: none;*/
-/*  font-size: 16px;*/
-/*  padding: 0.7rem;*/
-/*  margin: 0.8rem;*/
-/*}*/
-
-/*.button2:hover {*/
-/*  background-color: var(--dark-yellow);*/
-/*}*/
-
-/*.button2Inline {*/
-/*  background-color: white;*/
-/*  color: var(--dark-grey);*/
-/*  border-radius: 10px;*/
-/*  border: 2px solid var(--yellow);*/
-/*  font-size: 16px;*/
-/*  padding: 0.7rem;*/
-/*  margin: 0.8rem;*/
-/*}*/
-
-/*.button2Inline:hover {*/
-/*  background-color: var(--yellow);*/
-/*  !* Green *!*/
-/*}*/
-
-/*.button:active {*/
-/*  transform: scale(0.98);*/
-/*}*/
+.page-header-margin {
+  margin-top: 1rem;
+}
 
 /*///////////////////////////////////////////////////*/
 /*                  Specific classes                 */

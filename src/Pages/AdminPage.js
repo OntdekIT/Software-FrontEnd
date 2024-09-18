@@ -1,45 +1,54 @@
 import React, {useContext} from 'react';
-import { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
-import { api } from "../App";
+import {useState, useEffect} from "react";
+import {Link} from 'react-router-dom';
+import {api} from "../App";
 import LoginCheck from '../Components/LoginCheck';
+import DashboardButton from "../Components/Shared/DashboardButton";
 
 export default function AdminPage() {
-  const [errMsg, setErrMsg] = useState(null);
-  const { isAdmin } = useContext(LoginCheck);
+    const [errMsg, setErrMsg] = useState(null);
+    const {isAdmin} = useContext(LoginCheck);
 
-  if (!isAdmin)
-    {
-      window.location.href = "/";
+    if (!isAdmin) {
+        window.location.href = "/";
     }
 
-  useEffect(() => {
-  }, []);
+    useEffect(() => {
+    }, []);
 
 
-  return (
-    <div className="Account">
-      <title>Admin Panel</title>
-      {/* {user.admin ? valueToShowIfTrue : valueToShowIfFalse} */}
-      {isAdmin ? (
-  <div>
-    <h1>Welkom bij de admin panel</h1>
-    <Link to={"/Admin/workshopcode/create"}>
-      <button className="btn btn-lg bg-warning">Workshopcode aanmaken</button>
-    </Link>
-    <Link to={"/Admin/workshopcode/show"}>
-      <button className="btn btn-lg bg-warning">Workshopcodes zien</button>
-    </Link>
-    <Link to={"/Admin/grantUserAdmin"}>
-      <button className="btn btn-lg bg-warning">Gebruiker adminrechten geven</button>
-    </Link>
-  </div>
-) : (
-  <div>
-    
-  </div>
-)}
+    return (
+        <div className="Account">
+            <title>Beheer</title>
+            {/* {user.admin ? valueToShowIfTrue : valueToShowIfFalse} */}
+            {isAdmin ? (<div className="container">
+                    <div className="row">
+                        <h1 className="text-center page-header-margin">Beheer</h1>
+                    </div>
+                    <div className="row">
+                        <div className="col-12 col-sm-6 col-md-4 mb-4">
+                            <DashboardButton link={"/Admin/workshopcode/create"} text={"Workshopcode aanmaken"}
+                                             icon={"bi bi-123"}></DashboardButton>
+                        </div>
+                        <div className="col-12 col-sm-6 col-md-4 mb-4">
+                            <DashboardButton link={"/Admin/workshopcode/show"} text={"Workshopcodes zien"}
+                                             icon={"bi bi-123"}></DashboardButton>
+                        </div>
+                        <div className="col-12 col-sm-6 col-md-4 mb-4">
+                            {/*<Link to={"/Admin/grantUserAdmin"}>*/}
+                            {/*    <button className="btn btn-lg bg-warning">Gebruiker adminrechten geven</button>*/}
+                            {/*</Link>*/}
+                            <DashboardButton link={"/Admin/grantUserAdmin"} text={"Gebruiker adminrechten geven"}
+                                             icon={"bi bi-person"}></DashboardButton>
+                        </div>
+                    </div>
+                </div>
+            ) : (
+                <div>
 
-    </div>
-  );
+                </div>
+            )}
+
+        </div>
+    );
 }
