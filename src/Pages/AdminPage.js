@@ -25,13 +25,13 @@ export default function AdminPage() {
   <div>
     <h1>Welkom bij de admin panel</h1>
     <Link to={"/Admin/workshopcode/create"}>
-      <button className={"button2"}>Workshopcode aanmaken</button>
+      <button className="btn btn-lg bg-warning">Workshopcode aanmaken</button>
     </Link>
     <Link to={"/Admin/workshopcode/show"}>
-      <button className={"button2"}>Workshopcodes zien</button>
+      <button className="btn btn-lg bg-warning">Workshopcodes zien</button>
     </Link>
     <Link to={"/Admin/grantUserAdmin"}>
-      <button className={"button2"}>Gebruiker adminrechten geven</button>
+      <button className="btn btn-lg bg-warning">Gebruiker adminrechten geven</button>
     </Link>
   </div>
 ) : (

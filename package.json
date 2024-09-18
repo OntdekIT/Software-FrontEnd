@@ -71,6 +71,7 @@
   "devDependencies": {
     "cypress": "^13.11.0",
     "eslint-plugin-cypress": "^3.3.0",
-    "react-test-renderer": "^18.2.0"
+    "react-test-renderer": "^18.2.0",
+    "sass": "^1.78.0"
   }
 }

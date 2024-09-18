@@ -1,0 +1,20 @@
+$primary: #f57325;
+$secondary: rgb(32, 75, 153);
+$success: #33a567;
+$info: rgb(113, 201, 243);
+$warning: #fecb3d;
+$danger: #dc3545;
+$dark: #424043;
+
+$theme-colors: (
+        'primary': $primary,
+        'secondary': $secondary,
+        'success': $success,
+        'info': $info,
+        'warning': $warning,
+        'danger': $danger,
+        'dark': $dark
+);
+
+@import '~bootstrap/scss/bootstrap';
+

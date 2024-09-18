@@ -34,80 +34,60 @@ main section {
   display: none;
 }
 
-.button {
-  background-color: var(--yellow);
-  color: var(--dark-grey);
-  border-radius: 10px;
-  border: none;
-  font-size: 22px;
-  padding: 0.7rem;
-  margin-top: 0.8rem;
-}
+/*.button {*/
+/*  background-color: var(--yellow);*/
+/*  color: var(--dark-grey);*/
+/*  border-radius: 10px;*/
+/*  border: none;*/
+/*  font-size: 22px;*/
+/*  padding: 0.7rem;*/
+/*  margin-top: 0.8rem;*/
+/*}*/
 
-.button:hover {
-  background-color: var(--dark-yellow);
-}
+/*.button:hover {*/
+/*  background-color: var(--dark-yellow);*/
+/*}*/
 
-.button2 {
-  background-color: var(--yellow);
-  color: var(--dark-grey);
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-  padding: 0.7rem;
-  margin: 0.8rem;
-}
+/*.button2 {*/
+/*  background-color: var(--yellow);*/
+/*  color: var(--dark-grey);*/
+/*  border-radius: 10px;*/
+/*  border: none;*/
+/*  font-size: 16px;*/
+/*  padding: 0.7rem;*/
+/*  margin: 0.8rem;*/
+/*}*/
 
-.button2:hover {
-  background-color: var(--dark-yellow);
-}
+/*.button2:hover {*/
+/*  background-color: var(--dark-yellow);*/
+/*}*/
 
-.button2Inline {
-  background-color: white;
-  color: var(--dark-grey);
-  border-radius: 10px;
-  border: 2px solid var(--yellow);
-  font-size: 16px;
-  padding: 0.7rem;
-  margin: 0.8rem;
-}
+/*.button2Inline {*/
+/*  background-color: white;*/
+/*  color: var(--dark-grey);*/
+/*  border-radius: 10px;*/
+/*  border: 2px solid var(--yellow);*/
+/*  font-size: 16px;*/
+/*  padding: 0.7rem;*/
+/*  margin: 0.8rem;*/
+/*}*/
 
-.button2Inline:hover {
-  background-color: var(--yellow);
-  /* Green */
-}
+/*.button2Inline:hover {*/
+/*  background-color: var(--yellow);*/
+/*  !* Green *!*/
+/*}*/
 
-.button:active {
-  transform: scale(0.98);
-}
+/*.button:active {*/
+/*  transform: scale(0.98);*/
+/*}*/
 
 /*///////////////////////////////////////////////////*/
 /*                  Specific classes                 */
 /*///////////////////////////////////////////////////*/
-/* Navbar */
-.navbar-section {
-  background-color: var(--yellow);
-}
 
-.navbar-section nav a,
-.navbar-section nav div ul li a {
-  color: var(--dark-grey);
+.nav-size {
+  min-height: 3.5rem;
 }
-
-nav.navbar {
-  max-width: 1280px;
-  margin: 0 auto;
-}
-
-.navbar-toggler:focus {
-  box-shadow: none !important;
-}
-
-.navbar-toggler-icon {
-  color: var(--dark-grey);
-}
-
-/* End navbar */
 
 /* Home */
 .map-container {
@@ -285,11 +265,6 @@ form {
 @media only screen and (max-width: 1350px) {
   main {
     padding: 12px;
-  }
-
-  nav.navbar {
-    padding-left: 12px;
-    padding-right: 12px;
   }
 }
 
