@@ -46,12 +46,15 @@ const NavBar = () => {
                     <ul className="navbar-nav mr-auto">
                         {/* Links */}
                         <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                            <Link className="nav-link" to="/">Kaart</Link>
+                        </li>
+                        <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                             <Link className="nav-link" to="/about">Over ons</Link>
                         </li>
                         {isLoggedIn ? (
                             <>
                                 <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-                                    <Link className="nav-link" to="/Account">Mijn stations</Link>
+                                    <Link className="nav-link" to="/account">Mijn stations</Link>
                                 </li>
                                 {/* <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                       <Link className="nav-link" to="/Userdetails">Mijn gegevens</Link>

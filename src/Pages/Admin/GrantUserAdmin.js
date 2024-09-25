@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
-import useAuth from '../Hooks/useAuth';
+import useAuth from '../../Hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { api } from "../App";
-import LoginCheck from "../Components/LoginCheck";
+import { api } from "../../App";
+import LoginCheck from "../../Components/LoginCheck";
 
-const ADMIN_URL = '/Admin/grantuseradmin';
+const ADMIN_URL = '/admin/grantuseradmin';
 const SUPERADMINID = 1;
 
 const GrantUserAdmin = () => {
@@ -80,7 +80,7 @@ const GrantUserAdmin = () => {
                 });
 
             if (response?.status === 200) {
-                window.location.href = "http://localhost:3000/Admin";
+                window.location.href = "http://localhost:3000/admin";
             }
             
             if (response?.status === 400) {
@@ -154,7 +154,7 @@ const GrantUserAdmin = () => {
                     <div className={"row mt-5"}>
                         <div className={"col-4"}></div>
                         <div className={"col-5"}>
-                            <Link to={"/Admin"}>
+                            <Link to={"/admin"}>
                                 <button className={"btn btn-dark me-2"}>Annuleren</button>
                             </Link>
                             <button id="submitbutton" className={"btn btn-primary"} onClick={handleSubmit}>Opslaan</button>

@@ -31,7 +31,7 @@ export default function Account() {
   }, []);
 
   const handleButtonClick = () => {
-    navigate('/Station/Claim'); // Replace with the desired path
+    navigate('/stations/claim'); // Replace with the desired path
   };
 
   return (

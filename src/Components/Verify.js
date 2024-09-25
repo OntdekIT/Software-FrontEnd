@@ -35,10 +35,10 @@ const Verify = ({ mail }) => {
                 const stationId = localStorage.getItem("stationId");
                 console.log("Logged from local storage: ", stationId);
                 if (stationId != null){
-                    window.location.href = "http://localhost:3000/Station/Claim";
+                    window.location.href = "http://localhost:3000/stations/claim";
                 }
                 else{
-                    window.location.href = "http://localhost:3000/Account";
+                    window.location.href = "http://localhost:3000/account";
                 }
             }
         } catch (err) {
@@ -65,7 +65,7 @@ const Verify = ({ mail }) => {
                         required
                         placeholder="Code"
                     />
-                    <button className="button">Verify</button>
+                    <button className="btn btn-primary">Verify</button>
                 </form>
             </div>
         </section>

@@ -56,7 +56,7 @@ const ShowWorkshopCode = () => {
         {workshopCodes && workshopCodes.map(workshopCode => (
             <h2 align="center" key={workshopCode.id}>{workshopCode.code}</h2>
         ))}
-        <Link to={"/Admin"}>
+        <Link to={"/admin"}>
             <button className="btn btn-dark">Terug</button>
         </Link>
     </div>

@@ -96,7 +96,7 @@ const Home = () => {
                         errMsg && (
                             <div className="error-overlay">
                                 <p ref={errRef} aria-live="assertive">{errMsg}</p>
-                                <button className="button" onClick={() => window.location.reload(false)}>Opnieuw proberen</button>
+                                <button className="btn btn-primary" onClick={() => window.location.reload(false)}>Opnieuw proberen</button>
                             </div>
                         )
                     }

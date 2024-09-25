@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const ErrorPage = () => {
+const NotFoundErrorPage = () => {
     return (
         <article style={{ padding: "100px" }}>
             <title>Oops!</title>
@@ -13,4 +13,4 @@ const ErrorPage = () => {
     )
 }
 
-export default ErrorPage
+export default NotFoundErrorPage

@@ -175,7 +175,7 @@ const InfoStation = () => {
     }
 
     const handleEditClick = () => {
-        navigate(`/Station/Edit?id=${meetstation.stationid}`);
+        navigate(`/stations/Edit?id=${meetstation.stationid}`);
     }
 
     return (
