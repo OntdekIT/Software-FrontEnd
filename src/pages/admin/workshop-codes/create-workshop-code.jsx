@@ -1,5 +1,4 @@
-import {LoginCheckContext} from "../../../context/login-check-provider.jsx";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {useForm} from "react-hook-form";
 import {useNavigate} from "react-router-dom";
@@ -12,11 +11,6 @@ export default function CreateWorkshopCode() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [errMsg, setErrMsg] = useState('');
-    const {isAdmin} = useContext(LoginCheckContext);
-
-    if (!isAdmin) {
-        window.location.href = "/";
-    }
 
     useEffect(() => {
         setErrMsg('');
