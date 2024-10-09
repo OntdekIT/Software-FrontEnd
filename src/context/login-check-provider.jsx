@@ -16,6 +16,7 @@ export const LoginCheckProvider = ({ children }) => {
       setIsLoggedIn(response.data);
     } catch (err) {
       console.log(err);
+      setIsLoggedIn(false);
     }
   };
 
@@ -27,6 +28,7 @@ export const LoginCheckProvider = ({ children }) => {
       setIsAdmin(response.data);
     } catch (err) {
       console.log(err);
+      setIsAdmin(false);
     }
   };
 

@@ -22,6 +22,7 @@ import CreateWorkshopCode from "./pages/admin/workshop-codes/create-workshop-cod
 import GrantUserAdmin from "./pages/admin/users/grant-user-admin.jsx";
 import {isAdminLoader} from "./loaders/admin-loader.jsx";
 import {isLoggedInUserLoader} from "./loaders/logged-in-user-loader.jsx";
+import Logout from "./pages/auth/logout.jsx";
 
 
 const router = createBrowserRouter([
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
                     {
                         path: "register",
                         element: <Register/>
+                    },
+                    {
+                        path: "logout",
+                        element: <Logout/>
                     }
                 ]
             },
