@@ -1,14 +1,6 @@
-import {useContext} from "react";
-import {LoginCheckContext} from "../../context/login-check-provider.jsx";
 import DashboardButton from "../../components/dashboard-button.jsx";
 
 export default function AdminDashboard() {
-    const {isAdmin} = useContext(LoginCheckContext);
-
-    if (!isAdmin) {
-        throw new Error("Unauthorized");
-    }
-
     return (
         <>
             <div className="container">

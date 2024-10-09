@@ -4,7 +4,7 @@ import {LoginCheckContext} from "../context/login-check-provider.jsx";
 import {backendApi} from "../utils/backend-api.jsx";
 
 export default function Navbar() {
-    const {isLoggedIn, isAdmin} = useContext(LoginCheckContext);
+    const {checkLogin, checkAdmin, isLoggedIn, isAdmin} = useContext(LoginCheckContext);
     const logout = async () => {
         try {
             localStorage.removeItem("stationId");
@@ -12,6 +12,10 @@ export default function Navbar() {
                 {
                     withCredentials: true
                 });
+
+            checkLogin();
+            checkAdmin();
+
         } catch (err) {
             console.log(err);
         }

@@ -20,6 +20,8 @@ import AdminDashboard from "./pages/admin/admin-dashboard.jsx";
 import WorkshopCodeOverview from "./pages/admin/workshop-codes/workshop-code-overview.jsx";
 import CreateWorkshopCode from "./pages/admin/workshop-codes/create-workshop-code.jsx";
 import GrantUserAdmin from "./pages/admin/users/grant-user-admin.jsx";
+import {isAdminLoader} from "./loaders/admin-loader.jsx";
+import {isLoggedInUserLoader} from "./loaders/logged-in-user-loader.jsx";
 
 
 const router = createBrowserRouter([
@@ -55,6 +57,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/my",
+                loader: isLoggedInUserLoader,
                 children: [
                     {
                         path: "stations",
@@ -86,6 +89,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/admin",
+                loader: isAdminLoader,
                 children: [
                     {
                         index: true,

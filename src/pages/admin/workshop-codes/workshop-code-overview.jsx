@@ -1,13 +1,11 @@
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {LoginCheckContext} from "../../../context/login-check-provider.jsx";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
 import LoadingComponent from "../../../components/map/loading-component.jsx";
-import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function WorkshopCodeOverview() {
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array
-    const {isAdmin} = useContext(LoginCheckContext);
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
 
@@ -32,13 +30,8 @@ export default function WorkshopCodeOverview() {
     };
 
     useEffect(() => {
-        if (isAdmin) {
             getData();
-        } else {
-            setLoading(false); // Set loading to false directly if not admin
-            console.log("Admin not true");
-        }
-    }, [isAdmin]);
+    }, []);
 
     return (
         <>
