@@ -16,7 +16,7 @@ export default function RadioButton({data, handleChange, current}) {
         //excludes fields that should not get shown
         if (fieldName !== 'id' && fieldName !== 'latitude' && fieldName !== 'longitude' && fieldName !== 'timestamp' && fieldName !== 'is_public' && fieldName !== 'userId') {
             results.push(
-                <div>
+                <div key={fieldName}>
                     <label>
                         <input type="radio" value={fieldName} checked={selectedOption === fieldName}
                                onChange={() => {
