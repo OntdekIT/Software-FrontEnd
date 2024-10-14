@@ -10,6 +10,7 @@ import ColorLegend from "../components/map/color-legend.jsx";
 import nl from 'date-fns/locale/nl';
 import ReactDatePicker from "react-datepicker";
 import HeatmapLayer from "react-leaflet-heat-layer";
+import {gradient} from "../utils/map-utils.jsx";
 
 export default function Home() {
     const errRef = useRef();
@@ -115,18 +116,19 @@ export default function Home() {
                             <HeatmapLayer
                                 fitBoundsOnLoad
                                 fitBoundsOnUpdate
-                                latlngs={tempMeasurements
+                                latlngs={
+                                tempMeasurements
                                     .filter(m => m.latitude && m.longitude) // Ensure valid lat/lng
                                     .map(m => ([m.latitude, m.longitude, m[heatmapType] || 0]))
                                 }
-                                longitudeExtractor={m => m.lng}
-                                latitudeExtractor={m => m.lat}
-                                intensityExtractor={m => m.value}
-                                max={Number.MAX_VALUE}
-                                min={Number.MIN_VALUE}
+                                longitudeExtractor={m => m[1]}
+                                latitudeExtractor={m => m[0]}
+                                intensityExtractor={m => m[2]}
+                                max={Math.max(...tempMeasurements.map(m => m[heatmapType] || 0))}
+                                min={Math.min(...tempMeasurements.map(m => m[heatmapType] || 0))}
+                                gradient={gradient}
                             />
                         }
-                        {/*<HeatmapLayer data={tempMeasurements} visible={showTemp} type={heatmapType}/>}*/}
                     </MapContainer>
 
                     <div className="layer-control">

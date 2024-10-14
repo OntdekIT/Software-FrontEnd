@@ -15,3 +15,16 @@ export const spectralColors = {
     8: '#DF4828',
     9: '#B8221E'
 }
+
+export const gradient = {
+    '.20': spectralColors[0],
+    '.32': spectralColors[1],
+    '.44': spectralColors[2],
+    '.56': spectralColors[3],
+    '.68': spectralColors[4],
+    '.77': spectralColors[5],
+    '.84': spectralColors[6],
+    '.90': spectralColors[7],
+    '.95': spectralColors[8],
+    '1': spectralColors[9]
+}
