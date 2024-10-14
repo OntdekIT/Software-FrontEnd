@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {LoginCheckContext} from "../../../context/login-check-provider.jsx";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
-import LoadingComponent from "../../../components/map/loading-component.jsx";
+import LoadingComponent from "../../../components/loading-component.jsx";
 
 export default function WorkshopCodeOverview() {
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array

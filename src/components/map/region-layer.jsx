@@ -5,7 +5,7 @@ import ReactDatePicker from "react-datepicker";
 import {spectralColors, roundToOneDecimal} from "../../utils/map-utils.jsx";
 import {backendApi} from "../../utils/backend-api.jsx";
 import PropTypes from "prop-types";
-import LoadingComponent from "./loading-component.jsx";
+import LoadingComponent from "../loading-component.jsx";
 
 export default function RegionLayer({data}) {
     //use states for what to show and what not to show

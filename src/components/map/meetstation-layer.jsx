@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
 import L from 'leaflet';
-import LoadingComponent from "./loading-component.jsx";
+import LoadingComponent from "../loading-component.jsx";
 import {backendApi} from "../../utils/backend-api.jsx";
 import "react-datepicker/dist/react-datepicker.css";
 import PropTypes from "prop-types";

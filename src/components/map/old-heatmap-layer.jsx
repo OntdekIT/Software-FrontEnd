@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import PropTypes from "prop-types";
 
 //TODO: Fix crash when pressing heatmap radio button
-export default function HeatmapLayer({ data, visible, type }) {
+export default function OldHeatmapLayer({ data, visible, type }) {
     const map = useMap();
     const [heatmapLayer, setHeatmapLayer] = useState(null);
 
@@ -97,7 +97,7 @@ export default function HeatmapLayer({ data, visible, type }) {
     return null; // This component doesn't render any JSX
 }
 
-HeatmapLayer.propTypes = {
+OldHeatmapLayer.propTypes = {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     visible: PropTypes.bool.isRequired,
     type: PropTypes.string.isRequired,

@@ -3,15 +3,14 @@ import {backendApi} from "../utils/backend-api.jsx";
 import {MapContainer, TileLayer} from "react-leaflet";
 import RegionLayer from "../components/map/region-layer.jsx";
 import MeetStationLayer from "../components/map/meetstation-layer.jsx";
-import HeatmapLayer from "../components/map/heatmap-layer.jsx";
 import RadioButtonGroup from "../components/map/radio-button-group.jsx";
 import RadioButton from "../components/map/radio-button.jsx";
 import Checkbox from "../components/map/checkbox.jsx";
 import ColorLegend from "../components/map/color-legend.jsx";
 import nl from 'date-fns/locale/nl';
 import ReactDatePicker from "react-datepicker";
+import HeatmapLayer from "react-leaflet-heat-layer";
 
-//TODO: Fix crash when pressing heatmap radio button
 export default function Home() {
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
@@ -112,8 +111,22 @@ export default function Home() {
                         {showRegions && <RegionLayer data={regionData}></RegionLayer>}
                         <MeetStationLayer data={tempMeasurements} visible={showDataStations} selectedDate={dateTime}
                                           userId={userId}></MeetStationLayer>
-                        {tempMeasurements &&
-                            <HeatmapLayer data={tempMeasurements} visible={showTemp} type={heatmapType}/>}
+                        {showTemp && tempMeasurements.length > 0 &&
+                            <HeatmapLayer
+                                fitBoundsOnLoad
+                                fitBoundsOnUpdate
+                                latlngs={tempMeasurements
+                                    .filter(m => m.latitude && m.longitude) // Ensure valid lat/lng
+                                    .map(m => ([m.latitude, m.longitude, m[heatmapType] || 0]))
+                                }
+                                longitudeExtractor={m => m.lng}
+                                latitudeExtractor={m => m.lat}
+                                intensityExtractor={m => m.value}
+                                max={Number.MAX_VALUE}
+                                min={Number.MIN_VALUE}
+                            />
+                        }
+                        {/*<HeatmapLayer data={tempMeasurements} visible={showTemp} type={heatmapType}/>}*/}
                     </MapContainer>
 
                     <div className="layer-control">

@@ -2,7 +2,7 @@ import ReactDatePicker from "react-datepicker";
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
-import LoadingComponent from "../../components/map/loading-component.jsx";
+import LoadingComponent from "../../components/loading-component.jsx";
 import GraphView from "../../components/stations/graph-view.jsx";
 
 export default function StationDetails() {

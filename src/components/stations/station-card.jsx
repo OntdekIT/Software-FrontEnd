@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
-import LoadingComponent from "../map/loading-component.jsx";
+import LoadingComponent from "../loading-component.jsx";
 import ReactDatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 

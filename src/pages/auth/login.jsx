@@ -2,7 +2,7 @@ import useAuth from "../../hooks/use-auth.jsx";
 import {useEffect, useRef, useState} from "react";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
-import LoadingComponent from "../../components/map/loading-component.jsx";
+import LoadingComponent from "../../components/loading-component.jsx";
 import VerifyEmail from "../../components/auth/verify-email.jsx";
 import {useForm} from "react-hook-form";
 

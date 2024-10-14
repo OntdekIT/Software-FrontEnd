@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from "react";
 import {LoginCheckContext} from "../../../context/login-check-provider.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import LoadingComponent from "../../../components/map/loading-component.jsx";
+import LoadingComponent from "../../../components/loading-component.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function MyStationsOverview() {
