@@ -17,7 +17,6 @@ export default function VerifyEmail({ email, message }) {
 
     useEffect(() => {
         setErrMsg('');
-        console.log("test: " + email);
     }, [email]);
 
     const handleSubmit = async (e) => {

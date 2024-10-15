@@ -29,8 +29,7 @@ export default function RadioButton({data, handleChange, current}) {
                 </div>
             )
         }
-    })
-    console.log(fieldNames);
+    });
 
     return (
         <div>

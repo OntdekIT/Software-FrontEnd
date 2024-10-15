@@ -145,7 +145,6 @@ const MeetStationLayer = ({ data, visible, selectedDate, userId }) => {
 
     if (!visible) return (<></>);
 
-    console.log(selectedStation + "selectedStation");
     return (
         <>
             {data.map((meting) => (

@@ -13,7 +13,6 @@ export default function GrantUserAdmin() {
 
     const getData = async () => {
         try {
-            console.log(document.cookie);
             const getUsersResponse = await backendApi.get(
                 '/User',
                 {
@@ -25,12 +24,8 @@ export default function GrantUserAdmin() {
                     withCredentials: true
                 });
 
-            console.log(getUserId.data);
-            console.log(getUsersResponse.data);
-
             //zodat je eigen adminrechten niet kan wijzigen en SUPERADMIN id omdat die geen rechten niet mag verliezen
             const filteredUsers = getUsersResponse.data.filter(user => user.id !== getUserId.data && user.id !== SUPERADMINID);
-            console.log(filteredUsers);
 
             setUsers(filteredUsers);
 
@@ -52,10 +47,6 @@ export default function GrantUserAdmin() {
     }, []);
 
     const handleSubmit = async () => {
-        console.log(selectedUserId);
-        console.log('/admin/grantuseradmin');
-        console.log(adminRights);
-
         try {
             const response = await backendApi.post('/admin/grantuseradmin', {
                     userId: selectedUserId,

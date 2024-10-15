@@ -8,7 +8,6 @@ export async function isLoggedInUserLoader() {
         });
 
         if (response.data) {
-            console.log(response.data);
             isLoggedIn = true;
         }
     } catch (error) {

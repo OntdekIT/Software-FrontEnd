@@ -28,8 +28,6 @@ export default function ClaimStation() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(localStorage.getItem("stationId"));
-        console.log(station.stationid);
         station.visibility = '0';
         if (station.stationid != null) {
             SetStepValues(2);
@@ -81,14 +79,12 @@ export default function ClaimStation() {
             if (!station.stationid) {
                 setErrorMessage("Vul een station nummer in.");
             } else if (!workshopCode) {
-                console.log(workshopCode);
                 setErrorMessage("Vul een workshop code in.");
             } else {
                 const response = await backendApi.get(`/Meetstation/Availibility/${station.stationid}/${workshopCode}`, {
                     headers: {'Content-Type': 'application/json'},
                     withCredentials: false
                 });
-                console.log(response.data);
                 if (response.data === 200) {
                     SetStepValues(step.num + 1);
                 } else if (response.data === 402) {
@@ -141,7 +137,6 @@ export default function ClaimStation() {
             is_public: station.visibility === '1',
         };
 
-        console.log(currentStation);
         backendApi.put('/Meetstation/Claim', currentStation, {
             headers: {'Content-Type': 'application/json'},
             withCredentials: true

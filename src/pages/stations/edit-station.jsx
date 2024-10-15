@@ -63,7 +63,6 @@ export default function EditStation() {
             is_public: visibility === '1',
         };
 
-        console.log(currentStation);
         backendApi.put('/Meetstation/', currentStation)
             .then((response) => {
                 navigate(-1);

@@ -28,7 +28,6 @@ export default function StationDetails() {
                 });
 
                 setMeetstation(response.data);
-                console.log("Response 1: ", response.data);
                 setLoading(false); // End loading
             } catch (err) {
                 console.error("error: ", err);

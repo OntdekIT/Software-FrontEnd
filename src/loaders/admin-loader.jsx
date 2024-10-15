@@ -8,7 +8,6 @@ export async function isAdminLoader() {
         });
 
         if (response.data) {
-            console.log(response.data);
             isAdmin = true;
         }
     } catch (error) {

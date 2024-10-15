@@ -53,7 +53,6 @@ export default function Home() {
             try {
                 const response = await backendApi.get('/User/getID', {withCredentials: true});
                 setUserId(response.data); // Assuming response.data contains the userId
-                console.log(userId);
             } catch (error) {
                 console.error('Error fetching user ID:', error);
                 // Handle error here, e.g., setUserId to a default value or handle it in UI
@@ -65,7 +64,6 @@ export default function Home() {
             console.log(dateTime.toISOString());
             backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
-                    console.log(resp.data);
                     setTempMeasurements(resp.data.filter(station => station.is_public === true)); //laat ze alleen zien als ze true zijn
                 })
                 .catch(function (error) {

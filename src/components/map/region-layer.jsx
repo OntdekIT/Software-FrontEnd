@@ -48,9 +48,6 @@ export default function RegionLayer({data}) {
         tempDif = maxtemp - mintemp;
     }
 
-    console.log(data);
-    console.log(`min: ${mintemp}, max: ${maxtemp}, dif: ${tempDif}`);
-
     function setRegionColour(value) {
         if (isNaN(value))
             return "rgb(136,136,136)";

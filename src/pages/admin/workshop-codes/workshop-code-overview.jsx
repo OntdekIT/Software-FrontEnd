@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {LoginCheckContext} from "../../../context/login-check-provider.jsx";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
 import LoadingComponent from "../../../components/loading-component.jsx";
@@ -11,12 +10,11 @@ export default function WorkshopCodeOverview() {
 
     const getData = async () => {
         try {
-            const getWorkshopCodes = await backendApi.get("/workshopcodes", {
+            const response = await backendApi.get("/workshopcodes", {
                 withCredentials: true
             });
-            console.log(getWorkshopCodes.data);
 
-            setWorkshopCodes(getWorkshopCodes.data);
+            setWorkshopCodes(response.data);
             setErrMsg(null);
         } catch (err) {
             setErrMsg(err.message);
@@ -47,6 +45,7 @@ export default function WorkshopCodeOverview() {
                 </div>
                 <div className="row">
                     <div className="col">
+                        {errMsg && <div className="error-msg">{errMsg}</div>}
                         {loading ? (
                             <LoadingComponent message="Workshopcodes aan het ophalen..." isFullScreen={true}></LoadingComponent>
                         ) : (
