@@ -24,16 +24,21 @@ export default function RegionLayer({data}) {
 
     const errRef = useRef();
 
+    const convertToFloatOrNaN = (value) => {
+        return value === "NaN" ? NaN : parseFloat(value);
+    };
+
     let mintemp = 1000;
     let maxtemp = -1000;
     let tempDif = 1;
 
     data.forEach((neighbourhood) => {
+        neighbourhood.avgTemp = convertToFloatOrNaN(neighbourhood.avgTemp);
         if (!isNaN(neighbourhood.avgTemp)) {
             if (neighbourhood.avgTemp < mintemp) {
                 mintemp = neighbourhood.avgTemp;
             }
-            if (neighbourhood.avgTemp > maxtemp) {
+            if (neighbourhood > maxtemp) {
                 maxtemp = neighbourhood.avgTemp;
             }
         }
@@ -42,6 +47,9 @@ export default function RegionLayer({data}) {
     if (maxtemp - mintemp !== 0) {
         tempDif = maxtemp - mintemp;
     }
+
+    console.log(data);
+    console.log(`min: ${mintemp}, max: ${maxtemp}, dif: ${tempDif}`);
 
     function setRegionColour(value) {
         if (isNaN(value))
@@ -249,7 +257,7 @@ RegionLayer.propTypes = {
     data: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
-        avgTemp: PropTypes.number,
+        avgTemp: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         coordinates: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
     })).isRequired
 };
