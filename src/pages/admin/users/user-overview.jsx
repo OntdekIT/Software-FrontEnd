@@ -14,10 +14,23 @@ export default function UserOverview() {
     const [filters, setFilters] = useState({});
     const SUPERADMIN_ID = 1;
 
-    const getAllUsers = async () => {
+    const getAllUsers = async (filters = {}) => {
         try {
+            const queryParams = new URLSearchParams();
+            Object.keys(filters).forEach(key => {
+                if (filters[key] !== "" && filters[key] !== null && filters[key] !== undefined) {
+                    if (Array.isArray(filters[key])) {
+                        if (filters[key].length > 0) {
+                            queryParams.append(key, filters[key].join(","));
+                        }
+                    } else {
+                        queryParams.append(key, filters[key]);
+                    }
+                }
+            });
+
             //TODO: Change to correct endpoint when available
-            const response = await backendApi.get("/User", {
+            const response = await backendApi.get(`/User?${queryParams.toString()}`, {
                 withCredentials: true
             });
 
@@ -53,10 +66,13 @@ export default function UserOverview() {
     const onFiltersChanged = (filters) => {
         setFilters(filters);
         console.log(filters);
+
+        getAllUsers(filters).then();
     }
 
     const clearAllFilters = () => {
         setFilters({});
+        getAllUsers().then();
     }
 
     const handleEditUserRoleModalClose = () => {
@@ -65,7 +81,7 @@ export default function UserOverview() {
 
     const handleUserRoleChanged = () => {
         setSelectedUser(null);
-        getAllUsers().then();
+        getAllUsers(filters).then();
     }
 
     const handleEditButtonClick = (user) => {
@@ -97,10 +113,10 @@ export default function UserOverview() {
             <div className="container-fluid">
                 <div className="row">
                     {/* Large screen filters */}
-                    <div className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar">
+                    <div className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar shadow-sm">
                         <h2>Filters</h2>
                         <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
-                                         clearAllFilters={clearAllFilters}/>
+                                     clearAllFilters={clearAllFilters}/>
                     </div>
                     <div className="col-12 col-xxl-10 offset-xxl-2">
                         <div className="nav-size d-block d-xxl-none"></div>

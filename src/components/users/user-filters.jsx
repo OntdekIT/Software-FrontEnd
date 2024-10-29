@@ -49,7 +49,7 @@ export default function UserFilters({filters, onFiltersChange}) {
             <div className="mb-3">
                 <label htmlFor="admin" className="form-label mb-0">Rol:</label>
                 <select className="form-select form-select-sm" id="admin" {...register("admin")}>
-                    <option value={null}>Alles</option>
+                    <option value={""}>Alles</option>
                     <option value={"false"}>Gebruiker</option>
                     <option value={"true"}>Admin</option>
                 </select>
