@@ -90,7 +90,7 @@ export default function UserOverview() {
                                     <tr>
                                         <th scope="col">Naam</th>
                                         <th scope="col">Email</th>
-                                        <th scope="col">Admin</th>
+                                        <th scope="col">Rol</th>
                                         <th scope="col">Acties</th>
                                     </tr>
                                     </thead>
@@ -99,7 +99,7 @@ export default function UserOverview() {
                                         <tr key={user.id}>
                                             <td>{`${user.firstName} ${user.lastName}`}</td>
                                             <td>{user.mailAddress}</td>
-                                            <td>{user.admin ? "Ja" : "Nee"}</td>
+                                            <td>{user.admin ? "Admin" : "Gebruiker"}</td>
                                             <td>
                                                 {user.id !== SUPERADMIN_ID && user.id !== loggedInUserId &&
                                                     <button className="btn btn-outline-dark btn-sm" onClick={() => handleEditButtonClick(user)}>
