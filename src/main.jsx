@@ -19,10 +19,10 @@ import EditStation from "./pages/stations/edit-station.jsx";
 import AdminDashboard from "./pages/admin/admin-dashboard.jsx";
 import WorkshopCodeOverview from "./pages/admin/workshop-codes/workshop-code-overview.jsx";
 import CreateWorkshopCode from "./pages/admin/workshop-codes/create-workshop-code.jsx";
-import GrantUserAdmin from "./pages/admin/users/grant-user-admin.jsx";
 import {isAdminLoader} from "./loaders/admin-loader.jsx";
 import {isLoggedInUserLoader} from "./loaders/logged-in-user-loader.jsx";
 import Logout from "./pages/auth/logout.jsx";
+import UserOverview from "./pages/admin/users/user-overview.jsx";
 
 
 const router = createBrowserRouter([
@@ -118,7 +118,7 @@ const router = createBrowserRouter([
                         children: [
                             {
                                 index: true,
-                                element: <GrantUserAdmin/> //TODO: Change this to a user overview page once implemented
+                                element: <UserOverview/>
                             }
                         ]
                     }
