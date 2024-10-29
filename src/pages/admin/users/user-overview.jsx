@@ -2,6 +2,8 @@ import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import LoadingComponent from "../../../components/loading-component.jsx";
 import EditUserRoleModal from "../../../components/users/edit-user-role-modal.jsx";
+import UserFilters from "../../../components/users/user-filters.jsx";
+import FilterButton from "../../../components/filter-button.jsx";
 
 export default function UserOverview() {
     const [users, setUsers] = useState([]);
@@ -9,6 +11,7 @@ export default function UserOverview() {
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [filters, setFilters] = useState({});
     const SUPERADMIN_ID = 1;
 
     const getAllUsers = async () => {
@@ -47,6 +50,15 @@ export default function UserOverview() {
         }
     }
 
+    const onFiltersChanged = (filters) => {
+        setFilters(filters);
+        console.log(filters);
+    }
+
+    const clearAllFilters = () => {
+        setFilters({});
+    }
+
     const handleEditUserRoleModalClose = () => {
         setSelectedUser(null);
     }
@@ -67,18 +79,32 @@ export default function UserOverview() {
 
     return (
         <>
-            <div className="toolbar fixed-top d-flex justify-content-between align-items-center">
-                <button className="btn btn-primary btn-sm ms-auto"><i className="bi bi-funnel"></i></button>
-            </div>
-            <div className="container">
-                <div className="row">
-                    <div className="col text-center">
-                        <div className="nav-size"></div>
-                        <h1>Gebruikers</h1>
-                    </div>
+            {/*Filter offcanvas*/}
+            <div className="offcanvas offcanvas-start" tabIndex="-1" id="userFilterOffcanvas"
+                 aria-labelledby="userFilterOffcanvasLabel">
+                <div className="offcanvas-header">
+                    <h5 className="offcanvas-title" id="userFilterOffcanvasLabel">Filters</h5>
+                    <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
                 </div>
+                <div className="offcanvas-body">
+                    <UserFilters onFiltersChange={onFiltersChanged} filters={filters}/>
+                </div>
+            </div>
+            <div className="toolbar fixed-top d-flex justify-content-end align-items-center d-xxl-none">
+                <FilterButton areFiltersActive={false} targetId={"userFilterOffcanvas"}/>
+            </div>
+            <div className="container-fluid">
                 <div className="row">
-                    <div className="col">
+                    {/* Large screen filters */}
+                    <div className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar">
+                        <h2>Filters</h2>
+                        <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
+                                         clearAllFilters={clearAllFilters}/>
+                    </div>
+                    <div className="col-12 col-xxl-10 offset-xxl-2">
+                        <div className="nav-size d-block d-xxl-none"></div>
+                        <h1 className="page-header-margin text-center">Gebruikers</h1>
                         {errMsg && <div className="error-msg">{errMsg}</div>}
                         {loading ? (
                             <LoadingComponent message="Gebruikers aan het ophalen..."
@@ -102,7 +128,8 @@ export default function UserOverview() {
                                             <td>{user.admin ? "Admin" : "Gebruiker"}</td>
                                             <td>
                                                 {user.id !== SUPERADMIN_ID && user.id !== loggedInUserId &&
-                                                    <button className="btn btn-outline-dark btn-sm" onClick={() => handleEditButtonClick(user)}>
+                                                    <button className="btn btn-outline-dark btn-sm"
+                                                            onClick={() => handleEditButtonClick(user)}>
                                                         <i className="bi bi-pencil"></i>
                                                     </button>}
                                             </td>
@@ -115,7 +142,9 @@ export default function UserOverview() {
                     </div>
                 </div>
             </div>
-            {selectedUser && <EditUserRoleModal user={selectedUser} isShown={true} onClose={handleEditUserRoleModalClose} onRoleChanged={handleUserRoleChanged} />}
+            {selectedUser &&
+                <EditUserRoleModal user={selectedUser} isShown={true} onClose={handleEditUserRoleModalClose}
+                                   onRoleChanged={handleUserRoleChanged}/>}
         </>
     );
 }

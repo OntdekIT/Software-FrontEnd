@@ -61,6 +61,21 @@ body {
   transform: scale(1.02);
 }
 
+.min-h-100 {
+  min-height: 100%;
+}
+
+.full-height-sidebar {
+  height: calc(100vh - $navbar-height); /* Full viewport height minus navbar height */
+  position: fixed; /* Fix the sidebar position */
+  top: $navbar-height; /* Align below the navbar */
+  left: 0; /* Align to the left of the viewport */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  z-index: 1000; /* Ensure it stays above other content */
+  background-color: white; /* Optional: Set background color */
+  padding: 1rem; /* Optional: Add padding */
+}
+
 /* /////////////////////// */
 /* Map related css classes */
 /* /////////////////////// */
