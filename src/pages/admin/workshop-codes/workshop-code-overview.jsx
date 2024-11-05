@@ -8,6 +8,11 @@ export default function WorkshopCodeOverview() {
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
 
+    const parseDate = (dateString) => {
+        let date = new Date(dateString);
+        return date.toLocaleDateString("nl-NL") + " " + date.toLocaleTimeString("nl-NL", {hour: "2-digit", minute: "2-digit"});
+    };
+
     const getData = async () => {
         try {
             const response = await backendApi.get("/workshopcodes", {
@@ -52,8 +57,9 @@ export default function WorkshopCodeOverview() {
                             <div>
                                 {workshopCodes && workshopCodes.map(workshopCode => (
                                     <div key={workshopCode.id} className="card mb-2">
-                                        <div className="card-body">
+                                        <div className="card-body d-flex">
                                             <h4 className="card-title mb-0">{workshopCode.code}</h4>
+                                            {workshopCode?.expirationDate && (<p className="ms-auto text-body-tertiary"><i className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)} </p>)}
                                         </div>
                                     </div>
                                 ))}
