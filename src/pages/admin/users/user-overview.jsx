@@ -4,14 +4,21 @@ import LoadingComponent from "../../../components/loading-component.jsx";
 import EditUserRoleModal from "../../../components/users/edit-user-role-modal.jsx";
 import UserFilters from "../../../components/users/user-filters.jsx";
 import FilterButton from "../../../components/filter-button.jsx";
+import DeleteUserModal from "../../../components/users/delete-user-modal.jsx";
 
 export default function UserOverview() {
+    const modalTypes = {
+        EDIT: "EDIT",
+        DELETE: "DELETE"
+    };
+
     const [users, setUsers] = useState([]);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [filters, setFilters] = useState({});
+    const [selectedModalType, setSelectedModalType] = useState(modalTypes.EDIT);
 
     const getAllUsers = async (filters = {}) => {
         try {
@@ -81,16 +88,22 @@ export default function UserOverview() {
         getAllUsers().then();
     }
 
-    const handleEditUserRoleModalClose = () => {
+    const handleModalClose = () => {
         setSelectedUser(null);
     }
 
-    const handleUserRoleChanged = () => {
+    const handleUsersChanged = () => {
         setSelectedUser(null);
         getAllUsers(filters).then();
     }
 
     const handleEditButtonClick = (user) => {
+        setSelectedModalType(modalTypes.EDIT);
+        setSelectedUser(user);
+    }
+
+    const handleDeleteButtonClick = (user) => {
+        setSelectedModalType(modalTypes.DELETE);
         setSelectedUser(user);
     }
 
@@ -151,10 +164,16 @@ export default function UserOverview() {
                                             <td>{user.admin ? "Admin" : "Gebruiker"}</td>
                                             <td>
                                                 {user.id !== loggedInUserId &&
-                                                    <button className="btn btn-outline-dark btn-sm"
-                                                            onClick={() => handleEditButtonClick(user)}>
-                                                        <i className="bi bi-pencil"></i>
-                                                    </button>}
+                                                    <div className="d-flex">
+                                                        <button className="btn btn-outline-dark btn-sm"
+                                                                onClick={() => handleEditButtonClick(user)}>
+                                                            <i className="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button className="btn btn-outline-danger btn-sm ms-2"
+                                                                onClick={() => handleDeleteButtonClick(user)}>
+                                                            <i className="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>}
                                             </td>
                                         </tr>
                                     ))}
@@ -165,9 +184,12 @@ export default function UserOverview() {
                     </div>
                 </div>
             </div>
-            {selectedUser &&
-                <EditUserRoleModal user={selectedUser} isShown={true} onClose={handleEditUserRoleModalClose}
-                                   onRoleChanged={handleUserRoleChanged}/>}
+            {selectedUser && selectedModalType === modalTypes.EDIT &&
+                <EditUserRoleModal user={selectedUser} isShown={true} onClose={handleModalClose}
+                                   onRoleChanged={handleUsersChanged}/>}
+            {selectedUser && selectedModalType === modalTypes.DELETE &&
+                <DeleteUserModal user={selectedUser} isShown={true} onClose={handleModalClose}
+                                 onUserDeleted={handleUsersChanged}/>}
         </>
     );
 }

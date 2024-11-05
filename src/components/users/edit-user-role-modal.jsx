@@ -72,7 +72,10 @@ EditUserRoleModal.propTypes = {
     user: PropTypes.shape({
         id: PropTypes.number.isRequired,
         admin: PropTypes.bool.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
     }).isRequired,
     isShown: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    onRoleChanged: PropTypes.func.isRequired,
 };
