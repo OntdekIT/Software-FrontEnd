@@ -12,7 +12,6 @@ export default function UserOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [selectedUser, setSelectedUser] = useState(null);
     const [filters, setFilters] = useState({});
-    const SUPERADMIN_ID = 1;
 
     const getAllUsers = async (filters = {}) => {
         try {
@@ -37,7 +36,14 @@ export default function UserOverview() {
             setUsers(response.data);
             setErrMsg(null);
         } catch (err) {
-            setErrMsg(err.message);
+            let errorMessage = err.message;
+
+            if (err.response?.status === 404) {
+                errorMessage = "Geen gebruikers gevonden";
+            }
+
+            setErrMsg(errorMessage);
+            setUsers([]);
 
             if (err.response?.status === 401) {
                 window.location.href = "/login";
@@ -122,10 +128,11 @@ export default function UserOverview() {
                         <div className="nav-size d-block d-xxl-none"></div>
                         <h1 className="page-header-margin text-center">Gebruikers</h1>
                         {errMsg && <div className="error-msg">{errMsg}</div>}
-                        {loading ? (
+                        {loading && (
                             <LoadingComponent message="Gebruikers aan het ophalen..."
                                               isFullScreen={true}></LoadingComponent>
-                        ) : (
+                        )}
+                        {!loading && (users?.length > 0) && (
                             <div className="table-responsive">
                                 <table className="table">
                                     <thead>
@@ -143,7 +150,7 @@ export default function UserOverview() {
                                             <td>{user.mailAddress}</td>
                                             <td>{user.admin ? "Admin" : "Gebruiker"}</td>
                                             <td>
-                                                {user.id !== SUPERADMIN_ID && user.id !== loggedInUserId &&
+                                                {user.id !== loggedInUserId &&
                                                     <button className="btn btn-outline-dark btn-sm"
                                                             onClick={() => handleEditButtonClick(user)}>
                                                         <i className="bi bi-pencil"></i>
