@@ -44,7 +44,7 @@ export default function DeleteUserModal({user, isShown, onClose, onUserDeleted})
                     Annuleren
                 </Button>
                 <Button variant="danger" onClick={handleDelete} disabled={loading}>
-                    Verwijderen
+                    {loading && <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>} Verwijderen
                 </Button>
             </Modal.Footer>
         </Modal>
