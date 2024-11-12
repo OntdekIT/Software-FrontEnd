@@ -1,9 +1,10 @@
 import {Link, useLoaderData, useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import EditUserRoleModal from "../../../components/users/edit-user-role-modal.jsx";
 import DeleteUserModal from "../../../components/users/delete-user-modal.jsx";
 import UserUtils from "../../../utils/user-utils.jsx";
+import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function UserDetails() {
     const {user} = useLoaderData();
@@ -54,16 +55,25 @@ export default function UserDetails() {
         }
     }
 
-    return(
+    useEffect(() => {
+        getLoggedInUser().then();
+    }, []);
+
+    return (
         <>
             <div className="toolbar fixed-top d-flex align-items-center">
                 <p className="flex-grow-1 mb-0">{user.firstName} {user.lastName}</p>
-                <button className="btn btn-primary btn-sm ms-2"
-                        onClick={() => handleEditButtonClick()}>
-                    <i className="bi bi-pencil"></i></button>
-                <button className="btn btn-danger btn-sm ms-2"
-                        onClick={() => handleDeleteButtonClick()}>
-                    <i className="bi bi-trash"></i></button>
+                {user.id !== loggedInUser?.id && (
+                    <>
+                        <button className="btn btn-primary btn-sm ms-2"
+                                onClick={() => handleEditButtonClick()}>
+                            <i className="bi bi-pencil"></i></button>
+                        <button className="btn btn-danger btn-sm ms-2"
+                                onClick={() => handleDeleteButtonClick()}>
+                            <i className="bi bi-trash"></i></button>
+                    </>)
+                }
+
             </div>
             <div className="container">
                 <div className="row">
@@ -79,15 +89,28 @@ export default function UserDetails() {
                                 <span><b>Rol: </b> {UserUtils.translateRole(user.isAdmin)}</span>
                             </div>
                         </div>
+                        <h2 className="text-center mt-4">Stations</h2>
+                        <div className="row g-2">
+                            {user.stations.length === 0 && (
+                                <p className="text-body-tertiary text-center">Geen meetstations gevonden</p>
+                            )}
+                            {user.stations.length > 0 && user.stations
+                                .sort((a, b) => a.stationid - b.stationid)
+                                .map((station, index) => (
+                                    <div className="col-12 col-md-6 col-lg-4" key={station.stationid}>
+                                        <StationCard station={station}></StationCard>
+                                    </div>
+                                ))}
+                        </div>
                     </div>
                 </div>
             </div>
-                    {selectedModalType === modalTypes.EDIT &&
-                        <EditUserRoleModal user={user} isShown={showSelectedModal} onClose={handleModalClose}
-                                           onRoleChanged={handleUserChanged}/>}
-                    {selectedModalType === modalTypes.DELETE &&
-                        <DeleteUserModal user={user} isShown={showSelectedModal} onClose={handleModalClose}
-                                         onUserDeleted={handleUserDeleted}/>}
-                </>
-                );
-                }
+            {selectedModalType === modalTypes.EDIT &&
+                <EditUserRoleModal user={user} isShown={showSelectedModal} onClose={handleModalClose}
+                                   onRoleChanged={handleUserChanged}/>}
+            {selectedModalType === modalTypes.DELETE &&
+                <DeleteUserModal user={user} isShown={showSelectedModal} onClose={handleModalClose}
+                                 onUserDeleted={handleUserDeleted}/>}
+        </>
+    );
+}

@@ -1,16 +1,8 @@
 import {backendApi} from "../utils/backend-api.jsx";
 
-export async function getUserByIdLoader({request, params}) {
+export async function getUserByIdLoader({params}) {
     try {
-        const url = new URL(request.url);
-        const queryParams = new URLSearchParams(url.search);
-        let uri = `/users/${params.userId}`;
-
-        if (Array.from(queryParams.keys()).length > 0) {
-            uri += `?${queryParams.toString()}`;
-        }
-
-        const response = await backendApi.get(uri);
+        const response = await backendApi.get(`/users/${params.userId}?includeStations=true`);
 
         return {user: response.data};
     } catch (error) {
