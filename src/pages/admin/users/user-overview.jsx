@@ -35,8 +35,7 @@ export default function UserOverview() {
                 }
             });
 
-            //TODO: Change to correct endpoint when available
-            const response = await backendApi.get(`/User?${queryParams.toString()}`, {
+            const response = await backendApi.get(`/users?${queryParams.toString()}`, {
                 withCredentials: true
             });
 
@@ -62,11 +61,11 @@ export default function UserOverview() {
 
     const getLoggedInUserId = async () => {
         try {
-            const response = await backendApi.get("/User/getID", {
+            const response = await backendApi.get("/my-account", {
                 withCredentials: true
             });
 
-            setLoggedInUserId(response.data);
+            setLoggedInUserId(response.data.id);
         } catch (err) {
             setErrMsg(err.message);
 
@@ -160,8 +159,8 @@ export default function UserOverview() {
                                     {users && users.map(user => (
                                         <tr key={user.id}>
                                             <td>{`${user.firstName} ${user.lastName}`}</td>
-                                            <td>{user.mailAddress}</td>
-                                            <td>{user.admin ? "Admin" : "Gebruiker"}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.isAdmin ? "Admin" : "Gebruiker"}</td>
                                             <td>
                                                 {user.id !== loggedInUserId &&
                                                     <div className="d-flex">

@@ -25,13 +25,12 @@ export default function Register() {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 password: data.password,
-                confirmPassword: data.confirmPassword,
-                mailAddress: data.email,
-                meetstationCode: data.meetstationCode,
+                email: data.email,
+                stationCode: data.stationCode,
                 workshopCode: data.workshopCode,
             };
 
-            const response = await backendApi.post("/Authentication/register", JSON.stringify(body), {
+            const response = await backendApi.post("/authentication/register", JSON.stringify(body), {
                 headers: {'Content-Type': 'application/JSON'},
                 withCredentials: false
             });
@@ -152,15 +151,15 @@ export default function Register() {
 
                                 <div className="form-floating mb-3">
                                     <input
-                                        className={"form-control" + (errors.meetstationCode ? " is-invalid" : "")}
+                                        className={"form-control" + (errors.stationCode ? " is-invalid" : "")}
                                         type="number"
-                                        id="meetstationCode"
-                                        {...register("meetstationCode", {required: true})}
+                                        id="stationCode"
+                                        {...register("stationCode", {required: true})}
                                         placeholder="123456"
                                         disabled={loading}
                                     />
-                                    <label htmlFor="meetstationCode">Meetstation Code</label>
-                                    {errors.meetstationCode &&
+                                    <label htmlFor="stationCode">Meetstation Code</label>
+                                    {errors.stationCode &&
                                         <span className="invalid-feedback">Meetstation Code is verplicht</span>}
                                 </div>
 

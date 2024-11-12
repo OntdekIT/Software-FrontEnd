@@ -23,7 +23,7 @@ export default function VerifyEmail({ email, message }) {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await backendApi.post('/Authentication/verify', JSON.stringify({ mailAddress: email, code: code }), {
+            const response = await backendApi.post('/authentication/verify', JSON.stringify({ email: email, code: code }), {
                 headers: { 'Content-Type': 'application/JSON' },
                 withCredentials: true
             });

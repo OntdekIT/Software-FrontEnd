@@ -10,7 +10,7 @@ export const LoginCheckProvider = ({ children }) => {
 
   const checkLogin = async () => {
     try {
-      const response = await backendApi.get(`/Authentication/checkLogin`, {
+      const response = await backendApi.get(`/my-account`, {
         withCredentials: true
       });
       setIsLoggedIn(response.data);
@@ -22,10 +22,10 @@ export const LoginCheckProvider = ({ children }) => {
 
   const checkAdmin = async () => {
     try {
-      const response = await backendApi.get(`/User/checkAdmin`, {
+      const response = await backendApi.get(`/my-account`, {
         withCredentials: true
       });
-      setIsAdmin(response.data);
+      setIsAdmin(response.data?.isAdmin ?? false);
     } catch (err) {
       console.log(err);
       setIsAdmin(false);

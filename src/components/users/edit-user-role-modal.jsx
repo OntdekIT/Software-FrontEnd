@@ -4,16 +4,15 @@ import {useState} from "react";
 import PropTypes from "prop-types";
 
 export default function EditUserRoleModal({user, isShown, onClose, onRoleChanged}) {
-    const [adminRights, setAdminRights] = useState(user.admin);
+    const [adminRights, setAdminRights] = useState(user.isAdmin);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const handleSubmit = async () => {
         try {
             setLoading(true);
-            const response = await backendApi.post('/User/grantuseradmin', {
-                    userId: user.id,
-                    adminRights: adminRights
+            const response = await backendApi.put(`/users/${user.id}`, {
+                    isAdmin: adminRights
                 },
                 {
 
@@ -71,7 +70,7 @@ export default function EditUserRoleModal({user, isShown, onClose, onRoleChanged
 EditUserRoleModal.propTypes = {
     user: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        admin: PropTypes.bool.isRequired,
+        isAdmin: PropTypes.bool.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
     }).isRequired,

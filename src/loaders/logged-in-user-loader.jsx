@@ -3,7 +3,7 @@ import {backendApi} from "../utils/backend-api.jsx";
 export async function isLoggedInUserLoader() {
     let isLoggedIn = false;
     try {
-        const response = await backendApi.get(`/Authentication/checkLogin`, {
+        const response = await backendApi.get(`/my-account`, {
             withCredentials: true
         });
 

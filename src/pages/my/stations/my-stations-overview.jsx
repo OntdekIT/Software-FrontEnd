@@ -16,8 +16,8 @@ export default function MyStationsOverview() {
     useEffect(() => {
         const getData = async () => {
             try {
-                const response = await backendApi.get('/User/getUser', { withCredentials: true });
-                setMeetstations(response.data.meetstations);
+                const response = await backendApi.get('/my-account?includeStations=true', { withCredentials: true });
+                setMeetstations(response.data.stations);
                 setNaam(response.data.firstName);
                 setErrMsg(null);
             } catch (err) {

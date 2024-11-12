@@ -10,7 +10,7 @@ export default function DeleteUserModal({user, isShown, onClose, onUserDeleted})
     const handleDelete = async () => {
         try {
             setLoading(true);
-            const response = await backendApi.delete(`/User/${user.id}`, {
+            const response = await backendApi.delete(`/users/${user.id}`, {
                 withCredentials: true
             });
 

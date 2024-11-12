@@ -13,7 +13,7 @@ export default function Logout() {
         const logout = async () => {
             try {
                 localStorage.removeItem("stationId");
-                await backendApi.delete('/Authentication/logout', {
+                await backendApi.post('/authentication/logout', {
                     withCredentials: true
                 });
 

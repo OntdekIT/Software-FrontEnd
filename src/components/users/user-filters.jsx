@@ -48,7 +48,7 @@ export default function UserFilters({filters, onFiltersChange}) {
             {/*Role (admin)*/}
             <div className="mb-3">
                 <label htmlFor="admin" className="form-label mb-0">Rol:</label>
-                <select className="form-select form-select-sm" id="admin" {...register("admin")}>
+                <select className="form-select form-select-sm" id="admin" {...register("isAdmin")}>
                     <option value={""}>Alles</option>
                     <option value={"false"}>Gebruiker</option>
                     <option value={"true"}>Admin</option>

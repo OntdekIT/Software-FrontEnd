@@ -26,8 +26,8 @@ export default function Login() {
         setLoading(true); // Disable form on submit
         setFormData(data);
         try {
-            const response = await backendApi.post('/Authentication/login', JSON.stringify({
-                mailAddress: data.email,
+            const response = await backendApi.post('/authentication/login', JSON.stringify({
+                email: data.email,
                 password: data.password
             }), {
                 headers: {'Content-Type': 'application/JSON'},
@@ -36,7 +36,7 @@ export default function Login() {
 
             const accessToken = response?.data?.accessToken;
             const roles = response?.data?.roles;
-            setAuth({mail: data.email, password: data.password, roles, accessToken});
+            setAuth({email: data.email, password: data.password, roles, accessToken});
 
             if (response?.status === 200) {
                 setVerify(true);
