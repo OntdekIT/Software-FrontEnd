@@ -23,6 +23,8 @@ import {isAdminLoader} from "./loaders/admin-loader.jsx";
 import {isLoggedInUserLoader} from "./loaders/logged-in-user-loader.jsx";
 import Logout from "./pages/auth/logout.jsx";
 import UserOverview from "./pages/admin/users/user-overview.jsx";
+import UserDetails from "./pages/admin/users/user-details.jsx";
+import {getUserByIdLoader} from "./loaders/user-loader.jsx";
 
 
 const router = createBrowserRouter([
@@ -119,13 +121,23 @@ const router = createBrowserRouter([
                             {
                                 index: true,
                                 element: <UserOverview/>
+                            },
+                            {
+                                path: ":userId",
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <UserDetails/>,
+                                        loader: getUserByIdLoader
+                                    }
+                                ]
                             }
                         ]
                     }
                 ]
             }
         ]
-    },
+    }
 ]);
 
 createRoot(document.getElementById('root')).render(
