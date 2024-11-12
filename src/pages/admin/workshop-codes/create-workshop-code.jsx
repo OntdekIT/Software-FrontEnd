@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {useForm} from "react-hook-form";
 import {useNavigate} from "react-router-dom";
+import WorkshopUtils from "../../../utils/workshop-utils.jsx";
 
 export default function CreateWorkshopCode() {
     const {register, handleSubmit, formState: {errors}} = useForm({
@@ -21,9 +22,10 @@ export default function CreateWorkshopCode() {
         setErrMsg('');
         try {
             const body = {
-                duration: data.duration,
-                length: 6
+                expirationDate: WorkshopUtils.generateExpirationDate(data.duration)
             }
+
+            console.log(body);
 
             const response = await backendApi.post("/workshopcodes", body,
                 {
@@ -31,7 +33,7 @@ export default function CreateWorkshopCode() {
                     withCredentials: true
                 });
 
-            if (response?.status === 200) {
+            if (response?.status === 201) {
                 localStorage.setItem('workshopcode', response.data);
                 navigate("/admin/workshop-codes");
             }
@@ -68,7 +70,7 @@ export default function CreateWorkshopCode() {
                                 <option value={720}>12 uur</option>
                                 <option value={1440}>1 dag</option>
                                 <option value={4320}>3 dagen</option>
-                                <option value={2880}>1 week</option>
+                                <option value={10080}>1 week</option>
                             </select>
                             <label htmlFor="duration" className="form-label">Geldigheidsduur</label>
                             {errors.duration && <div className="invalid-feedback">Geldigheidsduur is verplicht</div>}
