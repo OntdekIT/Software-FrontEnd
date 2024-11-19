@@ -27,7 +27,7 @@ export default function CreateWorkshopCode() {
 
             console.log(body);
 
-            const response = await backendApi.post("/workshopcodes", body,
+            const response = await backendApi.post("/workshops", body,
                 {
                     headers: {'Content-Type': 'application/json'},
                     withCredentials: true

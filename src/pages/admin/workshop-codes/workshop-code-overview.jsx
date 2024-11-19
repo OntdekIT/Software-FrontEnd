@@ -15,7 +15,7 @@ export default function WorkshopCodeOverview() {
 
     const getData = async () => {
         try {
-            const response = await backendApi.get("/workshopcodes", {
+            const response = await backendApi.get("/workshops", {
                 withCredentials: true
             });
 
