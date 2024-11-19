@@ -7,7 +7,7 @@ import { LoginCheckContext } from "../../context/login-check-provider.jsx";
 
 export default function VerifyEmail({ email, message }) {
     const { setAuth } = useAuth();
-    const { checkLogin, checkAdmin } = useContext(LoginCheckContext);
+    const { checkLogin } = useContext(LoginCheckContext);
     const errRef = useRef();
     const codeRef = useRef();
     const navigate = useNavigate();
@@ -35,7 +35,6 @@ export default function VerifyEmail({ email, message }) {
 
             if (response?.status === 200) {
                 checkLogin();
-                checkAdmin();
                 const stationId = localStorage.getItem("stationId");
                 if (stationId != null) {
                     navigate('/my/stations/claim');

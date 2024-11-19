@@ -6,7 +6,7 @@ import useAuth from "../../hooks/use-auth.jsx";
 
 
 export default function Logout() {
-    const { checkLogin, checkAdmin } = useContext(LoginCheckContext);
+    const { checkLogin } = useContext(LoginCheckContext);
     const { setAuth } = useAuth();
 
     useEffect(() => {
@@ -17,9 +17,9 @@ export default function Logout() {
                     withCredentials: true
                 });
 
-                // setAuth(null); // Clear authentication state
+                setAuth(null); // Clear authentication state
                 await checkLogin();
-                await checkAdmin();
+
 
             } catch (err) {
                 console.log("Error logging out: ");
@@ -28,7 +28,7 @@ export default function Logout() {
         };
 
         logout();
-    }, [checkLogin, checkAdmin, setAuth]);
+    }, [setAuth]);
 
     return (
         <div className="container">
