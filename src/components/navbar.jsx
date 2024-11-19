@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { LoginCheckContext } from "../context/login-check-provider.jsx";
+import UserRole from "../domain/user-role.jsx";
 
 export default function Navbar() {
-    const { isLoggedIn, isAdmin } = useContext(LoginCheckContext);
+    const { loggedInUser } = useContext(LoginCheckContext);
 
     return (
         <nav className="navbar bg-primary navbar-expand-lg justify-content-between fixed-top nav-size shadow-sm">
@@ -22,12 +23,12 @@ export default function Navbar() {
                         <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                             <Link className="nav-link" to="/about">Over ons</Link>
                         </li>
-                        {isLoggedIn ? (
+                        {loggedInUser ? (
                             <>
                                 <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                                     <Link className="nav-link" to="/my/stations">Mijn stations</Link>
                                 </li>
-                                {isAdmin && (
+                                {(loggedInUser?.role === UserRole.ADMIN || loggedInUser?.role === UserRole.SUPER_ADMIN) && (
                                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                                         <Link className="nav-link" to="/admin">Beheer</Link>
                                     </li>
