@@ -103,6 +103,7 @@ export default function Login() {
                                         Inloggen
                                     </button>
                                 </div>
+                                <Link to={"/auth/forgot-password"}>Wachtwoord vergeten?</Link>
                                 <p>Nog geen account? <Link to={"/auth/register"}>registreer hier</Link></p>
                             </form>
                         </div>
