@@ -2,16 +2,37 @@ import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
 import LoadingComponent from "../../../components/loading-component.jsx";
+import DeleteWorkshopModal from "../../../components/workshop/delete-workshop-modal.jsx";
 
 export default function WorkshopCodeOverview() {
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [selectedWorkshop, setSelectedWorkshop] = useState(null);
 
     const parseDate = (dateString) => {
         let date = new Date(dateString);
-        return date.toLocaleDateString("nl-NL") + " " + date.toLocaleTimeString("nl-NL", {hour: "2-digit", minute: "2-digit"});
+        return date.toLocaleDateString("nl-NL") + " " + date.toLocaleTimeString("nl-NL", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
     };
+
+    const handleModalClose = () => {
+        setShowModal(false);
+
+    }
+
+    const handleDeleteButtonClick = (workshopCode) => {
+        setSelectedWorkshop(workshopCode);
+        setShowModal(true);
+    }
+
+    const handleWorkshopDeleted = async () => {
+        setShowModal(false);
+        await getData();
+    }
 
     const getData = async () => {
         try {
@@ -33,7 +54,7 @@ export default function WorkshopCodeOverview() {
     };
 
     useEffect(() => {
-            getData();
+        getData();
     }, []);
 
     return (
@@ -52,14 +73,22 @@ export default function WorkshopCodeOverview() {
                     <div className="col">
                         {errMsg && <div className="error-msg">{errMsg}</div>}
                         {loading ? (
-                            <LoadingComponent message="Workshopcodes aan het ophalen..." isFullScreen={true}></LoadingComponent>
+                            <LoadingComponent message="Workshopcodes aan het ophalen..."
+                                              isFullScreen={true}></LoadingComponent>
                         ) : (
                             <div>
                                 {workshopCodes && workshopCodes.map(workshopCode => (
                                     <div key={workshopCode.id} className="card mb-2">
                                         <div className="card-body d-flex">
                                             <h4 className="card-title mb-0">{workshopCode.code}</h4>
-                                            {workshopCode?.expirationDate && (<p className="ms-auto text-body-tertiary"><i className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)} </p>)}
+                                            {workshopCode?.expirationDate && (
+                                                <p className="ms-auto text-body-tertiary"><i
+                                                    className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)}
+                                                </p>)}
+                                            <button className="btn btn-danger btn-sm ms-2"
+                                                    onClick={() => handleDeleteButtonClick(workshopCode)}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
@@ -68,6 +97,14 @@ export default function WorkshopCodeOverview() {
                     </div>
                 </div>
             </div>
+            {selectedWorkshop && (
+                <DeleteWorkshopModal
+                    workshop={selectedWorkshop}
+                    isShown={showModal}
+                    onClose={handleModalClose}
+                    onWorkshopDeleted={handleWorkshopDeleted}
+                />
+            )}
         </>
     );
 }
