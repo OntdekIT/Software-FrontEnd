@@ -86,7 +86,7 @@ export default function UserDetails() {
                             <div className="card-body d-flex flex-column">
                                 <span><b>Naam: </b> {user.firstName} {user.lastName}</span>
                                 <span><b>E-mailadres: </b> {user.email}</span>
-                                <span><b>Rol: </b> {UserUtils.translateRole(user.isAdmin)}</span>
+                                <span><b>Rol: </b> {UserUtils.translateRole(user.role)}</span>
                             </div>
                         </div>
                         <h2 className="text-center mt-4">Stations</h2>
