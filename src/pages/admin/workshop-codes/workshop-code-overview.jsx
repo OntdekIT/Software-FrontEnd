@@ -31,6 +31,7 @@ export default function WorkshopCodeOverview() {
 
     const handleWorkshopDeleted = async () => {
         setShowModal(false);
+        setSelectedWorkshop(null);
         await getData();
     }
 
@@ -79,13 +80,13 @@ export default function WorkshopCodeOverview() {
                             <div>
                                 {workshopCodes && workshopCodes.map(workshopCode => (
                                     <div key={workshopCode.id} className="card mb-2">
-                                        <div className="card-body d-flex">
+                                        <div className="card-body d-flex align-items-center">
                                             <h4 className="card-title mb-0">{workshopCode.code}</h4>
                                             {workshopCode?.expirationDate && (
-                                                <p className="ms-auto text-body-tertiary"><i
+                                                <p className="ms-auto text-body-tertiary mb-0"><i
                                                     className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)}
                                                 </p>)}
-                                            <button className="btn btn-danger btn-sm ms-2"
+                                            <button className="btn btn-outline-danger btn-sm ms-2"
                                                     onClick={() => handleDeleteButtonClick(workshopCode)}>
                                                 <i className="bi bi-trash"></i>
                                             </button>

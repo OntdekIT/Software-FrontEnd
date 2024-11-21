@@ -14,8 +14,10 @@ export default function DeleteWorkshopModal({ workshop, isShown, onClose, onWork
                 withCredentials: true
             });
 
-            if (response?.status === 200) {
+            if (response?.status >= 200 && response?.status < 300) {
                 onWorkshopDeleted(); // Call the parent handler
+            } else {
+                console.error("Failed to delete workshop code", response);
             }
         } catch (err) {
             setError(err.message);
