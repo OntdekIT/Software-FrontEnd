@@ -38,7 +38,7 @@ export default function RegionLayer({data}) {
             if (neighbourhood.avgTemp < mintemp) {
                 mintemp = neighbourhood.avgTemp;
             }
-            if (neighbourhood > maxtemp) {
+            if (neighbourhood.avgTemp > maxtemp) {
                 maxtemp = neighbourhood.avgTemp;
             }
         }
