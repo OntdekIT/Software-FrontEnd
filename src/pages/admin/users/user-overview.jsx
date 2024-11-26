@@ -125,7 +125,7 @@ export default function UserOverview() {
                                         <tr key={user.id} onClick={() => navigateToDetails(user)} className="cursor-pointer">
                                             <td>{`${user.firstName} ${user.lastName}`}</td>
                                             <td>{user.email}</td>
-                                            <td>{UserUtils.translateRole(user.isAdmin)}</td>
+                                            <td>{UserUtils.translateRole(user.role)}</td>
                                             <td>
                                                 <Link to={`./${user.id}`} className="btn btn-sm btn-outline-dark"><i
                                                     className="bi bi-arrow-right"></i></Link>
