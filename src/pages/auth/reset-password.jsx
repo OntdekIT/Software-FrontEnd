@@ -32,7 +32,11 @@ export default function ResetPassword() {
         } catch (err) {
             console.error(err);
             if (err.status === 400) {
-                setErrMsg('Er is geen account gevonden met dit e-mailadres of de aanvraag is verlopen.');
+                if (err.response?.data?.message?.includes('password')) {
+                    setErrMsg('Wachtwoord voldoet niet aan de minimale eisen');
+                } else {
+                    setErrMsg('Er is geen account gevonden met dit e-mailadres of de aanvraag is verlopen.');
+                }
             } else {
                 setErrMsg('Er is iets misgegaan');
             }
@@ -54,13 +58,23 @@ export default function ResetPassword() {
                             type="password"
                             id="password"
                             autoComplete="off"
-                            {...register("password", {required: true})}
+                            {...register("password", {
+                                required: 'Wachtwoord is verplicht',
+                                minLength: {
+                                    value: 8,
+                                    message: 'Wachtwoord moet minimaal 8 tekens lang zijn'
+                                },
+                                pattern: {
+                                    value: /^(?=.*[A-Z])(?=.*\d).+$/,
+                                    message: 'Wachtwoord moet minimaal één hoofdletter en één cijfer bevatten'
+                                }
+                            })}
                             className={`form-control ${errors.password || errMsg ? 'is-invalid' : ''}`}
                             placeholder="Wachtwoord"
                             disabled={isSubmitProcessing} // Disable input when submitting
                         />
                         <label htmlFor="password" className="form-label">Wachtwoord</label>
-                        {errors.password && <div className="invalid-feedback">Wachtwoord is verplicht</div>}
+                        {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                     </div>
 
                     {/*Confirm password input*/}
