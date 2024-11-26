@@ -25,6 +25,8 @@ import Logout from "./pages/auth/logout.jsx";
 import UserOverview from "./pages/admin/users/user-overview.jsx";
 import UserDetails from "./pages/admin/users/user-details.jsx";
 import {getUserByIdLoader} from "./loaders/user-loader.jsx";
+import ForgotPassword from "./pages/auth/forgot-password.jsx";
+import ResetPassword from "./pages/auth/reset-password.jsx";
 
 
 const router = createBrowserRouter([
@@ -59,6 +61,14 @@ const router = createBrowserRouter([
                     {
                         path: "logout",
                         element: <Logout/>
+                    },
+                    {
+                        path: "forgot-password",
+                        element: <ForgotPassword/>
+                    },
+                    {
+                        path: "reset-password",
+                        element: <ResetPassword/>
                     }
                 ]
             },
