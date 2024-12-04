@@ -29,7 +29,7 @@ export default function Navbar() {
                                     <Link className="nav-link" to="/my/stations">Mijn stations</Link>
                                 </li>
                                 <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
-                                    <Link className="nav-link" to="/my/account/profile">Profile</Link>
+                                    <Link className="nav-link" to="/my/account/profile">Profiel</Link>
                                 </li>
 
                                 {(loggedInUser?.role === UserRole.ADMIN || loggedInUser?.role === UserRole.SUPER_ADMIN) && (
