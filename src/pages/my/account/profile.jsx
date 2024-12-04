@@ -5,13 +5,12 @@ import LoadingComponent from "../../../components/loading-component";
 import EditUserProfileModal from "../../../components/users/edit-User-Modal";
 import UserUtils from "../../../utils/user-utils";
 
-export default function EditProfile() {
+export default function Profile() {
     const navigate = useNavigate();
 
     const [loggedInUser, setLoggedInUser] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
     const [loading, setLoading] = useState(true);
-
     const getLoggedInUser = async () => {
         try {
             const response = await backendApi.get("/my-account", { withCredentials: true });
@@ -30,7 +29,8 @@ export default function EditProfile() {
     };
 
     const handleProfileUpdated = () => {
-        window.location.reload(); // Optionally reload page after update
+        getLoggedInUser();
+        setShowEditModal(false);
     };
 
     useEffect(() => {

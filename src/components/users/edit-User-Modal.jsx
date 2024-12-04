@@ -1,42 +1,49 @@
 import { Button, Modal } from "react-bootstrap";
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { backendApi } from "../../utils/backend-api"; // Adjust path as needed
+import { backendApi } from "../../utils/backend-api";
 
 export default function EditUserProfileModal({ user, isShown, onClose, onProfileUpdated }) {
     const [formData, setFormData] = useState({
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        password: "", // Password field for updates (can be left empty)
+        password: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // Handle form field changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    // Handle form submission to update user profile
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setLoading(true);
-            const response = await backendApi.put(`/api/my-account/${user.id}`, formData, {
+            console.log("Form Data:", formData);
+            const response = await backendApi.put("/my-account", formData, {
                 headers: { "Content-Type": "application/json" },
-                withCredentials: true, // Ensure credentials are sent for authentication
+                withCredentials: true,
             });
-
             if (response?.status === 200) {
-                onProfileUpdated();  // Callback to inform parent component of the update
-                onClose();  // Close modal after successful update
+                onProfileUpdated();
+                onClose();
+            } else {
+                throw new Error("Unexpected response code: " + response.status);
             }
         } catch (err) {
-            setError(err.message);  // Capture and display error
-            if (err.response?.status === 401) {
-                window.location.href = "/login";  // Redirect to login if unauthorized
+            console.error("PUT /api/my-account failed:", err);
+            if (err.response) {
+                console.error("Error response:", err.response);
+                console.error("Error message:", err.response?.data?.message);
+                setError(err.response?.data?.message || "Failed to update profile");
+                if (err.response?.status === 401) {
+                    window.location.href = "/auth/login";
+                }
+            } else {
+                setError("An unexpected error occurred. Please try again later.");
             }
         } finally {
             setLoading(false);
@@ -49,7 +56,10 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                 <Modal.Title>Edit Profile</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {/* Show error if there's any */}
                 {error && <div className="alert alert-danger">{error}</div>}
+
+                {/* Form for profile edit */}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
                         <label htmlFor="firstName" className="form-label">First Name</label>
@@ -63,6 +73,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                             disabled={loading}
                         />
                     </div>
+
                     <div className="mb-3">
                         <label htmlFor="lastName" className="form-label">Last Name</label>
                         <input
@@ -75,6 +86,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                             disabled={loading}
                         />
                     </div>
+
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label">Email</label>
                         <input
@@ -87,6 +99,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                             disabled={loading}
                         />
                     </div>
+
                     <div className="mb-3">
                         <label htmlFor="password" className="form-label">Password (leave empty to keep current)</label>
                         <input
@@ -99,15 +112,17 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                             disabled={loading}
                         />
                     </div>
-                    <Button variant="primary" type="submit" disabled={loading}>
-                        {loading ? "Saving..." : "Save Changes"}
-                    </Button>
+
+                    <div className="d-flex justify-content-end">
+                        <Button variant="secondary" onClick={onClose} disabled={loading} className="me-2">
+                            Cancel
+                        </Button>
+                        <Button variant="primary" type="submit" disabled={loading}>
+                            {loading ? "Saving..." : "Save Changes"}
+                        </Button>
+                    </div>
                 </form>
             </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={onClose} disabled={loading}>Cancel</Button>
-                <Button variant="primary" type="submit" disabled={loading}>Save Changes</Button>
-            </Modal.Footer>
         </Modal>
     );
 }
