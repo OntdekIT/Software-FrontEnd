@@ -53,7 +53,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
     return (
         <Modal show={isShown} onHide={onClose}>
             <Modal.Header closeButton>
-                <Modal.Title>Edit Profile</Modal.Title>
+                <Modal.Title>Gegevens bewerken</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {/* Show error if there's any */}
@@ -62,7 +62,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                 {/* Form for profile edit */}
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                        <label htmlFor="firstName" className="form-label">First Name</label>
+                        <label htmlFor="firstName" className="form-label">Voornaam</label>
                         <input
                             id="firstName"
                             name="firstName"
@@ -75,7 +75,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="lastName" className="form-label">Last Name</label>
+                        <label htmlFor="lastName" className="form-label">Achternaam</label>
                         <input
                             id="lastName"
                             name="lastName"
@@ -101,7 +101,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="password" className="form-label">Password (leave empty to keep current)</label>
+                        <label htmlFor="password" className="form-label">Wachtwoord</label>
                         <input
                             id="password"
                             name="password"
@@ -115,10 +115,10 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
 
                     <div className="d-flex justify-content-end">
                         <Button variant="secondary" onClick={onClose} disabled={loading} className="me-2">
-                            Cancel
+                            Annuleren
                         </Button>
                         <Button variant="primary" type="submit" disabled={loading}>
-                            {loading ? "Saving..." : "Save Changes"}
+                            {loading ? "Saving..." : "Opslaan"}
                         </Button>
                     </div>
                 </form>

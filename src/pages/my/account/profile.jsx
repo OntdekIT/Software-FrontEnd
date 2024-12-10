@@ -45,19 +45,19 @@ export default function Profile() {
                     <div className="col-md-8 offset-md-2">
                         <div className="card mt-4">
                             <div className="card-header">
-                                <h5>Profile Information</h5>
+                                <h5>Mijn profiel</h5>
                             </div>
                             <div className="card-body">
                                 {loading ? (
                                     <LoadingComponent message="Loading your profile..." isFullScreen={false} />
                                 ) : (
                                     <>
-                                        <p><strong>Full Name:</strong> {loggedInUser?.firstName} {loggedInUser?.lastName}</p>
+                                        <p><strong>Naam:</strong> {loggedInUser?.firstName} {loggedInUser?.lastName}</p>
                                         <p><strong>Email:</strong> {loggedInUser?.email}</p>
-                                        <p><strong>Role:</strong> {UserUtils.translateRole(loggedInUser?.role)}</p>
+                                        <p><strong>Rol:</strong> {UserUtils.translateRole(loggedInUser?.role)}</p>
 
                                         <button className="btn btn-primary" onClick={() => setShowEditModal(true)}>
-                                            <i className="bi bi-pencil"></i> Edit Profile
+                                            <i className="bi bi-pencil"></i> Profiel bijwerken
                                         </button>
                                     </>
                                 )}
