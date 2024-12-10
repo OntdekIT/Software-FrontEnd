@@ -1,10 +1,10 @@
 name: Build and Test
 
 on:
-  push:
-    branches: [ s3nj23_dev ]
-  pull_request:
-    branches: [ s3nj23_dev ]
+  push: #Add your branch here
+    branches: [ s3nj24_dev ]
+  pull_request: #Also add it here
+    branches: [ s3nj24_dev ]
 
 jobs:
   build:
@@ -17,23 +17,14 @@ jobs:
       - name: Install Node.Js
         uses: actions/setup-node@v4
         with:
-          node-version: '18.10.0'
-      
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          node-version: '20.17.0'
+          cache: 'npm'
       
       - name: Install node modules
-        if: steps.cache-npm.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci #clean install
 
       - name: Run build
         run: npm run build
-        env:
-          CI: ""
        
   
         
