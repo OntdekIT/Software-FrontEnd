@@ -1,5 +1,4 @@
-import useAuth from "../../hooks/use-auth.jsx";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
 import LoadingComponent from "../../components/loading-component.jsx";
@@ -11,7 +10,6 @@ export default function Login() {
         mode: "onBlur"
     });
 
-    const {setAuth} = useAuth();
     const [formData, setFormData] = useState({});
     const [errMsg, setErrMsg] = useState('');
     const [verify, setVerify] = useState(false);
@@ -33,10 +31,6 @@ export default function Login() {
                 headers: {'Content-Type': 'application/JSON'},
                 withCredentials: false
             });
-
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
-            setAuth({email: data.email, password: data.password, roles, accessToken});
 
             if (response?.status === 200) {
                 setVerify(true);

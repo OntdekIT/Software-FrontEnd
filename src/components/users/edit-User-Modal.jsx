@@ -39,9 +39,6 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                 console.error("Error response:", err.response);
                 console.error("Error message:", err.response?.data?.message);
                 setError(err.response?.data?.message || "Failed to update profile");
-                if (err.response?.status === 401) {
-                    window.location.href = "/auth/login";
-                }
             } else {
                 setError("An unexpected error occurred. Please try again later.");
             }
@@ -103,6 +100,7 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                     <div className="mb-3">
                         <label htmlFor="password" className="form-label">Wachtwoord</label>
                         <input
+                            placeholder="(Ongewijzigd)"
                             id="password"
                             name="password"
                             type="password"

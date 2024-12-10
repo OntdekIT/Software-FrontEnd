@@ -1,10 +1,9 @@
 import { Link } from "react-router-dom";
-import { useContext } from "react";
-import { LoginCheckContext } from "../context/login-check-provider.jsx";
 import UserRole from "../domain/user-role.jsx";
+import {useAuth} from "../providers/auth-provider.jsx";
 
 export default function Navbar() {
-    const { loggedInUser } = useContext(LoginCheckContext);
+    const {loggedInUser} = useAuth();
 
     return (
         <nav className="navbar bg-primary navbar-expand-lg justify-content-between fixed-top nav-size shadow-sm">

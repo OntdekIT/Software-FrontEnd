@@ -1,13 +1,11 @@
-import useAuth from "../../hooks/use-auth.jsx";
-import { useEffect, useRef, useState, useContext } from "react";
+import { useEffect, useRef, useState } from "react";
 import { backendApi } from "../../utils/backend-api.jsx";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { LoginCheckContext } from "../../context/login-check-provider.jsx";
+import {useAuth} from "../../providers/auth-provider.jsx";
 
 export default function VerifyEmail({ email, message }) {
-    const { setAuth } = useAuth();
-    const { checkLogin } = useContext(LoginCheckContext);
+    const { updateToken } = useAuth();
     const errRef = useRef();
     const codeRef = useRef();
     const navigate = useNavigate();
@@ -27,14 +25,10 @@ export default function VerifyEmail({ email, message }) {
                 headers: { 'Content-Type': 'application/JSON' },
                 withCredentials: true
             });
-            sessionStorage.setItem("name", response.data);
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
 
-            setAuth({ email, code, roles, accessToken });
 
             if (response?.status === 200) {
-                checkLogin();
+                updateToken(response.data.token);
                 const stationId = localStorage.getItem("stationId");
                 if (stationId != null) {
                     navigate('/my/stations/claim');

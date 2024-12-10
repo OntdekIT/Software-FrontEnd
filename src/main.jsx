@@ -6,11 +6,10 @@ import * as bootstrap from 'bootstrap'
 import Home from "./pages/home.jsx";
 import Root from "./pages/root.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { LoginCheckProvider } from "./context/login-check-provider.jsx";
 import About from "./pages/about.jsx";
 import ErrorPage from "./pages/error-page.jsx";
 import Login from "./pages/auth/login.jsx";
-import { AuthProvider } from "./context/auth-provider.jsx";
+import AuthProvider from "./providers/auth-provider.jsx";
 import MyStationsOverview from "./pages/my/stations/my-stations-overview.jsx";
 import ClaimStation from "./pages/my/stations/claim-station.jsx";
 import Register from "./pages/auth/register.jsx";
@@ -19,8 +18,6 @@ import EditStation from "./pages/stations/edit-station.jsx";
 import AdminDashboard from "./pages/admin/admin-dashboard.jsx";
 import WorkshopCodeOverview from "./pages/admin/workshop-codes/workshop-code-overview.jsx";
 import CreateWorkshopCode from "./pages/admin/workshop-codes/create-workshop-code.jsx";
-import { isAdminLoader } from "./loaders/admin-loader.jsx";
-import { isLoggedInUserLoader } from "./loaders/logged-in-user-loader.jsx";
 import Logout from "./pages/auth/logout.jsx";
 import UserOverview from "./pages/admin/users/user-overview.jsx";
 import UserDetails from "./pages/admin/users/user-details.jsx";
@@ -28,6 +25,8 @@ import { getUserByIdLoader } from "./loaders/user-loader.jsx";
 import ForgotPassword from "./pages/auth/forgot-password.jsx";
 import ResetPassword from "./pages/auth/reset-password.jsx";
 import Profile from './pages/my/account/profile.jsx';
+import ProtectedRoute from "./components/protected-route.jsx";
+import UserRole from "./domain/user-role.jsx";
 
 
 const router = createBrowserRouter([
@@ -75,7 +74,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/my",
-                loader: isLoggedInUserLoader,
+                element: <ProtectedRoute />,
                 children: [
 
                     {
@@ -113,7 +112,7 @@ const router = createBrowserRouter([
             },
             {
                 path: "/admin",
-                loader: isAdminLoader,
+                element: <ProtectedRoute roles={[UserRole.SUPER_ADMIN, UserRole.ADMIN]} />,
                 children: [
                     {
                         index: true,
@@ -160,9 +159,7 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <AuthProvider>
-            <LoginCheckProvider>
                 <RouterProvider router={router} />
-            </LoginCheckProvider>
         </AuthProvider>
     </StrictMode>,
 )
