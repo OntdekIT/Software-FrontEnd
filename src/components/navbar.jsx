@@ -11,9 +11,9 @@ export default function Navbar() {
             <div className="container-fluid">
                 <a className="navbar-brand" href="/">MB Ontdekt</a>
                 <button className="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbar"
-                        aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"/>
+                    data-bs-target="#navbar"
+                    aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon" />
                 </button>
                 <div className="collapse navbar-collapse justify-content-end" id="navbar">
                     <ul className="navbar-nav mr-auto">
@@ -28,6 +28,10 @@ export default function Navbar() {
                                 <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                                     <Link className="nav-link" to="/my/stations">Mijn stations</Link>
                                 </li>
+                                <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
+                                    <Link className="nav-link" to="/my/account/profile">Profiel</Link>
+                                </li>
+
                                 {(loggedInUser?.role === UserRole.ADMIN || loggedInUser?.role === UserRole.SUPER_ADMIN) && (
                                     <li className="nav-item" data-toggle="collapse" data-target=".navbar-collapse.show">
                                         <Link className="nav-link" to="/admin">Beheer</Link>
