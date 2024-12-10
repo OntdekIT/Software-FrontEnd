@@ -1,10 +1,10 @@
 name: Build and Test
 
 on:
-  push: #Add your branch here
-    branches: [ s3nj24_dev ]
-  pull_request: #Also add it here
-    branches: [ s3nj24_dev ]
+  push:
+    branches: [ s3nj24_dev ] # Change this branch to your current
+  pull_request: 
+    branches: [ s3nj24_dev ] # Change this branch to your current
 
 jobs:
   build:
