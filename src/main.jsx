@@ -27,7 +27,7 @@ import UserDetails from "./pages/admin/users/user-details.jsx";
 import { getUserByIdLoader } from "./loaders/user-loader.jsx";
 import ForgotPassword from "./pages/auth/forgot-password.jsx";
 import ResetPassword from "./pages/auth/reset-password.jsx";
-import Profile from './pages/my/Account/Profile.jsx';
+import Profile from './pages/my/account/profile.jsx';
 
 
 const router = createBrowserRouter([
