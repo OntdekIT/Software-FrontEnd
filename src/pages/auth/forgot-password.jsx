@@ -15,7 +15,7 @@ export default function ForgotPassword() {
         setSuccessMsg('');
         setErrMsg('');
         try {
-            const response = await backendApi.post('/authentication/forgot-password', JSON.stringify(data));
+            const response = await backendApi.post('/authentication/forgot-password', data);
             console.log(response);
             if (response?.status === 200) {
                 setSuccessMsg('Er is een e-mail verstuurd. Controleer je inbox en spamfolder.');

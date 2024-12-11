@@ -25,7 +25,7 @@ export default function ResetPassword() {
         }
 
         try {
-            const response = await backendApi.post('/authentication/reset-password', JSON.stringify(body));
+            const response = await backendApi.post('/authentication/reset-password', body);
             if (response?.status === 200) {
                 navigate('/auth/login');
             }
