@@ -157,4 +157,4 @@ EditUserProfileModal.propTypes = {
     isShown: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onProfileUpdated: PropTypes.func.isRequired,
-};
+}; 
