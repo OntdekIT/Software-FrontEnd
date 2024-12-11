@@ -1,10 +1,8 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import LoadingComponent from "../../../components/loading-component.jsx";
-import EditUserRoleModal from "../../../components/users/edit-user-role-modal.jsx";
 import UserFilters from "../../../components/users/user-filters.jsx";
 import FilterButton from "../../../components/filter-button.jsx";
-import DeleteUserModal from "../../../components/users/delete-user-modal.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import UserUtils from "../../../utils/user-utils.jsx";
 
@@ -13,7 +11,6 @@ export default function UserOverview() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
-    const [selectedUser, setSelectedUser] = useState(null);
     const [filters, setFilters] = useState({});
 
 
@@ -32,9 +29,7 @@ export default function UserOverview() {
                 }
             });
 
-            const response = await backendApi.get(`/users?${queryParams.toString()}`, {
-                withCredentials: true
-            });
+            const response = await backendApi.get(`/users?${queryParams.toString()}`);
 
             setUsers(response.data);
             setErrMsg(null);
@@ -47,10 +42,6 @@ export default function UserOverview() {
 
             setErrMsg(errorMessage);
             setUsers([]);
-
-            if (err.response?.status === 401) {
-                window.location.href = "/login";
-            }
         } finally {
             setLoading(false);
         }

@@ -1,4 +1,3 @@
-import useAuth from "../../hooks/use-auth.jsx";
 import {useState} from "react";
 import {backendApi} from "../../utils/backend-api.jsx";
 import LoadingComponent from "../../components/loading-component.jsx";
@@ -10,7 +9,6 @@ export default function Register() {
     const {register, handleSubmit, formState: {errors}} = useForm({
         mode: "onBlur"
     });
-    const {setAuth} = useAuth();
     const [errMsg, setErrMsg] = useState('');
     const [verify, setVerify] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -34,10 +32,6 @@ export default function Register() {
                 headers: {'Content-Type': 'application/JSON'},
                 withCredentials: false
             });
-
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
-            setAuth({...data, roles, accessToken});
 
             if (response?.status === 201) {
                 setVerify(true);

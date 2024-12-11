@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import UserRole from "../../domain/user-role.jsx";
+import UserUtils from "../../utils/user-utils.jsx";
 
 export default function UserFilters({filters, onFiltersChange}) {
     const {register, setValue, reset, handleSubmit, formState: {errors}} = useForm();
@@ -51,9 +52,9 @@ export default function UserFilters({filters, onFiltersChange}) {
                 <label htmlFor="role" className="form-label mb-0">Rol:</label>
                 <select className="form-select form-select-sm" id="role" {...register("role")}>
                     <option value={""}>Alles</option>
-                    <option value={UserRole.USER}>Gebruiker</option>
-                    <option value={UserRole.ADMIN}>Admin</option>
-                    <option value={UserRole.SUPER_ADMIN}>Super admin</option>
+                    {Object.values(UserRole).map(role => (
+                        <option key={role} value={role}>{UserUtils.translateRole(role)}</option>
+                    ))}
                 </select>
             </div>
 
