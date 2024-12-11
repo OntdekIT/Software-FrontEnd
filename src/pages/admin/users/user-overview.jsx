@@ -13,8 +13,9 @@ export default function UserOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
 
-
     const getAllUsers = async (filters = {}) => {
+        setErrMsg(null);
+        setLoading(true);
         try {
             const queryParams = new URLSearchParams();
             Object.keys(filters).forEach(key => {
@@ -30,9 +31,12 @@ export default function UserOverview() {
             });
 
             const response = await backendApi.get(`/users?${queryParams.toString()}`);
-
             setUsers(response.data);
-            setErrMsg(null);
+
+            if (response.data.length === 0) {
+                setErrMsg("Geen gebruikers gevonden");
+            }
+
         } catch (err) {
             let errorMessage = err.message;
 
@@ -81,18 +85,18 @@ export default function UserOverview() {
                     <UserFilters onFiltersChange={onFiltersChanged} filters={filters}/>
                 </div>
             </div>
-            <div className="toolbar fixed-top d-flex justify-content-end align-items-center d-xxl-none">
+            <header className="toolbar fixed-top d-flex justify-content-end align-items-center d-xxl-none">
                 <FilterButton areFiltersActive={false} targetId={"userFilterOffcanvas"}/>
-            </div>
-            <div className="container-fluid">
+            </header>
+            <main className="container-fluid">
                 <div className="row">
                     {/* Large screen filters */}
-                    <div className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar shadow-sm">
+                    <aside className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar shadow-sm">
                         <h2>Filters</h2>
                         <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
                                      clearAllFilters={clearAllFilters}/>
-                    </div>
-                    <div className="col-12 col-xxl-10 offset-xxl-2">
+                    </aside>
+                    <section className="col-12 col-xxl-10 offset-xxl-2">
                         <div className="nav-size d-block d-xxl-none"></div>
                         <h1 className="page-header-margin text-center">Gebruikers</h1>
                         {errMsg && <div className="error-msg">{errMsg}</div>}
@@ -127,10 +131,9 @@ export default function UserOverview() {
                                 </table>
                             </div>
                         )}
-                    </div>
+                    </section>
                 </div>
-            </div>
-
+            </main>
         </>
     );
 }
