@@ -1,11 +1,12 @@
-import {useState} from "react";
-import EditUserProfileModal from "../../../components/users/edit-User-Modal";
+import { useState } from "react";
+import EditUserProfileModal from "../../../Components/users/edit-User-Modal.jsx";
 import UserUtils from "../../../utils/user-utils";
-import {useAuth} from "../../../providers/auth-provider.jsx";
+import { useAuth } from "../../../providers/auth-provider.jsx";
 
 export default function Profile() {
-    const {loggedInUser, refreshUserInfo} = useAuth()
+    const { loggedInUser, refreshUserInfo } = useAuth();
     const [showEditModal, setShowEditModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
     const handleModalClose = () => {
         setShowEditModal(false);
@@ -14,6 +15,10 @@ export default function Profile() {
     const handleProfileUpdated = () => {
         refreshUserInfo();
         setShowEditModal(false);
+        setSuccessMessage("Veranderingen succesvol bijgewerkt!");
+
+        // Hide the message after 3 seconds
+        setTimeout(() => setSuccessMessage(""), 3000);
     };
 
     return (
@@ -27,6 +32,13 @@ export default function Profile() {
                                 <h5>Mijn profiel</h5>
                             </div>
                             <div className="card-body">
+                                {/* Success Message */}
+                                {successMessage && (
+                                    <div className="alert alert-success" role="alert">
+                                        {successMessage}
+                                    </div>
+                                )}
+
                                 <p><strong>Naam:</strong> {loggedInUser?.firstName} {loggedInUser?.lastName}</p>
                                 <p><strong>Email:</strong> {loggedInUser?.email}</p>
                                 <p><strong>Rol:</strong> {UserUtils.translateRole(loggedInUser?.role)}</p>
@@ -34,7 +46,6 @@ export default function Profile() {
                                 <button className="btn btn-primary" onClick={() => setShowEditModal(true)}>
                                     <i className="bi bi-pencil"></i> Profiel bijwerken
                                 </button>
-
                             </div>
                         </div>
                     </div>
