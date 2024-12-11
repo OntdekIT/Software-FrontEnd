@@ -10,6 +10,7 @@ export default function WorkshopCodeOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+    const [showExpired, setShowExpired] = useState(false);
 
     const parseDate = (dateString) => {
         let date = new Date(dateString);
@@ -21,7 +22,6 @@ export default function WorkshopCodeOverview() {
 
     const handleModalClose = () => {
         setShowModal(false);
-
     }
 
     const handleDeleteButtonClick = (workshopCode) => {
@@ -32,17 +32,27 @@ export default function WorkshopCodeOverview() {
     const handleWorkshopDeleted = async () => {
         setShowModal(false);
         setSelectedWorkshop(null);
-        await getData();
+        await getData(showExpired);
     }
 
-    const getData = async () => {
+    const getData = async (isExpired = false) => {
+        setWorkshopCodes([]);
         try {
-            const response = await backendApi.get("/workshops", {
+            const queryParams = new URLSearchParams();
+            if (isExpired) {
+                queryParams.append("isExpired", "true");
+            }
+
+            const response = await backendApi.get(`/workshops?${queryParams.toString()}`, {
                 withCredentials: true
             });
 
-            setWorkshopCodes(response.data);
-            setErrMsg(null);
+            if (response.data.length === 0) {
+                setErrMsg(isExpired ? "Geen verlopen workshop codes gevonden" : "Geen actieve workshop codes gevonden");
+            } else {
+                setWorkshopCodes(response.data);
+                setErrMsg(null);
+            }
         } catch (err) {
             setErrMsg(err.message);
 
@@ -58,10 +68,18 @@ export default function WorkshopCodeOverview() {
         getData();
     }, []);
 
+    const toggleShowExpired = () => {
+        setShowExpired(!showExpired);
+        getData(!showExpired);
+    };
+
     return (
         <>
             <div className="toolbar fixed-top d-flex justify-content-between align-items-center">
                 <Link to={"./create"} className="btn btn-primary btn-sm ms-auto">Workshopcode aanmaken</Link>
+                <button className="btn btn-secondary btn-sm ms-2" onClick={toggleShowExpired}>
+                    {showExpired ? "toon actieve codes" : "toon verlopen codes"}
+                </button>
             </div>
             <div className="container">
                 <div className="row">
@@ -79,7 +97,8 @@ export default function WorkshopCodeOverview() {
                         ) : (
                             <div>
                                 {workshopCodes && workshopCodes.map(workshopCode => (
-                                    <div key={workshopCode.id} className="card mb-2">
+                                    <div key={workshopCode.id}
+                                         className={`card mb-2 ${showExpired ? 'bg-danger-subtle' : ''}`}>
                                         <div className="card-body d-flex align-items-center">
                                             <h4 className="card-title mb-0">{workshopCode.code}</h4>
                                             {workshopCode?.expirationDate && (
