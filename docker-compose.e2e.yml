@@ -1,0 +1,42 @@
+services:
+  backend-api:
+    hostname: backend-api
+    image: climatechecker-backend:latest
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: e2e
+      SPRING_FLYWAY_URL: jdbc:mariaDB://mariaDB:3306/ontdekstation013
+      SPRING_FLYWAY_USER: ontdekstation
+      SPRING_FLYWAY_PASSWORD: ontdekstation013
+      SPRING_FLYWAY_SCHEMAS: ontdekstation013
+      SPRING_DATABASE_URL: jdbc:mariaDB://mariaDB:3306/ontdekstation013
+      SPRING_DATABASE_USERNAME: root
+      SPRING_DATABASE_PASSWORD: ontdekstation013
+    depends_on:
+      - mariaDB
+    networks:
+      - public
+
+
+  frontend:
+    build: .
+    ports:
+      - "80:80"
+    networks:
+      - public
+
+  mariaDB:
+    hostname: mariaDB
+    image: mariadb:latest
+    ports:
+      - "3307:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: ontdekstation013
+      MARIADB_DATABASE: ontdekstation013
+    networks:
+      - public
+    
+
+networks:
+  public:

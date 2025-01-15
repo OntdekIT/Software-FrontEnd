@@ -63,7 +63,7 @@ export default function Navbar() {
                             </li>
                         ) : (
                             <li className="nav-item">
-                                <Link className="nav-link" to="/auth/login" onClick={handleNavLinkClick}>Login</Link>
+                                <Link className="nav-link" to="/auth/login" data-testid="LoginButton" onClick={handleNavLinkClick}>Login</Link>
                             </li>
                         )}
                     </ul>
