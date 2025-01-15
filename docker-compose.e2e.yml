@@ -32,8 +32,8 @@ services:
     ports:
       - "3307:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ontdekstation013
-      MYSQL_DATABASE: ontdekstation013
+      MARIADB_ROOT_PASSWORD: ontdekstation013
+      MARIADB_DATABASE: ontdekstation013
     networks:
       - public
     
