@@ -25,7 +25,8 @@ export default function Home() {
     const [showRegions, setShowRegions] = useState(true);
     const [heatmapType, setHeatmapType] = useState('temperature')
     const [dateTime, setDateTime] = useState(new Date());
-    const [userId, setUserId] = useState('');
+    const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
+    const [userId, setUserId] = useState(loggedInUser.id);
 
     const calRef = useRef();
 
@@ -48,17 +49,6 @@ export default function Home() {
     }
 
     useEffect(() => {
-
-        const fetchUserId = async () => {
-            try {
-                const response = await backendApi.get('/User/getID', {withCredentials: true});
-                setUserId(response.data); // Assuming response.data contains the userId
-            } catch (error) {
-                console.error('Error fetching user ID:', error);
-                // Handle error here, e.g., setUserId to a default value or handle it in UI
-            }
-        };
-
         try {
             // Get measurements data
             console.log(dateTime.toISOString());
@@ -82,7 +72,6 @@ export default function Home() {
             // Errors don't reach this catch, check function 'handleAxiosError'
             setErrMsg('Fout bij ophalen kaart-data.');
         }
-        fetchUserId();
     }, [dateTime])
 
     return (
