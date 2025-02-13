@@ -92,13 +92,13 @@ export default function Login() {
                                     {errors.password && <div className="invalid-feedback">Wachtwoord is verplicht</div>}
                                 </div>
                                 <div className="d-grid mb-2">
-                                    <button className="btn btn-lg btn-primary"
+                                    <button data-testid='Login' className="btn btn-lg btn-primary" 
                                             disabled={loading}>
                                         Inloggen
                                     </button>
                                 </div>
                                 <Link to={"/auth/forgot-password"}>Wachtwoord vergeten?</Link>
-                                <p>Nog geen account? <Link to={"/auth/register"}>registreer hier</Link></p>
+                                <p>Nog geen account? <Link to={"/auth/register"} data-testid="RegisterButton">registreer hier</Link></p>
                             </form>
                         </div>
                     </div>
