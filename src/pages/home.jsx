@@ -26,7 +26,6 @@ export default function Home() {
     const [heatmapType, setHeatmapType] = useState('temperature')
     const [dateTime, setDateTime] = useState(new Date());
     const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
-    const [userId, setUserId] = useState(loggedInUser.id);
 
     const calRef = useRef();
 
@@ -98,7 +97,7 @@ export default function Home() {
                         />
                         {showRegions && <RegionLayer data={regionData}></RegionLayer>}
                         <MeetStationLayer data={tempMeasurements} visible={showDataStations} selectedDate={dateTime}
-                                          userId={userId}></MeetStationLayer>
+                                          userId={loggedInUser.id}></MeetStationLayer>
                         {showTemp && tempMeasurements.length > 0 &&
                             <HeatmapLayer
                                 fitBoundsOnLoad
