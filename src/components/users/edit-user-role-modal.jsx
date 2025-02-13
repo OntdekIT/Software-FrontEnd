@@ -1,109 +1,160 @@
-import {Button, Modal} from "react-bootstrap";
-import {backendApi} from "../../utils/backend-api.jsx";
-import {useEffect, useState} from "react";
+import { Button, Modal } from "react-bootstrap";
+import { useState } from "react";
 import PropTypes from "prop-types";
-import UserRole from "../../domain/user-role.jsx";
-import UserUtils from "../../utils/user-utils.jsx";
-import {useForm} from "react-hook-form";
-import {useAuth} from "../../providers/auth-provider.jsx";
+import { backendApi } from "../../utils/backend-api";
 
-export default function EditUserRoleModal({user, isShown, onClose, onRoleChanged}) {
-    const {loggedInUser} = useAuth();
-    const [roleOptions, setRoleOptions] = useState([]);
-    const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
-    const [error, setError] = useState(null);
-    const {register, handleSubmit, formState: {errors}} = useForm({
-        mode: "onBlur"
+export default function EditUserProfileModal({ user, isShown, onClose, onProfileUpdated }) {
+    const [formData, setFormData] = useState({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        password: "",
     });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
 
-    const calculateRoleOptions = () => {
-        const loggedInUserRole = loggedInUser.role;
-        const userRole = user.role;
-
-        if (loggedInUserRole === UserRole.SUPER_ADMIN) {
-            setRoleOptions([UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN]);
-        } else if (loggedInUserRole === UserRole.ADMIN) {
-            if (userRole === UserRole.USER) {
-                setRoleOptions([UserRole.USER, UserRole.ADMIN]);
-            } else if (userRole === UserRole.ADMIN) {
-                setRoleOptions([UserRole.ADMIN]);
-            } else {
-                setRoleOptions([UserRole.SUPER_ADMIN]);
-            }
-        }
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleUpdateRole = async (value) => {
-        setIsSubmitProcessing(true);
-
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const updateData = {
-                role: value.role
-            };
-
-            const response = await backendApi.put(`/users/${user.id}`, updateData);
-
+            setLoading(true);
+            const response = await backendApi.put("/my-account", formData, {
+                headers: { "Content-Type": "application/json" },
+                withCredentials: true,
+            });
             if (response?.status === 200) {
-                onRoleChanged();
+                onProfileUpdated();
+                onClose();
+            } else {
+                throw new Error("Unexpected response code: " + response.status);
             }
         } catch (err) {
-            setError(err.message);
-            console.error(err);
-
-            if (err.response?.status === 401) {
-                window.location.href = "/login";
-            }
+            setError(err.response?.data?.message || "An unexpected error occurred. Please try again later.");
         } finally {
-            setIsSubmitProcessing(false);
+            setLoading(false);
         }
     };
-
-    useEffect(() => {
-        calculateRoleOptions();
-    }, [loggedInUser, user]);
 
     return (
         <Modal show={isShown} onHide={onClose}>
-            <form onSubmit={handleSubmit(handleUpdateRole)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Rol aanpassen</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div>
-                        {error && <div className="error-msg">{error}</div>}
+            <Modal.Header closeButton>
+                <Modal.Title>Gegevens bewerken</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {/* Show error if there's any */}
+                {error && <div className="alert alert-danger">{error}</div>}
+
+                {/* Form for profile edit */}
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-3">
+                        <label htmlFor="firstName" className="form-label">Voornaam</label>
+                        <input
+                            id="firstName"
+                            name="firstName"
+                            type="text"
+                            className="form-control"
+                            value={formData.firstName}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
                     </div>
-                    <p>Selecteer een rol om aan de gebruiker <b>{`${user.firstName} ${user.lastName}`}</b> toe te
-                        kennen.</p>
-                    <label>Rol<small className="text-danger">*</small></label>
-                    <select
-                        className={"form-select" + (errors.role ? " is-invalid" : "")}
-                        {...register("role", {required: "Dit veld is vereist"})}
-                        defaultValue={user.role}
-                        disabled={isSubmitProcessing}
-                    >
-                        {roleOptions.map(role => (
-                            <option key={role} value={role}>{UserUtils.translateRole(role)}</option>
-                        ))}
-                    </select>
-                    {errors.role && <div className="invalid-feedback">{errors.role.message}</div>}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="dark" onClick={onClose}>Annuleren</Button>
-                    <Button variant="primary" type="submit" disabled={isSubmitProcessing}>Opslaan</Button>
-                </Modal.Footer>
-            </form>
+
+                    <div className="mb-3">
+                        <label htmlFor="lastName" className="form-label">Achternaam</label>
+                        <input
+                            id="lastName"
+                            name="lastName"
+                            type="text"
+                            className="form-control"
+                            value={formData.lastName}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="mb-3">
+                        <label htmlFor="email" className="form-label">Email</label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            className="form-control"
+                            value={formData.email}
+                            onChange={handleChange}
+                            disabled={loading}
+                        />
+                    </div>
+
+                    <div className="mb-3 position-relative">
+                        <label htmlFor="password" className="form-label">Wachtwoord</label>
+                        <div
+                            className="password-container"
+                            onMouseEnter={() => setShowPassword(true)}
+                            onMouseLeave={() => setShowPassword(false)}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                position: "relative",
+                            }}
+                        >
+                            <input
+                                placeholder="(Ongewijzigd)"
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                className="form-control"
+                                value={formData.password}
+                                onChange={handleChange}
+                                disabled={loading}
+                            />
+                            <div
+                                style={{
+                                    width: "24px",
+                                    height: "24px",
+                                    borderRadius: "50%",
+                                    backgroundColor: "#007bff",
+                                    marginLeft: "8px",
+                                    cursor: "pointer",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                }}
+                                title={showPassword ? "Hide Password" : "Show Password"}
+                            >
+                                🔍
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="d-flex justify-content-end">
+                        <Button variant="secondary" onClick={onClose} disabled={loading} className="me-2">
+                            Annuleren
+                        </Button>
+                        <Button variant="primary" type="submit" disabled={loading}>
+                            {loading ? "Saving..." : "Opslaan"}
+                        </Button>
+                    </div>
+                </form>
+            </Modal.Body>
         </Modal>
     );
 }
 
-EditUserRoleModal.propTypes = {
+EditUserProfileModal.propTypes = {
     user: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        role: PropTypes.oneOf(Object.values(UserRole)).isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
+        email: PropTypes.string.isRequired,
     }).isRequired,
     isShown: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    onRoleChanged: PropTypes.func.isRequired,
+    onProfileUpdated: PropTypes.func.isRequired,
 };

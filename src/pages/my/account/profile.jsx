@@ -1,5 +1,5 @@
 import { useState } from "react";
-import EditUserProfileModal from "../../../components/users/edit-user-modal.jsx";
+import EditUserProfileModal from "../../../Components/users/edit-User-Modal.jsx";
 import UserUtils from "../../../utils/user-utils";
 import { useAuth } from "../../../providers/auth-provider.jsx";
 
