@@ -11,16 +11,17 @@ import ErrorPage from "./pages/error-page.jsx";
 import Login from "./pages/auth/login.jsx";
 import AuthProvider from "./providers/auth-provider.jsx";
 import MyStationsOverview from "./pages/my/stations/my-stations-overview.jsx";
-import ClaimStation from "./pages/my/stations/claim-station.jsx";
+import ClaimStation from './Pages/my/stations/claim-station.jsx';
 import Register from "./pages/auth/register.jsx";
 import StationDetails from "./pages/stations/station-details.jsx";
 import EditStation from "./pages/stations/edit-station.jsx";
-import AdminDashboard from "./pages/admin/admin-dashboard.jsx";
+import AdminDashboard from './Pages/admin/admin-dashboard.jsx';
 import WorkshopCodeOverview from "./pages/admin/workshop-codes/workshop-code-overview.jsx";
 import CreateWorkshopCode from "./pages/admin/workshop-codes/create-workshop-code.jsx";
 import Logout from "./pages/auth/logout.jsx";
 import UserOverview from "./pages/admin/users/user-overview.jsx";
 import UserDetails from "./pages/admin/users/user-details.jsx";
+import StationOverview from './Pages/admin/stations/stations-overview.jsx';
 import { getUserByIdLoader } from "./loaders/user-loader.jsx";
 import ForgotPassword from "./pages/auth/forgot-password.jsx";
 import ResetPassword from "./pages/auth/reset-password.jsx";
@@ -145,6 +146,24 @@ const router = createBrowserRouter([
                                         index: true,
                                         element: <UserDetails />,
                                         loader: getUserByIdLoader
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        path: "stations",
+                        children: [
+                            {
+                                index: true,
+                                element: <StationOverview />
+                            },
+                            {
+                                path: ":stationId",
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <StationDetails />
                                     }
                                 ]
                             }

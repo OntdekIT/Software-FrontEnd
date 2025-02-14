@@ -17,6 +17,12 @@ export default function AdminDashboard() {
                                          icon={"bi bi-person"}></DashboardButton>
                     </div>
                 </div>
+                <div className="row">
+                    <div className="col-12 col-sm6 mb-4">
+                    <DashboardButton link={"/admin/stations"} text={"Stations"}
+                                         icon={"bi bi-graph-up"}></DashboardButton>
+                    </div>
+                </div>
             </div>
         </>
     )
