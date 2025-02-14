@@ -8,13 +8,13 @@ export default function ErrorPage() {
     console.error(error);
 
     useEffect(() => {
-        if (error.message === "Unauthorized" || error.statusCode === 401) {
+        if (error.message === "Unauthorized" || error.status === 401) {
             setTitle("Geen toegang");
             setMessage("U dient ingelogd te zijn om deze pagina te kunnen bekijken");
-        } else if (error.message === "Forbidden" || error.statusCode === 403) {
+        } else if (error.message === "Forbidden" || error.status === 403) {
             setTitle("Verboden toegang");
             setMessage("U bent niet gemachtigd om deze pagina te bekijken.");
-        } else if (error.statusCode === 404) {
+        } else if (error.status === 404) {
             setTitle("Pagina niet gevonden");
             setMessage("De pagina die u zoekt bestaat niet.");
         } else {
