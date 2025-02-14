@@ -28,6 +28,7 @@ import ResetPassword from "./pages/auth/reset-password.jsx";
 import Profile from './pages/my/account/profile.jsx';
 import ProtectedRoute from "./components/protected-route.jsx";
 import UserRole from "./domain/user-role.jsx";
+import MeetstationToevoegen from './Pages/admin/stations/toevoegen/meetstation-toevoegen.jsx';
 
 
 const router = createBrowserRouter([
@@ -157,6 +158,10 @@ const router = createBrowserRouter([
                             {
                                 index: true,
                                 element: <StationOverview />
+                            },
+                            {
+                                path: "toevoegen",
+                                element: <MeetstationToevoegen />
                             },
                             {
                                 path: ":stationId",

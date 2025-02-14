@@ -11,6 +11,10 @@ export default function StationOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
 
+    const handleClick = () => {
+        navigate('/admin/stations/add');
+    };
+
     const getAllStations = async (filters = {}) => {
         setErrMsg(null);
         setLoading(true);
@@ -94,7 +98,7 @@ export default function StationOverview() {
                         <StationFilters filters={filters} onFiltersChange={onFiltersChanged} clearAllFilters={clearAllFilters}/>
                     </aside>
                     <section className="col-12 col-xxl-10">
-                        <h1 className="page-header-margin text-center">Meetstations</h1>
+                        <h1 className="page-header-margin text-center">Meetstations</h1> <Link to="/admin/stations/toevoegen" className="btn btn-primary">Voeg Meetstation Toe</Link>
                         {errMsg && <div className="error-msg">{errMsg}</div>}
                         {loading ? <LoadingComponent message="Stations aan het ophalen..." isFullScreen={true}/> : (
                             stations.length > 0 ? (
