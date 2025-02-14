@@ -97,7 +97,7 @@ export default function Home() {
                         />
                         {showRegions && <RegionLayer data={regionData}></RegionLayer>}
                         <MeetStationLayer data={tempMeasurements} visible={showDataStations} selectedDate={dateTime}
-                                          userId={loggedInUser.id}></MeetStationLayer>
+                                          userId={loggedInUser?.id ?? ''}></MeetStationLayer>
                         {showTemp && tempMeasurements.length > 0 &&
                             <HeatmapLayer
                                 fitBoundsOnLoad
