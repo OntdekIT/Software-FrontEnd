@@ -1,4 +1,4 @@
-import { Marker, Popup } from "react-leaflet";
+import { Marker, Popup, Tooltip } from "react-leaflet";
 import {roundToOneDecimal} from "../../utils/map-utils.jsx";
 import { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
@@ -116,30 +116,31 @@ const MeetStationLayer = ({ data, visible, selectedDate, userId }) => {
         setSelectedGraph(event.target.value);
     };
 
+    const [hoveredStationId, setHoveredStationId] = useState(null);
+
     // Blue Marker Icon
-    const blueMarkerIcon = new L.Icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        tooltipAnchor: [16, -28],
-        shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
-        shadowSize: [60, 60],       // size of the shadow
-        shadowAnchor: [20, 60]      // point from which the shadow should be centered relative to the iconAnchor
-    });
+const blueMarkerIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+    iconSize: [25, 41],       
+    iconAnchor: [12, 41],      
+    popupAnchor: [1, -34],     
+    tooltipAnchor: [0, -45],   // Centered tooltip above the marker
+    shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+    shadowSize: [60, 60],       
+    shadowAnchor: [20, 60]      
+});
 
-// Gold Marker Icon
-    const greenMarkerIcon = new L.Icon({
-        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-        iconSize: [25, 41],         // size of the icon
-        iconAnchor: [12, 41],       // point of the icon which will correspond to marker's location
-        popupAnchor: [1, -34],      // point from which the popup should open relative to the iconAnchor
-        tooltipAnchor: [16, -28],   // point from which the tooltip should open relative to the iconAnchor
-        shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
-        shadowSize: [60, 60],       // size of the shadow
-        shadowAnchor: [20, 60]      // point from which the shadow should be centered relative to the iconAnchor
-    });
-
+// Green Marker Icon
+const greenMarkerIcon = new L.Icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    iconSize: [25, 41],         
+    iconAnchor: [12, 41],       
+    popupAnchor: [1, -34],      
+    tooltipAnchor: [0, -45],   // Centered tooltip above the marker
+    shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+    shadowSize: [60, 60],       
+    shadowAnchor: [20, 60]      
+});
 
     const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
 
@@ -148,88 +149,109 @@ const MeetStationLayer = ({ data, visible, selectedDate, userId }) => {
     return (
         <>
             {data.map((meting) => (
-                <Marker key={meting.id} id={meting.id} position={[meting.latitude, meting.longitude]} icon={meting.userId === userId ? greenMarkerIcon : blueMarkerIcon} eventHandlers={{ click: handleClick }}>
-                    <Popup closeOnClick={false}>
-                        <label className="bold d-block fs-6">Station ID: {meting.id}</label>
-
-                        <div key={meting.id}>
-                            <label>{meting.temperature ? "Temperatuur: " + roundToOneDecimal(meting.temperature) + " °C" : ''}</label>
-                            <br/>
-                            <label>{meting.humidity ? "Luchtvochtigheid: " + roundToOneDecimal(meting.humidity) + " %" : ''}</label>
+                <Marker 
+                key={meting.id} 
+                id={meting.id} 
+                position={[meting.latitude, meting.longitude]} 
+                icon={meting.userId === userId ? greenMarkerIcon : blueMarkerIcon} 
+                eventHandlers={{ 
+                    click: handleClick,
+                    mouseover: () => setHoveredStationId(meting.id),
+                    mouseout: () => setHoveredStationId(null),
+                }}
+            >
+                {hoveredStationId === meting.id && (
+                    <Tooltip 
+                    direction="top"  
+                    opacity={1} 
+                    permanent
+                    className="custom-tooltip"
+                    >
+                        <span>📍 Station: <strong>{meting.id}</strong></span>
+                    </Tooltip>
+                )}
+            
+                <Popup closeOnClick={false}>
+                    <label className="bold d-block fs-6">Station ID: {meting.id}</label>
+            
+                    <div key={meting.id}>
+                        <label>{meting.temperature ? "Temperatuur: " + roundToOneDecimal(meting.temperature) + " °C" : ''}</label>
+                        <br/>
+                        <label>{meting.humidity ? "Luchtvochtigheid: " + roundToOneDecimal(meting.humidity) + " %" : ''}</label>
+                    </div>
+            
+                    <label className="fst-italic mt-1">Meting van: {selectedDate.toLocaleString('nl-NL')}</label>
+            
+                    <hr />
+            
+                    <label className="bold mt-2">Historische data</label>
+            
+                    {errorMessage && (
+                        <div>
+                            <p className={'text-danger'} ref={errRef} aria-live="assertive">{errorMessage}</p>
                         </div>
-
-                        <label className="fst-italic mt-1">Meting van: {selectedDate.toLocaleString('nl-NL')}</label>
-
-                        <hr></hr>
-
-                        <label className="bold mt-2">Historische data</label>
-
-                        {
-                            errorMessage && (
-                                <div>
-                                    <p className={'text-danger'} ref={errRef} aria-live="assertive">{errorMessage}</p>
-                                </div>
-                            )
-                        }
-
-                        {/* Dropdown for graph selection */}
-                        <div className="mb-3">
-                            <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type
-                                grafiek</label>
-                            <select id={`graphType-${meting.id}`} className="form-select" value={selectedGraph}
-                                    onChange={handleGraphChange}>
-                                <option value="tempGraph">Temperatuur</option>
-                                <option value="humGraph">Vochtigheid</option>
-                                <option value="stofGraph">Fijnstof</option>
-                            </select>
-                        </div>
-                        <div className="position-relative">
-                            {loading && (
-                                <LoadingComponent message="Data aan het ophalen..." isFullScreen={false}></LoadingComponent>
-                            )}
-                        </div>
-                        <ResponsiveContainer minWidth={250} minHeight={250}>
-                            <LineChart data={graphData}>
-                                <XAxis dataKey="timestamp"/>
-                                <YAxis width={30}/>
-                                <CartesianGrid stroke="#ccc"/>
-                                <Legend onClick={handleLegendChange}/>
-                                <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp}
-                                      dot={false}/>
-                                <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp}
-                                      dot={false}/>
-                                <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp}
-                                      dot={false}/>
-                            </LineChart>
-                        </ResponsiveContainer>
-
-                        <div className="container text-center">
-                            <div className="row gy-2">
-                                <div className="col">
-                                    <label className="me-2">Start datum</label>
-                                    <ReactDatePicker
-                                        className="border border-secondary"
-                                        dateFormat="dd-MM-yyyy"
-                                        selected={startDate}
-                                        onChange={handleStartDateChange}
-                                        maxDate={endDate}
-                                    />
-                                </div>
-                                <div className="col">
-                                    <label className="me-2">Eind datum</label>
-                                    <ReactDatePicker
-                                        className="border border-secondary"
-                                        dateFormat="dd-MM-yyyy"
-                                        selected={endDate}
-                                        onChange={handleEndDateChange}
-                                        minDate={startDate}
-                                        maxDate={new Date()}
-                                    />
-                                </div>
+                    )}
+            
+                    {/* Dropdown for graph selection */}
+                    <div className="mb-3">
+                        <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type grafiek</label>
+                        <select 
+                            id={`graphType-${meting.id}`} 
+                            className="form-select" 
+                            value={selectedGraph}
+                            onChange={handleGraphChange}
+                        >
+                            <option value="tempGraph">Temperatuur</option>
+                            <option value="humGraph">Vochtigheid</option>
+                            <option value="stofGraph">Fijnstof</option>
+                        </select>
+                    </div>
+            
+                    <div className="position-relative">
+                        {loading && (
+                            <LoadingComponent message="Data aan het ophalen..." isFullScreen={false} />
+                        )}
+                    </div>
+            
+                    <ResponsiveContainer minWidth={250} minHeight={250}>
+                        <LineChart data={graphData}>
+                            <XAxis dataKey="timestamp" />
+                            <YAxis width={30} />
+                            <CartesianGrid stroke="#ccc" />
+                            <Legend onClick={handleLegendChange} />
+                            <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp} dot={false} />
+                            <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp} dot={false} />
+                            <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGemTemp} dot={false} />
+                        </LineChart>
+                    </ResponsiveContainer>
+            
+                    <div className="container text-center">
+                        <div className="row gy-2">
+                            <div className="col">
+                                <label className="me-2">Start datum</label>
+                                <ReactDatePicker
+                                    className="border border-secondary"
+                                    dateFormat="dd-MM-yyyy"
+                                    selected={startDate}
+                                    onChange={handleStartDateChange}
+                                    maxDate={endDate}
+                                />
+                            </div>
+                            <div className="col">
+                                <label className="me-2">Eind datum</label>
+                                <ReactDatePicker
+                                    className="border border-secondary"
+                                    dateFormat="dd-MM-yyyy"
+                                    selected={endDate}
+                                    onChange={handleEndDateChange}
+                                    minDate={startDate}
+                                    maxDate={new Date()}
+                                />
                             </div>
                         </div>
-                    </Popup>
-                </Marker>
+                    </div>
+                </Popup>
+            </Marker>
             ))}
         </>
     );
