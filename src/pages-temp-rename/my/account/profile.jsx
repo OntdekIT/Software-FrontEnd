@@ -1,6 +1,6 @@
 import { useState } from "react";
-import EditUserProfileModal from "../../../Components/users/edit-User-Modal.jsx";
-import UserUtils from "../../../utils/user-utils";
+import EditUserProfileModal from "../../../components/users/edit-User-Modal.jsx";
+import UserUtils from "../../../utils/user-utils.jsx";
 import { useAuth } from "../../../providers/auth-provider.jsx";
 
 export default function Profile() {
