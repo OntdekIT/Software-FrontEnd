@@ -251,3 +251,15 @@ body {
   background: rgba(255, 255, 255, 0.3); /* Semi-transparent background */
   backdrop-filter: blur(3px); /* Apply blur effect */
 }
+
+.warning-text {
+  font-weight: bold; /* Makes the text bold */
+  color: #d9534f; /* Red color for the warning */
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 300px; /* Optional: Adjust width */
+  text-align: center;
+}
