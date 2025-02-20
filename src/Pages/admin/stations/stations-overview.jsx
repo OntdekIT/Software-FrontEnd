@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import LoadingComponent from "../../../components/loading-component.jsx";
-import StationFilters from "../../../Components/stations/station-filters.jsx";
+import StationFilters from "../../../components/stations/station-filters.jsx"
 import {Link, useNavigate} from "react-router-dom";
 
 export default function StationOverview() {
