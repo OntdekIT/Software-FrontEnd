@@ -74,7 +74,11 @@ export default function StationCard({station}) {
             setStofGraphData(stofData);
             setLoading(false);
         }).catch(handleError);
-    }, [selectedStation, startDate, endDate]);
+
+        if (station.isActive === false) {
+            setGraphVisible(false);
+          }
+    }, [selectedStation, startDate, endDate, station.isActive]);
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
@@ -145,12 +149,21 @@ export default function StationCard({station}) {
                     </div>
 
                     <hr style={{margin: "0"}}></hr>
-
-                    <div className="d-flex justify-content-center" onClick={toggleGraphVisibility}
-                         style={{cursor: 'pointer'}}>
-                        {/* Toggle button */}
-                        {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                    </div>
+                    
+                    {station.isActive === true ? (
+                        <div className="d-flex justify-content-center" onClick={toggleGraphVisibility} style={{cursor: 'pointer'}}>
+                            {/* Toggle button */}
+                            {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                        </div>
+                    ) : (
+                        <div className="d-flex justify-content-center">
+                            <span className="warning-text">
+                                ⚠️ LET OP: Dit station is inactief!
+                            </span>
+                        </div>
+                        
+                    )}
+                    
 
                     {graphVisible && (
                         <div>
