@@ -202,20 +202,20 @@ export default function RegionLayer({data}) {
                                                       isFullScreen={false}></LoadingComponent>
                                 )}
                             </div>
-                            <ResponsiveContainer minWidth={250} minHeight={250}>
-                                <LineChart data={graphData}>
-                                    <XAxis dataKey="timestamp"/>
-                                    <YAxis width={30}/>
-                                    <CartesianGrid stroke="#ccc"/>
-                                    <Legend onClick={handleLegendChange}/>
-                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMinTemp}
-                                          dot={false}/>
-                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMaxTemp}
-                                          dot={false}/>
-                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
-                                          hide={showGemTemp} dot={false}/>
-                                </LineChart>
-                            </ResponsiveContainer>
+
+                            {graphData.length > 0 && (
+                                <ResponsiveContainer minWidth={250} minHeight={250}>
+                                    <LineChart data={graphData}>
+                                        <XAxis dataKey="timestamp" />
+                                        <YAxis width={30} domain={['auto', 'auto']} tick={{ fontSize: 12 }} />
+                                        <CartesianGrid stroke="#ccc" />
+                                        <Legend />
+                                        <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" dot={false} />
+                                        <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" dot={false} />
+                                        <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" dot={false} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}
 
                             <div className="container text-center">
                                 <div className="row gy-2">

@@ -18,7 +18,8 @@ export default function Home() {
 
     //data from API's
     const [regionData, setRegionData] = useState([]);
-    const [tempMeasurements, setTempMeasurements] = useState([]);
+    const [stations, setStations] = useState([]);
+    const [measurements, setMeasurements] = useState([]);
     //use states for what to show and what not to show
     const [showTemp, setShowTemp] = useState(false)
     const [showDataStations, setShowDataStations] = useState(false);
@@ -49,16 +50,32 @@ export default function Home() {
 
     useEffect(() => {
         try {
-            // Get measurements data
-            console.log(dateTime.toISOString());
-            backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
-                .then(resp => {
-                    setTempMeasurements(resp.data.filter(station => station.is_public === true)); //laat ze alleen zien als ze true zijn
-                })
-                .catch(function (error) {
-                    handleAxiosError(error);
+            // Get Stations
+            console.log(dateTime.toISOString());backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
+            .then(resp => {
+                const stations = resp.data;
+                stations.forEach(station => {
+                    if (!station.measurements) {
+                        console.log(`Station ID: ${station.stationid} has no measurements.`);
+                    }
                 });
+                setStations(stations);
+            })
+            .catch(function (error) {
+                handleAxiosError(error);
+            });
 
+            // Get timestamp measurements
+            console.log(dateTime.toISOString());backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
+            .then(resp => {
+                console.log(resp.data);
+                setMeasurements(resp.data);
+            })
+            .catch(function (error) {
+                handleAxiosError(error);
+            });
+        
+    
             // Get neighbourhood data
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
                 .then((response) => {
@@ -68,10 +85,10 @@ export default function Home() {
                     handleAxiosError(error);
                 });
         } catch (error) {
-            // Errors don't reach this catch, check function 'handleAxiosError'
             setErrMsg('Fout bij ophalen kaart-data.');
         }
-    }, [dateTime])
+    }, [dateTime]);
+    
 
     return (
         <div>
@@ -96,22 +113,27 @@ export default function Home() {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         {showRegions && <RegionLayer data={regionData}></RegionLayer>}
-                        <MeetStationLayer data={tempMeasurements} visible={showDataStations} selectedDate={dateTime}
-                                          userId={loggedInUser?.id ?? ''}></MeetStationLayer>
-                        {showTemp && tempMeasurements.length > 0 &&
+                        <MeetStationLayer 
+                            stations={stations} 
+                            visible={showDataStations} 
+                            selectedDate={dateTime}
+                            userId={loggedInUser?.id ? loggedInUser.id.toString() : ''} 
+                        />
+
+                        {showTemp && measurements.length > 0 &&
                             <HeatmapLayer
                                 fitBoundsOnLoad
                                 fitBoundsOnUpdate
                                 latlngs={
-                                tempMeasurements
+                                    measurements
                                     .filter(m => m.latitude && m.longitude) // Ensure valid lat/lng
                                     .map(m => ([m.latitude, m.longitude, m[heatmapType] || 0]))
                                 }
                                 longitudeExtractor={m => m[1]}
                                 latitudeExtractor={m => m[0]}
                                 intensityExtractor={m => m[2]}
-                                max={Math.max(...tempMeasurements.map(m => m[heatmapType] || 0))}
-                                min={Math.min(...tempMeasurements.map(m => m[heatmapType] || 0))}
+                                max={Math.max(...measurements.map(m => m[heatmapType] || 0))}
+                                min={Math.min(...measurements.map(m => m[heatmapType] || 0))}
                                 gradient={gradient}
                             />
                         }
@@ -123,7 +145,7 @@ export default function Home() {
                             handleToggleTemp={handleToggleTemp}/>
                         {showTemp && <div className={'heatmapRadio'}>
 
-                            <RadioButton data={tempMeasurements} handleChange={setHeatmapType} current={heatmapType}/>
+                            <RadioButton data={measurements} handleChange={setHeatmapType} current={heatmapType}/>
                         </div>}
                         <Checkbox handleToggleShowDataStations={handleToggleShowDataStations}/>
                         <ReactDatePicker
@@ -148,7 +170,7 @@ export default function Home() {
                             </button>
                         </ReactDatePicker>
                     </div>
-                    <ColorLegend temperatures={tempMeasurements}/>
+                    <ColorLegend temperatures={measurements}/>
                 </div>
             </section>
         </div>
