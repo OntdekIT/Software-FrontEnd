@@ -101,7 +101,7 @@ const MeetStationLayer = ({ stations, visible, selectedDate, userId }) => {
                     key={station.stationid} 
                     id={station.stationid} 
                     position={[station.latitude, station.longitude]} 
-                    icon={station.userid === userId ? greenMarkerIcon : blueMarkerIcon} 
+                    icon={String(station.userid) === String(userId) ? greenMarkerIcon : blueMarkerIcon}
                     eventHandlers={{ 
                         click: handleClick,
                         mouseover: () => setHoveredStationId(station.stationid),
@@ -110,12 +110,12 @@ const MeetStationLayer = ({ stations, visible, selectedDate, userId }) => {
                 >
                     {hoveredStationId === station.stationid && (
                         <Tooltip direction="top" opacity={1} permanent className="custom-tooltip">
-                            <span>📍 {station.name || `Station ${station.id}`}</span>
+                            <span>📍 {station.name && station.name.trim() !== "" ? station.name : `Station ${station.stationid}`}</span>
                         </Tooltip>
                     )}
 
                     <Popup closeOnClick={false}>
-                        <h4>{station.name || `Station ${station.id}`}</h4>
+                        <h4>{station.name || `Station ${station.stationid}`}</h4>
 
                         {station.measurementDtoList && station.measurementDtoList.length > 0 ? (
 

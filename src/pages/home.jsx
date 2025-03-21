@@ -51,19 +51,15 @@ export default function Home() {
     useEffect(() => {
         try {
             // Get Stations
-            console.log(dateTime.toISOString());backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
-            .then(resp => {
-                const stations = resp.data;
-                stations.forEach(station => {
-                    if (!station.measurements) {
-                        console.log(`Station ID: ${station.stationid} has no measurements.`);
+            backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
+                .then(resp => {
+                    console.log("API Response:", resp.data); // Logs full response
+                    if (resp.data.length > 0) {
+                        console.log("First station:", resp.data[0]); // Logs first station
                     }
-                });
-                setStations(stations);
-            })
-            .catch(function (error) {
-                handleAxiosError(error);
-            });
+                    setStations(resp.data);
+                })
+                .catch(handleAxiosError);
 
             // Get timestamp measurements
             console.log(dateTime.toISOString());backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
@@ -74,8 +70,7 @@ export default function Home() {
             .catch(function (error) {
                 handleAxiosError(error);
             });
-        
-    
+            
             // Get neighbourhood data
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
                 .then((response) => {
