@@ -140,7 +140,13 @@ const MeetStationLayer = ({ stations, visible, selectedDate, userId }) => {
                         {errorMessage && <p className={'text-danger'} ref={errRef} aria-live="assertive">{errorMessage}</p>}
 
                         {/* Dropdown for graph selection */}
-                        <select className="form-select mb-2" value={selectedGraph} onChange={handleGraphChange}>
+                        <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type grafiek</label>
+                        <select 
+                            id={`graphType-${meting.id}`} 
+                            className="form-select" 
+                            value={selectedGraph}
+                            onChange={handleGraphChange}
+                        >
                             <option value="tempGraph">Temperatuur</option>
                             <option value="humGraph">Vochtigheid</option>
                             <option value="stofGraph">Fijnstof</option>
