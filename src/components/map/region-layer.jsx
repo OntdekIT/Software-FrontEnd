@@ -202,6 +202,7 @@ export default function RegionLayer({data}) {
                                                       isFullScreen={false}></LoadingComponent>
                                 )}
                             </div>
+                            
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart data={graphData}>
                                     <XAxis dataKey="timestamp"/>

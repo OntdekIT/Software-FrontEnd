@@ -191,7 +191,7 @@ const greenMarkerIcon = new L.Icon({
                             <p className={'text-danger'} ref={errRef} aria-live="assertive">{errorMessage}</p>
                         </div>
                     )}
-            
+
                     {/* Dropdown for graph selection */}
                     <div className="mb-3">
                         <label htmlFor={`graphType-${meting.id}`} className="form-label">Kies het type grafiek</label>

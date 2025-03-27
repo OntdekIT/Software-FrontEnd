@@ -78,7 +78,7 @@ export default function StationCard({station}) {
         if (station.isActive === false) {
             setGraphVisible(false);
           }
-    }, [selectedStation, startDate, endDate, station.isActive]);
+    }, [selectedStation, startDate, endDate, station.isActive, station.tempError, station.humError, station.stofError, station.locError]);
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
@@ -136,19 +136,33 @@ export default function StationCard({station}) {
             </div>
             <div className="card-body">
                 <div className="p-0">
-                    <div key={station.stationid} style={{padding: "5%"}}>
-                        {station.is_public === false && (
-                            <div className={"form-text"}>Het station is onzichtbaar, maar de data wordt gebruikt
-                                binnen
-                                de metingen van een wijk.</div>
-                        )}
-                        {station.is_public === true && (
-                            <div className={"form-text"}>Het station is zichtbaar en kan door iedereen bekeken
-                                worden.</div>
-                        )}
+                <div key={station.stationid} style={{ padding: "5%" }}>
+                {station.locError === true ? (
+                station.isActive === true ? (
+                    <div className="d-flex justify-content-center">
+                        <span className="warning-text">
+                            ⚠️ LET OP: De locatie wordt niet meer gemeten!
+                        </span>
                     </div>
+                ) : null
+                ) : (
+                <>
+                    {!station.is_public && (
+                    <div className="form-text">
+                        Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
+                    </div>
+                    )}
+                    {station.is_public && (
+                    <div className="form-text">
+                        Het station is zichtbaar en kan door iedereen bekeken worden.
+                    </div>
+                    )}
+                </>
+                )}
 
-                    <hr style={{margin: "0"}}></hr>
+                </div>
+
+                    
                     
                     {station.isActive === true ? (
                         <div className="d-flex justify-content-center" onClick={toggleGraphVisibility} style={{cursor: 'pointer'}}>
@@ -163,10 +177,13 @@ export default function StationCard({station}) {
                         </div>
                         
                     )}
+
+                    
                     
 
                     {graphVisible && (
                         <div>
+                            <hr style={{margin: "0"}}></hr>
                             <label className="fst-italic mt-1">Meting
                                 van: {dateTime.toLocaleString('nl-NL')}</label>
                             <br></br>
@@ -188,6 +205,36 @@ export default function StationCard({station}) {
                                                       isFullScreen={false}></LoadingComponent>
                                 )}
                             </div>
+                            {(() => {
+                                switch (selectedGraph) {
+                                    case "tempGraph":
+                                        return station.tempError ? (
+                                            <div className="d-flex justify-content-center">
+                                                <span className="warning-text">
+                                                    ⚠️ LET OP: De temperatuur wordt niet meer gemeten!
+                                                </span>
+                                            </div>
+                                        ) : null;
+                                    case "humGraph":
+                                        return station.humError ? (
+                                            <div className="d-flex justify-content-center">
+                                                <span className="warning-text">
+                                                    ⚠️ LET OP: De luchtvochtigheid wordt niet meer gemeten!
+                                                </span>
+                                            </div>
+                                        ) : null;
+                                    case "stofGraph":
+                                        return station.stofError ? (
+                                            <div className="d-flex justify-content-center">
+                                                <span className="warning-text">
+                                                    ⚠️ LET OP: De Fijnstof wordt niet meer gemeten!
+                                                </span>
+                                            </div>
+                                        ) : null;
+                                    default:
+                                        return null;
+                                }
+                            })()}
                             <ResponsiveContainer minWidth={250} minHeight={250}>
                                 <LineChart key={station.stationid} data={graphData}>
                                     <XAxis dataKey="timestamp"/>
