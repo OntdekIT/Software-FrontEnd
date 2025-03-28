@@ -15,6 +15,7 @@ export default function MyStationsOverview() {
             try {
                 const response = await backendApi.get('/my-account?includeStations=true');
                 setStations(response.data.stations);
+                console.log(response.data.stations);  
                 setName(response.data.firstName);
                 setErrMsg(null);
             } catch (err) {

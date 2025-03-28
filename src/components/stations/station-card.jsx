@@ -73,6 +73,7 @@ export default function StationCard({station}) {
             }))
             setStofGraphData(stofData);
             setLoading(false);
+            console.log(station);
         }).catch(handleError);
 
         if (station.isActive === false) {
