@@ -34,6 +34,7 @@ export default function RegionLayer({data}) {
 
     data.forEach((neighbourhood) => {
         neighbourhood.avgTemp = convertToFloatOrNaN(neighbourhood.avgTemp);
+        console.log(neighbourhood);
         if (!isNaN(neighbourhood.avgTemp)) {
             if (neighbourhood.avgTemp < mintemp) {
                 mintemp = neighbourhood.avgTemp;
