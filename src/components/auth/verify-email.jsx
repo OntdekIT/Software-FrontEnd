@@ -70,7 +70,7 @@ export default function VerifyEmail({ email, message }) {
                         </div>
 
                         <div className="d-grid mb-2">
-                            <button className="btn btn-lg btn-primary" disabled={loading || !code}>
+                            <button data-testid="verifyCode" className="btn btn-lg btn-primary" disabled={loading || !code}>
                                 {loading && <span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>}
                                 Code verifiëren
                             </button>

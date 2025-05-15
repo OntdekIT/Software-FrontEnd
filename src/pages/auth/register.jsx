@@ -172,7 +172,7 @@ export default function Register() {
                                 </div>
 
                                 <div className="d-grid mb-2">
-                                    <button className="btn btn-lg btn-primary" disabled={loading}>
+                                    <button className="btn btn-lg btn-primary" data-testid='Register' disabled={loading}>
                                         Registreren
                                     </button>
                                 </div>

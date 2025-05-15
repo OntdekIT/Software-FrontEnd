@@ -27,7 +27,8 @@
     "react-leaflet-heat-layer": "^1.1.1",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^6.26.2",
-    "recharts": "^2.12.7"
+    "recharts": "^2.12.7",
+    "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -35,11 +36,13 @@
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "cypress": "^13.17.0",
+    "cypress-mailslurp": "^1.10.0",
     "eslint": "^9.9.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "mailslurp-client": "^15.21.0",
     "prop-types": "^15.8.1",
     "sass": "^1.79.4",
     "vite": "^5.4.1"
