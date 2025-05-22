@@ -210,7 +210,7 @@ export default function ClaimStation() {
                                         <div className="col-4"></div>
                                         <div className="col-4">
                                             <div className="form-group">
-                                                <select
+                                                <select data-testid='Visibility'
                                                     value={station.visibility}
                                                     onChange={handleChange}
                                                     className="form-select"
@@ -290,7 +290,7 @@ export default function ClaimStation() {
                                 Terug
                             </button>
                         )}
-                        <button className={"btn btn-primary"} onClick={() => handleButtonClick(step.num)}>Volgende
+                        <button data-testid='ClaimMeetstationNext' className={"btn btn-primary"} onClick={() => handleButtonClick(step.num)}>Volgende
                         </button>
                     </div>
                 </div>
