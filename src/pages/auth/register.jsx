@@ -35,7 +35,7 @@ export default function Register() {
 
             if (response?.status === 201) {
                 setVerify(true);
-                localStorage.setItem("stationId", data.meetstationCode);
+                localStorage.setItem("stationId", data.stationCode);
             }
         } catch (err) {
             if (!err?.response) {

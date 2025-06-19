@@ -143,7 +143,7 @@ export default function ClaimStation() {
         })
             .then((response) => {
                 localStorage.removeItem("stationId");
-                window.location.href = "http://localhost:3000/Account";
+                navigate('/my/stations');
             })
             .catch((error) => {
                 if (error.response) {
@@ -239,6 +239,7 @@ export default function ClaimStation() {
                                         <div className="col-4"></div>
                                         <div className="col-4">
                                             <input
+                                                data-testid='StationName'
                                                 onChange={handleChange}
                                                 className={"form-control"}
                                                 value={station.name}

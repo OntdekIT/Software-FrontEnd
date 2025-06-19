@@ -26,11 +26,11 @@
 import { MailSlurp } from "mailslurp-client";
 
 Cypress.Commands.add("createInbox", () => {
-  const mailslurp = new MailSlurp({ apiKey: "d3a01844b2f28cd6fd6d07da59b2b5b3771e09d34d8b262ba8edbcd2b1d888ee" });
+  const mailslurp = new MailSlurp({ apiKey: "70219ee2c07e783c5144d620709c96148a2c198710648bc6b3a003c1a5041591" });
   return mailslurp.createInbox();
 });
 
 Cypress.Commands.add("waitForLatestEmail", (inboxId, timeout = 30000) => {
-  const mailslurp = new MailSlurp({ apiKey: "d3a01844b2f28cd6fd6d07da59b2b5b3771e09d34d8b262ba8edbcd2b1d888ee" });
+  const mailslurp = new MailSlurp({ apiKey: "70219ee2c07e783c5144d620709c96148a2c198710648bc6b3a003c1a5041591" });
   return mailslurp.waitForLatestEmail(inboxId, timeout);
 });
