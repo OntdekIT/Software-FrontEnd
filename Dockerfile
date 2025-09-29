@@ -42,3 +42,11 @@ CMD ["nginx", "-g", "daemon off;"]
 
 # To run, use the following command:
 # sudo docker run -p 3000:80 --name mynginx ontdekstation-client-release:latest
+
+# ---- Dev Stage ----
+FROM base AS dev
+WORKDIR /app
+COPY --from=dependencies /app/ ./
+COPY . .
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
