@@ -45,6 +45,6 @@
     "mailslurp-client": "^15.21.0",
     "prop-types": "^15.8.1",
     "sass": "^1.79.4",
-    "vite": "^5.4.1"
+    "vite": "^7.1.5"
   }
 }
