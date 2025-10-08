@@ -25,7 +25,7 @@ COPY public ./public
 COPY src ./src
 
 # Build the application for production
-RUN npm run build
+RUN npm run build:docker
 
 # ---- Release with NGINX ----
 FROM nginx:alpine AS release
