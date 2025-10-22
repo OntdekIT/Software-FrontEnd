@@ -12,6 +12,7 @@ import ReactDatePicker from "react-datepicker";
 import HeatmapLayer from "react-leaflet-heat-layer";
 import {gradient} from "../utils/map-utils.jsx";
 import './new-home.css';
+import { fetchOpenMeteo, transformDaily, wmoCodeToEmoji } from "../utils/open-meteo.jsx";
 
 export default function Home() {
     const errRef = useRef();
@@ -28,6 +29,7 @@ export default function Home() {
     const [heatmapType, setHeatmapType] = useState('temperature')
     const [dateTime, setDateTime] = useState(new Date());
     const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
+    const [weatherData, setWeatherData] = useState(null);
 
     const calRef = useRef();
     const mapRef = useRef();
@@ -68,6 +70,28 @@ export default function Home() {
 
     useEffect(() => {
         try {
+            const params = {
+                latitude: 51.5555,
+                longitude: 5.0913,
+                daily: [
+                    "temperature_2m_max",
+                    "temperature_2m_min",
+                    "weather_code",
+                    "temperature_2m_mean",
+                    "relative_humidity_2m_mean",
+                ],
+                timezone: "Europe/Berlin",
+            };
+            fetchOpenMeteo("https://api.open-meteo.com/v1/forecast", params)
+                .then(json => {
+                    const daily = transformDaily(json);
+                    setWeatherData({ raw: json, daily });
+                    console.log("Open-Meteo daily", daily);
+                })
+                .catch(err => {
+                    console.error("Open-Meteo error", err);
+                });
+
             // Get Stations
             backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
@@ -97,6 +121,20 @@ export default function Home() {
             setErrMsg('Fout bij ophalen kaart-data.');
         }
     }, [dateTime]);
+
+    const dailyEntries = (() => {
+        if (!weatherData?.daily) return [];
+        const d = weatherData.daily;
+        const times = Array.isArray(d.time) ? d.time : [];
+        return times.map((t, i) => ({
+            date: t instanceof Date ? t : new Date(t),
+            temperature_2m_max: d.temperature_2m_max?.[i] ?? null,
+            temperature_2m_min: d.temperature_2m_min?.[i] ?? null,
+            temperature_2m_mean: d.temperature_2m_mean?.[i] ?? null,
+            relative_humidity_2m_mean: d.relative_humidity_2m_mean?.[i] ?? null,
+            weather_code: d.weather_code?.[i] ?? null,
+        }));
+    })();
 
     return (<div>
             <title>Home</title>
@@ -140,6 +178,9 @@ export default function Home() {
                             max={Math.max(...measurements.map(m => m[heatmapType] || 0))}
                             min={Math.min(...measurements.map(m => m[heatmapType] || 0))}
                             gradient={gradient}
+                            radius={30}
+                            blur={15}
+                            maxZoom={13}
                         />}
                     </MapContainer>
                     {/* Controls overlay */}
@@ -192,6 +233,35 @@ export default function Home() {
                     <div className="weer-view">
                         <div className="weer-view-header">
                             <h2>Weer</h2>
+                        </div>
+
+                        <div className="weer-view-body">
+                            {dailyEntries.length === 0 ? (
+                                <p>No daily weather data available</p>
+                            ) : (
+                                <div className="daily-grid" role="list" aria-label="7 day forecast">
+                                    {dailyEntries.slice(0, 7).map((entry, idx) => (
+                                        <div key={idx} className="daily-card" role="listitem" aria-label={`Forecast ${idx + 1}`}>
+                                            <div className="date">
+                                                {entry.date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+                                            </div>
+
+                                            {/* optional icon placeholder (you can replace with actual icons later) */}
+                                            <div className="icon" aria-hidden="true" style={{ fontSize: '1.25rem' }}>
+                                                {wmoCodeToEmoji(entry.weather_code)}
+                                            </div>
+
+                                            <div className="temps">
+                                                <div>Max: {entry.temperature_2m_max != null ? `${entry.temperature_2m_max.toFixed(1)}°C` : '--'}</div>
+                                                <div>Min: {entry.temperature_2m_min != null ? `${entry.temperature_2m_min.toFixed(1)}°C` : '--'}</div>
+                                                <div>Mean: {entry.temperature_2m_mean != null ? `${entry.temperature_2m_mean.toFixed(1)}°C` : '--'}</div>
+                                            </div>
+
+                                            <div className="rh">RH: {entry.relative_humidity_2m_mean != null ? `${entry.relative_humidity_2m_mean.toFixed(0)}%` : '--'}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
