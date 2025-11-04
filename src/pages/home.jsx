@@ -53,18 +53,18 @@ export default function Home() {
             // Get Stations
             backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
                 .then(resp => {
-                    console.log("API Response:", resp.data); // Logs full response
+                    /*console.log("API Response:", resp.data); // Logs full response
                     if (resp.data.length > 0) {
                         console.log("First station:", resp.data[0]); // Logs first station
-                    }
+                    }*/
                     setStations(resp.data);
                 })
                 .catch(handleAxiosError);
 
             // Get timestamp measurements
-            console.log(dateTime.toISOString());backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
+            backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
             .then(resp => {
-                console.log(resp.data);
+                /*console.log(resp.data);*/
                 setMeasurements(resp.data);
             })
             .catch(function (error) {
