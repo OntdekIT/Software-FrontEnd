@@ -80,6 +80,10 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
 
                 if (validMeasurements.length === 0) return;
 
+                let unit = '°';
+                if (heatmapType === 'humidity') unit = '%';
+                else if (heatmapType === 'particulate') unit = ' μg/m³';
+
                 const points = validMeasurements.map(m => {
                     const point = this._map.latLngToContainerPoint([m.latitude, m.longitude]);
                     return {
@@ -97,8 +101,16 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
                     maxTemp = Math.max(...temps);
                 } else if (colorMode === 'balanced') {
                     const avg = temps.reduce((a, b) => a + b, 0) / temps.length;
-                    minTemp = avg - 5;
-                    maxTemp = avg + 5;
+                    if (heatmapType === 'particulate') {
+                        minTemp = Math.max(0, avg - 10);
+                        maxTemp = avg + 10;
+                    } else if (heatmapType === 'humidity') {
+                        minTemp = Math.max(0, avg - 20);
+                        maxTemp = Math.min(100, avg + 20);
+                    } else {
+                        minTemp = avg - 5;
+                        maxTemp = avg + 5;
+                    }
                 } else if (colorMode === 'relative') {
                     const avg = temps.reduce((a, b) => a + b, 0) / temps.length;
                     const stdDev = Math.sqrt(
@@ -107,8 +119,16 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
                     minTemp = avg - stdDev * relativeFactor;
                     maxTemp = avg + stdDev * relativeFactor;
                 } else {
-                    minTemp = 0;
-                    maxTemp = 30;
+                    if (heatmapType === 'particulate') {
+                        minTemp = 0;
+                        maxTemp = 50;
+                    } else if (heatmapType === 'humidity') {
+                        minTemp = 0;
+                        maxTemp = 100;
+                    } else {
+                        minTemp = 0;
+                        maxTemp = 30;
+                    }
                 }
 
                 const power = 2;
@@ -177,7 +197,7 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
                 ctx.putImageData(imageData, 0, 0);
 
                 if (this._showContours) {
-                    this._drawContours(ctx, { x: gw, y: gh }, contourCell, tempGrid);
+                    this._drawContours(ctx, { x: gw, y: gh }, contourCell, tempGrid, unit);
                 }
             },
 
@@ -333,10 +353,12 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
         if (!canvasLayerRef.current) {
             const layer = new CanvasLayer();
             layer._showContours = showContours;
+            layer._heatmapType = heatmapType;
             canvasLayerRef.current = layer;
             map.addLayer(canvasLayerRef.current);
         } else {
             canvasLayerRef.current._showContours = showContours;
+            canvasLayerRef.current._heatmapType = heatmapType;
             canvasLayerRef.current._reset();
         }
 
@@ -370,6 +392,22 @@ function MeasurementMarkers({ measurements, heatmapType }) {
         m[heatmapType] !== null && m[heatmapType] !== undefined
     );
 
+    const getLabel = () => {
+        switch(heatmapType) {
+            case 'humidity': return 'Luchtvochtigheid';
+            case 'particulate': return 'Fijnstof (PM2.5)';
+            default: return 'Temperatuur';
+        }
+    };
+
+    const getUnit = () => {
+        switch(heatmapType) {
+            case 'humidity': return '%';
+            case 'particulate': return ' μg/m³';
+            default: return '°C';
+        }
+    };
+
     return (
         <>
             {validMeasurements.map((m, idx) => (
@@ -385,7 +423,7 @@ function MeasurementMarkers({ measurements, heatmapType }) {
                     <Popup>
                         <div>
                             <strong>Meetstation</strong><br />
-                            Temperatuur: {m[heatmapType].toFixed(1)}°C<br />
+                            {getLabel()}: {m[heatmapType].toFixed(1)}{getUnit()}<br />
                             Locatie: {m.latitude.toFixed(4)}, {m.longitude.toFixed(4)}
                         </div>
                     </Popup>
@@ -394,6 +432,7 @@ function MeasurementMarkers({ measurements, heatmapType }) {
         </>
     );
 }
+
 
 MeasurementMarkers.propTypes = {
     measurements: PropTypes.arrayOf(PropTypes.shape({
@@ -404,14 +443,14 @@ MeasurementMarkers.propTypes = {
     heatmapType: PropTypes.string.isRequired
 };
 
-/* MapControls: compact, collapsible control panel integrated on the map */
 function MapControls({
                          showTemp, setShowTemp,
                          showContours, setShowContours,
                          colorMode, setColorMode,
                          relativeFactor, setRelativeFactor,
                          dateTime, setDateTime,
-                         toLocalInput, fromLocalInput
+                         toLocalInput, fromLocalInput,
+                         heatmapType, setHeatmapType
                      }) {
     const [open, setOpen] = useState(true);
 
@@ -444,6 +483,29 @@ function MapControls({
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12s4-6 9-6 9 6 9 6-4 6-9 6S3 12 3 12z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 6v12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
                     <span className="mc-label">Contouren</span>
                 </button>
+            </div>
+
+            <div className="mc-block">
+                <div className="mc-row">
+                    <strong className="mc-title">Type</strong>
+                </div>
+                <div className="segmented">
+                    <button
+                        className={`seg-btn ${heatmapType === 'temperature' ? 'active' : ''}`}
+                        onClick={() => setHeatmapType('temperature')}
+                        title="Temperatuur"
+                    >Temp</button>
+                    <button
+                        className={`seg-btn ${heatmapType === 'humidity' ? 'active' : ''}`}
+                        onClick={() => setHeatmapType('humidity')}
+                        title="Luchtvochtigheid"
+                    >Humidity</button>
+                    <button
+                        className={`seg-btn ${heatmapType === 'particulate' ? 'active' : ''}`}
+                        onClick={() => setHeatmapType('particulate')}
+                        title="Fijnstof"
+                    >PM2.5</button>
+                </div>
             </div>
 
             <div className="mc-block">
@@ -504,6 +566,7 @@ function MapControls({
     );
 }
 
+
 MapControls.propTypes = {
     showTemp: PropTypes.bool.isRequired,
     setShowTemp: PropTypes.func.isRequired,
@@ -516,37 +579,42 @@ MapControls.propTypes = {
     dateTime: PropTypes.instanceOf(Date).isRequired,
     setDateTime: PropTypes.func.isRequired,
     toLocalInput: PropTypes.func.isRequired,
-    fromLocalInput: PropTypes.func.isRequired
+    fromLocalInput: PropTypes.func.isRequired,
+    heatmapType: PropTypes.string.isRequired,
+    setHeatmapType: PropTypes.func.isRequired
 };
+
 
 export default function Home() {
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
     const [measurements, setMeasurements] = useState([]);
     const [showTemp, setShowTemp] = useState(true);
-    const [heatmapType] = useState('temperature');
+    const [heatmapType, setHeatmapType] = useState('temperature');
     const [colorMode, setColorMode] = useState('balanced');
     const [relativeFactor, setRelativeFactor] = useState(3);
     const [dateTime, setDateTime] = useState(new Date());
     const [showContours, setShowContours] = useState(false);
 
-    // helper to format Date for datetime-local input (local time)
     const toLocalInput = (d) => {
         const off = d.getTimezoneOffset();
         const local = new Date(d.getTime() - off * 60000);
         return local.toISOString().slice(0, 16);
     };
 
-    // parse value from datetime-local input (interpreted as local)
     const fromLocalInput = (s) => {
         return new Date(s);
     };
 
     useEffect(() => {
         backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
-            .then(resp => setMeasurements(resp.data))
+            .then(resp => {
+                console.log('Measurement data:', resp.data[0]); // Log eerste measurement
+                setMeasurements(resp.data);
+            })
             .catch(() => setErrMsg('Het ophalen van de gegevens is mislukt'));
     }, [dateTime]);
+
 
     return (
         <>
@@ -597,7 +665,9 @@ export default function Home() {
                 relativeFactor={relativeFactor} setRelativeFactor={setRelativeFactor}
                 dateTime={dateTime} setDateTime={setDateTime}
                 toLocalInput={toLocalInput} fromLocalInput={fromLocalInput}
+                heatmapType={heatmapType} setHeatmapType={setHeatmapType}
             />
         </>
     );
 }
+

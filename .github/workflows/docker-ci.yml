@@ -1,0 +1,73 @@
+name: Frontend CI to Docker Hub
+
+on:
+  push:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+  pull_request:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+
+jobs:
+  build-test:
+    name: Build and Deploy Frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build application
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t climatechecker-frontend .
+
+      - name: Test Docker image
+        run: |
+          docker run -d --name test-frontend -p 3000:80 climatechecker-frontend
+          sleep 5
+          
+          # Test if nginx is serving content
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Frontend is serving content successfully"
+          else
+            echo "Frontend health check failed with status: $HTTP_STATUS"
+            docker logs test-frontend
+            exit 1
+          fi
+          
+          docker stop test-frontend
+          docker rm test-frontend
+
+      - name: Login to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push to Docker Hub
+        if: github.event_name == 'push'
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
+          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
+          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
+
