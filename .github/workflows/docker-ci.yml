@@ -41,15 +41,46 @@ jobs:
       - name: Test Docker image
         run: |
           docker run -d --name test-frontend -p 3000:80 climatechecker-frontend
-          sleep 5
           
-          # Test if nginx is serving content
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
-          if [ "$HTTP_STATUS" -eq 200 ]; then
-            echo "Frontend is serving content successfully"
-          else
-            echo "Frontend health check failed with status: $HTTP_STATUS"
+          # Wait for container to be ready
+          echo "Waiting for container to start..."
+          sleep 10
+          
+          # Check if container is still running
+          if ! docker ps | grep -q test-frontend; then
+            echo "Container stopped unexpectedly"
             docker logs test-frontend
+            docker rm test-frontend
+            exit 1
+          fi
+          
+          # Test if nginx is serving content (retry up to 5 times)
+          SUCCESS=false
+          for i in {1..5}; do
+            echo "Attempt $i: Testing if nginx is serving content..."
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
+            echo "HTTP Status: $HTTP_STATUS"
+            
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Frontend is serving content successfully"
+              SUCCESS=true
+              break
+            fi
+            
+            if [ $i -lt 5 ]; then
+              echo "Waiting 3 seconds before retry..."
+              sleep 3
+            fi
+          done
+          
+          if [ "$SUCCESS" = "false" ]; then
+            echo "Frontend health check failed after 5 attempts"
+            echo "Container logs:"
+            docker logs test-frontend
+            echo "Container status:"
+            docker ps -a | grep test-frontend
+            docker stop test-frontend
+            docker rm test-frontend
             exit 1
           fi
           
