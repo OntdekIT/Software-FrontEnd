@@ -5,6 +5,7 @@ import './styles.scss'
 import * as bootstrap from 'bootstrap'
 import Home from "./pages/home.jsx";
 import NewHome from "./pages/new-home.jsx";
+import NewHeatMap from "./pages/new-heatmap.jsx";
 import Root from "./pages/root.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import About from "./pages/about.jsx";
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
             {
                 path: "/newhome",
                 element: <NewHome />
+            },
+            {
+                path: "/newheatmap",
+                element: <NewHeatMap />
             },
             {
                 path: "/map",

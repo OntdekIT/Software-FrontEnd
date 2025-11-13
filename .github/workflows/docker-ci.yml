@@ -1,0 +1,105 @@
+name: Frontend CI to Docker Hub
+
+on:
+  push:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+  pull_request:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+
+jobs:
+  build-test:
+    name: Build and Deploy Frontend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build application
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t climatechecker-frontend .
+
+      - name: Test Docker image
+        run: |
+          docker run -d --name test-frontend -p 3000:80 climatechecker-frontend
+          
+          # Wait for container to be ready
+          echo "Waiting for container to start..."
+          sleep 10
+          
+          # Check if container is still running
+          if ! docker ps | grep -q test-frontend; then
+            echo "Container stopped unexpectedly"
+            docker logs test-frontend
+            docker rm test-frontend
+            exit 1
+          fi
+          
+          # Test if nginx is serving content (retry up to 5 times)
+          SUCCESS=false
+          for i in {1..5}; do
+            echo "Attempt $i: Testing if nginx is serving content..."
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
+            echo "HTTP Status: $HTTP_STATUS"
+            
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Frontend is serving content successfully"
+              SUCCESS=true
+              break
+            fi
+            
+            if [ $i -lt 5 ]; then
+              echo "Waiting 3 seconds before retry..."
+              sleep 3
+            fi
+          done
+          
+          if [ "$SUCCESS" = "false" ]; then
+            echo "Frontend health check failed after 5 attempts"
+            echo "Container logs:"
+            docker logs test-frontend
+            echo "Container status:"
+            docker ps -a | grep test-frontend
+            docker stop test-frontend
+            docker rm test-frontend
+            exit 1
+          fi
+          
+          docker stop test-frontend
+          docker rm test-frontend
+
+      - name: Login to Docker Hub
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push to Docker Hub
+        if: github.event_name == 'push'
+        run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
+          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
+          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
+
