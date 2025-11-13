@@ -32,21 +32,21 @@
 
 .wijken-view {
     width: 100%;
+    max-height: 52vh;
     height: 52vh;
     background: #fecb3d;
-    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
 
-    .wijken-view-header{
+    .wijken-view-header {
         display: flex;
         justify-content: center; /* Center content horizontally */
         align-items: center;
         padding: 10px 16px;
-        background: #1976d2;
+        background: #009ee3;
         color: #fff;
         font-size: 1.2em;
         font-weight: bold;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
     }
 
     .wijken-view-header h2 {
@@ -54,7 +54,8 @@
     }
 
     .wijken-list {
-        max-height: 300px;
+        flex: 1 1 auto;
+        height: 100%;
         overflow-y: auto;
         background: #fecb3d;
         padding: 8px 0;
@@ -67,7 +68,7 @@
             align-items: center;
             padding: 10px 18px;
             margin: 0 8px 8px 8px;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
@@ -76,8 +77,9 @@
 
             .wijken-list-name {
                 font-weight: bold;
-                color: #1976d2;
+                color: #009ee3;
             }
+
             .wijken-list-temp {
                 color: #d84315;
                 font-size: 1.05em;
@@ -97,10 +99,12 @@
         background: #fecb3d;
         border-radius: 8px;
     }
+
     .wijken-list::-webkit-scrollbar-thumb {
         background: #e6b800;
         border-radius: 8px;
     }
+
     .wijken-list::-webkit-scrollbar-thumb:hover {
         background: #d1a700;
     }
@@ -110,24 +114,81 @@
     width: 100%;
     height: 32vh;
     background: #fecb3d;
-    border-radius: 8px;
     margin-top: 2vh;
 
-    .weer-view-header{
+    .weer-view-header {
         display: flex;
         justify-content: center; /* Center content horizontally */
         align-items: center;
         padding: 10px 16px;
-        background: #1976d2;
+        background: #009ee3;
         color: #fff;
         font-size: 1.2em;
         font-weight: bold;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
     }
 
     .weer-view-header h2 {
         margin-bottom: 0;
+    }
+
+    .daily-grid {
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        overflow-x: auto;               /* horizontal scrolling when more items */
+        align-items: stretch;
+        -webkit-overflow-scrolling: touch;
+        box-sizing: border-box;
+    }
+
+    /* Each card is an equal box; on narrow screens it becomes a fixed min width */
+    .daily-card {
+        box-sizing: border-box;
+        flex: 0 0 calc((100% - 16px) / 3); /* (100% - 2 gaps) / 3 => three equal columns */
+        max-width: calc((100% - 16px) / 3);
+        min-width: 160px;                   /* keep readable; will cause horizontal scroll if container is too small */
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        padding: 5px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        text-align: center;
+        gap: 3px;
+    }
+
+    /* Small text styles inside card */
+    .daily-card .date {
+        font-weight: 700;
+        font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+    }
+    .daily-card .temps {
+        font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+        line-height: 1.2;
+    }
+    .daily-card .rh {
+        font-size: clamp(0.65rem, 1.2vw, 0.85rem);
+        color: #666;
+    }
+
+    /* If viewport is too small, make cards fixed width and allow scrolling */
+    @media (max-width: 900px) {
+        .daily-card {
+            flex: 0 0 180px;
+            min-width: 180px;
+            max-width: 180px;
+        }
+    }
+
+    /* Optional: style scrollbar to match theme */
+    .daily-grid::-webkit-scrollbar {
+        height: 8px;
+    }
+    .daily-grid::-webkit-scrollbar-thumb {
+        background: #e6b800;
+        border-radius: 8px;
     }
 }
 
@@ -142,16 +203,16 @@
     top: 12px;
     right: 12px;
     z-index: 1100;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255, 255, 255, 0.4);
     padding: 10px 14px;
     border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
     display: flex;
     gap: 8px;
 }
 
 .btn.active {
-    background-color: #1976d2;
+    background-color: #009ee3;
     color: #fff;
 }
 
@@ -160,8 +221,8 @@
     bottom: 12px;
     left: 12px;
     z-index: 1100;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255, 255, 255, 0.4);
     padding: 8px 12px;
     border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
