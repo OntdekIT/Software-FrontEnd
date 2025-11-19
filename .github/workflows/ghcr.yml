@@ -1,4 +1,4 @@
-name: Frontend CI to Docker Hub
+name: Frontend CI to GitHub Container Registry
 
 on:
   push:
@@ -10,6 +10,9 @@ jobs:
   build-test:
     name: Build and Deploy Frontend
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     defaults:
       run:
@@ -41,11 +44,11 @@ jobs:
       - name: Test Docker image
         run: |
           docker run -d --name test-frontend -p 3000:80 climatechecker-frontend
-          
+
           # Wait for container to be ready
           echo "Waiting for container to start..."
           sleep 10
-          
+
           # Check if container is still running
           if ! docker ps | grep -q test-frontend; then
             echo "Container stopped unexpectedly"
@@ -53,26 +56,26 @@ jobs:
             docker rm test-frontend
             exit 1
           fi
-          
+
           # Test if nginx is serving content (retry up to 5 times)
           SUCCESS=false
           for i in {1..5}; do
             echo "Attempt $i: Testing if nginx is serving content..."
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
             echo "HTTP Status: $HTTP_STATUS"
-            
+
             if [ "$HTTP_STATUS" = "200" ]; then
               echo "Frontend is serving content successfully"
               SUCCESS=true
               break
             fi
-            
+
             if [ $i -lt 5 ]; then
               echo "Waiting 3 seconds before retry..."
               sleep 3
             fi
           done
-          
+
           if [ "$SUCCESS" = "false" ]; then
             echo "Frontend health check failed after 5 attempts"
             echo "Container logs:"
@@ -83,23 +86,26 @@ jobs:
             docker rm test-frontend
             exit 1
           fi
-          
+
           docker stop test-frontend
           docker rm test-frontend
 
-      - name: Login to Docker Hub
+      - name: Login to GitHub Container Registry
         if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push to Docker Hub
+      - name: Push to GitHub Container Registry
         if: github.event_name == 'push'
         run: |
           BRANCH_NAME=${GITHUB_REF##*/}
-          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
-          docker tag climatechecker-frontend ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:${BRANCH_NAME}
-          docker push ${{ secrets.DOCKER_USERNAME }}/climatechecker-frontend:latest
+          IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/climatechecker-frontend
+          IMAGE_NAME_LOWER=$(echo "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')
 
+          docker tag climatechecker-frontend ${IMAGE_NAME_LOWER}:${BRANCH_NAME}
+          docker tag climatechecker-frontend ${IMAGE_NAME_LOWER}:latest
+          docker push ${IMAGE_NAME_LOWER}:${BRANCH_NAME}
+          docker push ${IMAGE_NAME_LOWER}:latest
