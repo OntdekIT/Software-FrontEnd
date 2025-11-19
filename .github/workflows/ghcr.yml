@@ -28,8 +28,16 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Refresh node modules
-        run: npm install
+      - name: Update package-lock.json if needed
+        run: |
+          npm install --package-lock-only
+          git diff --exit-code package-lock.json || \
+            (echo "package-lock.json was updated" && \
+             git config --global user.name "GitHub Actions" && \
+             git config --global user.email "actions@github.com" && \
+             git add package-lock.json && \
+             git commit -m "Update package-lock.json" && \
+             git push)
 
       - name: Install dependencies
         run: npm ci
@@ -46,13 +54,11 @@ jobs:
 
       - name: Test Docker image
         run: |
-          docker run -d --name test-frontend -p 3000:80 climatechecker-frontend
+          docker run -d --name test-frontend -p 3000:5173 climatechecker-frontend
 
-          # Wait for container to be ready
           echo "Waiting for container to start..."
-          sleep 10
+          sleep 15
 
-          # Check if container is still running
           if ! docker ps | grep -q test-frontend; then
             echo "Container stopped unexpectedly"
             docker logs test-frontend
@@ -60,10 +66,9 @@ jobs:
             exit 1
           fi
 
-          # Test if nginx is serving content (retry up to 5 times)
           SUCCESS=false
-          for i in {1..5}; do
-            echo "Attempt $i: Testing if nginx is serving content..."
+          for i in {1..10}; do
+            echo "Attempt $i: Testing if application is serving content..."
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
             echo "HTTP Status: $HTTP_STATUS"
 
@@ -73,14 +78,14 @@ jobs:
               break
             fi
 
-            if [ $i -lt 5 ]; then
+            if [ $i -lt 10 ]; then
               echo "Waiting 3 seconds before retry..."
               sleep 3
             fi
           done
 
           if [ "$SUCCESS" = "false" ]; then
-            echo "Frontend health check failed after 5 attempts"
+            echo "Frontend health check failed after 10 attempts"
             echo "Container logs:"
             docker logs test-frontend
             echo "Container status:"
