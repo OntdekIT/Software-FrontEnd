@@ -74,6 +74,10 @@ jobs:
         with:
           version: ${{ steps.previoustag.outputs.tag }}
 
+      - name: Set lowercase owner
+        id: owner
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -83,7 +87,7 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker tag climatechecker-frontend ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
-          docker tag climatechecker-frontend ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:latest
-          docker push ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
-          docker push ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:latest
+          docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
+          docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:latest
+          docker push ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
+          docker push ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:latest
