@@ -7,20 +7,17 @@ on:
     branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
 
 jobs:
-  build-test:
-    name: Build and Deploy Frontend
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
-    defaults:
-      run:
-        working-directory: .
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -28,11 +25,8 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Refresh node modules
-        run: npm install
-
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run linter
         run: npm run lint
@@ -41,95 +35,55 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Build Docker image
-        run: docker build -t climatechecker-frontend .
-
       - name: Test Docker image
         run: |
+          docker build -t climatechecker-frontend .
           docker run -d --name test-frontend -p 3000:5173 climatechecker-frontend
-
           echo "Waiting for container to start..."
-          sleep 15
-
-          if ! docker ps | grep -q test-frontend; then
-            echo "Container stopped unexpectedly"
-            docker logs test-frontend
-            docker rm test-frontend
-            exit 1
-          fi
+          sleep 10
 
           SUCCESS=false
           for i in {1..10}; do
-            echo "Attempt $i: Testing if application is serving content..."
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
-            echo "HTTP Status: $HTTP_STATUS"
-
+            echo "Attempt $i - HTTP Status: $HTTP_STATUS"
             if [ "$HTTP_STATUS" = "200" ]; then
-              echo "Frontend is serving content successfully"
               SUCCESS=true
               break
             fi
-
-            if [ $i -lt 10 ]; then
-              echo "Waiting 3 seconds before retry..."
-              sleep 3
-            fi
+            sleep 3
           done
 
           if [ "$SUCCESS" = "false" ]; then
-            echo "Frontend health check failed after 10 attempts"
-            echo "Container logs:"
+            echo "Frontend health check failed"
             docker logs test-frontend
-            echo "Container status:"
-            docker ps -a | grep test-frontend
-            docker stop test-frontend
-            docker rm test-frontend
+            docker rm -f test-frontend
             exit 1
           fi
 
-          docker stop test-frontend
-          docker rm test-frontend
+          docker rm -f test-frontend
+
+      - name: Get previous Git tag
+        id: previoustag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get next release version
+        id: next
+        uses: WyriHaximus/github-action-next-release-version@1.0.0
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
 
       - name: Log in to GitHub Container Registry
-        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-          flavor: |
-            latest=true
-
-      - name: Push to GitHub Container Registry
-        if: github.event_name == 'push'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ${{ env.DOCKERFILE_PATH }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Output pushed images
-        if: github.event_name == 'push'
+      - name: Push Docker image
         run: |
-          echo "Image pushed as:"
-          echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}"
-          echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          echo "All tags:"
-          echo "${{ steps.meta.outputs.tags }}"
+          docker tag climatechecker-frontend ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
+          docker tag climatechecker-frontend ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:latest
+          docker push ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:${{ steps.next.outputs.version }}
+          docker push ghcr.io/${{ github.repository_owner }}/climatechecker-frontend:latest
