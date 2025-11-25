@@ -183,28 +183,6 @@ export default function Home() {
                             maxZoom={13}
                         />}
                     </MapContainer>
-                    {/* Controls overlay */}
-                    <div className="map-controls">
-                        <button
-                            className={`btn btn-primary${showRegions ? ' active' : ''}`}
-                            onClick={() => {
-                                setShowRegions(true);
-                                setShowTemp(false);
-                            }}
-                        >
-                            Wijken
-                        </button>
-                        <button
-                            className={`btn btn-primary${showTemp ? ' active' : ''}`}
-                            onClick={() => {
-                                setShowTemp(true);
-                                setShowRegions(false);
-                            }}
-                        >
-                            Heatmap
-                        </button>
-                    </div>
-                    {/* Legend overlay */}
                     <div className="map-legend">
                         <ColorLegend temperatures={measurements}/>
                     </div>
