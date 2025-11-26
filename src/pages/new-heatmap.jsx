@@ -1,4 +1,3 @@
-// src/pages/new-heatmap.jsx
 import { useEffect, useRef, useState } from "react";
 import PropTypes from 'prop-types';
 import { backendApi } from "../utils/backend-api.jsx";
@@ -80,9 +79,9 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
 
                 if (validMeasurements.length === 0) return;
 
-                let unit = '°';
+                let unit = '°C';
                 if (heatmapType === 'humidity') unit = '%';
-                else if (heatmapType === 'particulate') unit = ' μg/m³';
+                else if (heatmapType === 'particulate') unit = 'μg/m³';
 
                 const points = validMeasurements.map(m => {
                     const point = this._map.latLngToContainerPoint([m.latitude, m.longitude]);
@@ -201,109 +200,113 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
                 }
             },
 
-            _drawContours: function (ctx, gridSize, cell, values) {
-                let dataMin = Infinity;
-                let dataMax = -Infinity;
-                for (let i = 0; i < values.length; i++) {
-                    if (!isNaN(values[i])) {
-                        dataMin = Math.min(dataMin, values[i]);
-                        dataMax = Math.max(dataMax, values[i]);
-                    }
-                }
+            _drawContours: function (ctx, gridSize, cell, values, unit) {
+                 let dataMin = Infinity;
+                 let dataMax = -Infinity;
+                 for (let i = 0; i < values.length; i++) {
+                     if (!isNaN(values[i])) {
+                         dataMin = Math.min(dataMin, values[i]);
+                         dataMax = Math.max(dataMax, values[i]);
+                     }
+                 }
 
+                const levelCount = 20;
                 const levels = [];
-                const start = Math.floor(dataMin * 4) / 4;
-                const end = Math.ceil(dataMax * 4) / 4;
-                for (let t = start; t <= end; t += 0.25) {
-                    levels.push(t);
-                }
+                 if (isFinite(dataMax) && isFinite(dataMin) && dataMax > dataMin) {
+                     const stepVal = (dataMax - dataMin) / levelCount;
+                     for (let i = 1; i <= levelCount; i++) {
+                         levels.push(dataMin + i * stepVal);
+                     }
+                 } else {
+                     levels.push((dataMin + dataMax) / 2);
+                 }
 
-                const iso = d3Contours()
-                    .size([gridSize.x, gridSize.y])
-                    .smooth(true)
-                    .thresholds(levels)(values);
+                 const iso = d3Contours()
+                     .size([gridSize.x, gridSize.y])
+                     .smooth(true)
+                     .thresholds(levels)(values);
 
-                ctx.save();
-                ctx.lineWidth = 0.8;
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
-                ctx.lineJoin = 'round';
-                ctx.lineCap = 'round';
+                 ctx.save();
+                 ctx.lineWidth = 0.8;
+                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                 ctx.lineJoin = 'round';
+                 ctx.lineCap = 'round';
 
-                for (const c of iso) {
-                    for (const multi of c.coordinates) {
-                        for (const ring of multi) {
-                            ctx.beginPath();
-                            for (let i = 0; i < ring.length; i++) {
-                                const px = ring[i][0] * cell;
-                                const py = ring[i][1] * cell;
-                                if (i === 0) ctx.moveTo(px, py);
-                                else ctx.lineTo(px, py);
+                 for (const c of iso) {
+                     for (const multi of c.coordinates) {
+                         for (const ring of multi) {
+                             ctx.beginPath();
+                             for (let i = 0; i < ring.length; i++) {
+                                 const px = ring[i][0] * cell;
+                                 const py = ring[i][1] * cell;
+                                 if (i === 0) ctx.moveTo(px, py);
+                                 else ctx.lineTo(px, py);
                             }
                             ctx.closePath();
                             ctx.stroke();
                         }
-                    }
-                }
+                     }
+                 }
 
-                ctx.font = 'bold 16px Arial';
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = 3;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                 ctx.font = 'bold 16px Arial';
+                 ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                 ctx.strokeStyle = 'white';
+                 ctx.lineWidth = 3;
+                 ctx.textAlign = 'center';
+                 ctx.textBaseline = 'middle';
 
-                const placedLabels = [];
+                 const placedLabels = [];
 
-                const hasCollision = (x, y, minDistance) => {
-                    for (const label of placedLabels) {
-                        const dx = x - label.x;
-                        const dy = y - label.y;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < minDistance) return true;
-                    }
-                    return false;
-                };
+                 const hasCollision = (x, y, minDistance) => {
+                     for (const label of placedLabels) {
+                         const dx = x - label.x;
+                         const dy = y - label.y;
+                         const dist = Math.sqrt(dx * dx + dy * dy);
+                         if (dist < minDistance) return true;
+                     }
+                     return false;
+                 };
 
-                let minPos = { x: 0, y: 0 };
-                let maxPos = { x: 0, y: 0 };
+                 let minPos = { x: 0, y: 0 };
+                 let maxPos = { x: 0, y: 0 };
 
-                for (let i = 0; i < values.length; i++) {
-                    if (!isNaN(values[i])) {
-                        if (values[i] === dataMin) {
-                            const y = Math.floor(i / gridSize.x);
-                            const x = i % gridSize.x;
-                            minPos = { x: x * cell, y: y * cell };
-                        }
-                        if (values[i] === dataMax) {
-                            const y = Math.floor(i / gridSize.x);
-                            const x = i % gridSize.x;
-                            maxPos = { x: x * cell, y: y * cell };
-                        }
-                    }
-                }
+                 for (let i = 0; i < values.length; i++) {
+                     if (!isNaN(values[i])) {
+                         if (values[i] === dataMin) {
+                             const y = Math.floor(i / gridSize.x);
+                             const x = i % gridSize.x;
+                             minPos = { x: x * cell, y: y * cell };
+                         }
+                         if (values[i] === dataMax) {
+                             const y = Math.floor(i / gridSize.x);
+                             const x = i % gridSize.x;
+                             maxPos = { x: x * cell, y: y * cell };
+                         }
+                     }
+                 }
 
-                if (dataMin !== Infinity) {
-                    const text = dataMin.toFixed(1) + '°';
-                    ctx.strokeText(text, minPos.x, minPos.y);
-                    ctx.fillText(text, minPos.x, minPos.y);
-                    placedLabels.push({ x: minPos.x, y: minPos.y });
-                }
+                 if (dataMin !== Infinity) {
+                     const text = `${dataMin.toFixed(1)} ${unit}`;
+                     ctx.strokeText(text, minPos.x, minPos.y);
+                     ctx.fillText(text, minPos.x, minPos.y);
+                     placedLabels.push({ x: minPos.x, y: minPos.y });
+                 }
 
-                if (dataMax !== -Infinity) {
-                    const text = dataMax.toFixed(1) + '°';
-                    ctx.strokeText(text, maxPos.x, maxPos.y);
-                    ctx.fillText(text, maxPos.x, maxPos.y);
-                    placedLabels.push({ x: maxPos.x, y: maxPos.y });
-                }
+                 if (dataMax !== -Infinity) {
+                     const text = `${dataMax.toFixed(1)} ${unit}`;
+                     ctx.strokeText(text, maxPos.x, maxPos.y);
+                     ctx.fillText(text, maxPos.x, maxPos.y);
+                     placedLabels.push({ x: maxPos.x, y: maxPos.y });
+                 }
 
-                const minLabelDistance = 60;
+                 const minLabelDistance = 60;
 
-                for (const c of iso) {
-                    const temp = c.value.toFixed(1) + '°';
+                 for (const c of iso) {
+                     const temp = `${c.value.toFixed(1)} ${unit}`;
 
-                    for (const multi of c.coordinates) {
-                        for (const ring of multi) {
-                            if (ring.length < 5) continue;
+                     for (const multi of c.coordinates) {
+                         for (const ring of multi) {
+                             if (ring.length < 5) continue;
 
                             let sumX = 0, sumY = 0;
                             for (const point of ring) {
@@ -326,12 +329,12 @@ function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, re
                                 ctx.fillText(temp, centroidX, centroidY);
                                 placedLabels.push({ x: centroidX, y: centroidY });
                             }
-                        }
-                    }
-                }
+                         }
+                     }
+                 }
 
-                ctx.restore();
-            },
+                 ctx.restore();
+             },
 
             _getColor: function (value) {
                 if (value < 0.25) {
@@ -403,7 +406,7 @@ function MeasurementMarkers({ measurements, heatmapType }) {
     const getUnit = () => {
         switch(heatmapType) {
             case 'humidity': return '%';
-            case 'particulate': return ' μg/m³';
+            case 'particulate': return 'μg/m³';
             default: return '°C';
         }
     };
@@ -423,7 +426,7 @@ function MeasurementMarkers({ measurements, heatmapType }) {
                     <Popup>
                         <div>
                             <strong>Meetstation</strong><br />
-                            {getLabel()}: {m[heatmapType].toFixed(1)}{getUnit()}<br />
+                            {getLabel()}: {m[heatmapType].toFixed(1)} {getUnit()}<br />
                             Locatie: {m.latitude.toFixed(4)}, {m.longitude.toFixed(4)}
                         </div>
                     </Popup>
@@ -443,14 +446,75 @@ MeasurementMarkers.propTypes = {
     heatmapType: PropTypes.string.isRequired
 };
 
+function getColorString(value) {
+    let r, g, b;
+    if (value < 0.25) {
+        const t = value / 0.25;
+        r = 0; g = Math.round(255 * t); b = 255;
+    } else if (value < 0.5) {
+        const t = (value - 0.25) / 0.25;
+        r = 0; g = 255; b = Math.round(255 * (1 - t));
+    } else if (value < 0.75) {
+        const t = (value - 0.5) / 0.25;
+        r = Math.round(255 * t); g = 255; b = 0;
+    } else {
+        const t = (value - 0.75) / 0.25;
+        r = 255; g = Math.round(255 * (1 - t)); b = 0;
+    }
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+const Legend = ({ measurements, heatmapType, relativeFactor = 1.0, inline = true }) => {
+    const valid = (measurements || []).filter(m => m.latitude && m.longitude && m[heatmapType] !== null && m[heatmapType] !== undefined);
+    const values = valid.map(m => m[heatmapType]);
+
+    let unit = '°C';
+    if (heatmapType === 'humidity') unit = '%';
+    else if (heatmapType === 'particulate') unit = 'μg/m³';
+
+    let minVal, maxVal;
+    if (values.length === 0) {
+        if (heatmapType === 'particulate') { minVal = 0; maxVal = 50; }
+        else if (heatmapType === 'humidity') { minVal = 0; maxVal = 100; }
+        else { minVal = 0; maxVal = 30; }
+    } else {
+        const avg = values.reduce((a,b)=>a+b,0)/values.length;
+        const stdDev = Math.sqrt(values.reduce((s,v)=>s+Math.pow(v-avg,2),0)/values.length);
+        minVal = avg - stdDev * relativeFactor;
+        maxVal = avg + stdDev * relativeFactor;
+    }
+
+    if (maxVal <= minVal) { const c = (maxVal + minVal)/2 || 0; minVal = c - 1; maxVal = c + 1; }
+
+    const stops = [0, 0.25, 0.5, 0.75, 1];
+    const colorStops = stops.map(s => `${getColorString(s)} ${Math.round(s*100)}%`).join(', ');
+    const gradientStyle = { background: `linear-gradient(to right, ${colorStops})`, height: inline ? '10px' : '12px', borderRadius: '6px' };
+
+    const container = inline ? { padding: 0 } : { position: 'absolute', right: 12, bottom: 12, zIndex: 1000 };
+
+    const label = heatmapType === 'humidity' ? 'Luchtvochtigheid' : (heatmapType === 'particulate' ? 'Fijnstof (PM2.5)' : 'Temperatuur');
+
+    return (
+        <div style={container} className={inline ? 'legend-inline' : ''} aria-label={`${label} legenda`}>
+            <div style={{ fontWeight: 600, marginBottom: inline ? 4 : 6 }}>{label} <span style={{ fontWeight: 400, marginLeft: 6 }}>({unit})</span></div>
+            <div style={gradientStyle} aria-hidden="true" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: inline ? 12 : 13 }}>
+                <div>{minVal.toFixed(1)} {unit}</div>
+                <div>{maxVal.toFixed(1)} {unit}</div>
+            </div>
+        </div>
+    );
+};
+
+Legend.propTypes = { measurements: PropTypes.array, heatmapType: PropTypes.string.isRequired, relativeFactor: PropTypes.number, inline: PropTypes.bool };
+
 function MapControls({
                          showTemp, setShowTemp,
                          showContours, setShowContours,
-                         colorMode, setColorMode,
-                         relativeFactor, setRelativeFactor,
                          dateTime, setDateTime,
                          toLocalInput, fromLocalInput,
-                         heatmapType, setHeatmapType
+                         heatmapType, setHeatmapType,
+                         measurements, colorMode, relativeFactor
                      }) {
     const [open, setOpen] = useState(true);
 
@@ -510,39 +574,11 @@ function MapControls({
 
             <div className="mc-block">
                 <div className="mc-row">
-                    <strong className="mc-title">Kleur</strong>
+                    <strong className="mc-title">Legenda</strong>
                 </div>
-                <div className="segmented">
-                    <button
-                        className={`seg-btn ${colorMode === 'balanced' ? 'active' : ''}`}
-                        onClick={() => setColorMode('balanced')}
-                        title="Gebalanceerd"
-                    >Gebalanceerd</button>
-                    <button
-                        className={`seg-btn ${colorMode === 'relative' ? 'active' : ''}`}
-                        onClick={() => setColorMode('relative')}
-                        title="Relatief"
-                    >Relatief</button>
-                    <button
-                        className={`seg-btn ${colorMode === 'absolute' ? 'active' : ''}`}
-                        onClick={() => setColorMode('absolute')}
-                        title="Absoluut"
-                    >Absoluut</button>
+                <div style={{ paddingTop: 6 }}>
+                    <Legend measurements={measurements} heatmapType={heatmapType} relativeFactor={relativeFactor} inline />
                 </div>
-
-                {colorMode === 'relative' && (
-                    <div className="relative-control">
-                        <label className="mc-sub">Factor: <strong>{relativeFactor.toFixed(1)}σ</strong></label>
-                        <input
-                            type="range"
-                            min="1"
-                            max="20"
-                            step="0.1"
-                            value={relativeFactor}
-                            onChange={(e) => setRelativeFactor(parseFloat(e.target.value))}
-                        />
-                    </div>
-                )}
             </div>
 
             <div className="mc-block">
@@ -572,16 +608,15 @@ MapControls.propTypes = {
     setShowTemp: PropTypes.func.isRequired,
     showContours: PropTypes.bool.isRequired,
     setShowContours: PropTypes.func.isRequired,
-    colorMode: PropTypes.oneOf(['dynamic', 'balanced', 'relative', 'absolute']).isRequired,
-    setColorMode: PropTypes.func.isRequired,
-    relativeFactor: PropTypes.number.isRequired,
-    setRelativeFactor: PropTypes.func.isRequired,
     dateTime: PropTypes.instanceOf(Date).isRequired,
     setDateTime: PropTypes.func.isRequired,
     toLocalInput: PropTypes.func.isRequired,
     fromLocalInput: PropTypes.func.isRequired,
     heatmapType: PropTypes.string.isRequired,
-    setHeatmapType: PropTypes.func.isRequired
+    setHeatmapType: PropTypes.func.isRequired,
+    measurements: PropTypes.array,
+    colorMode: PropTypes.string,
+    relativeFactor: PropTypes.number
 };
 
 
@@ -591,8 +626,8 @@ export default function Home() {
     const [measurements, setMeasurements] = useState([]);
     const [showTemp, setShowTemp] = useState(true);
     const [heatmapType, setHeatmapType] = useState('temperature');
-    const [colorMode, setColorMode] = useState('balanced');
-    const [relativeFactor, setRelativeFactor] = useState(3);
+    const colorMode = 'relative';
+    const relativeFactor = 1.0;
     const [dateTime, setDateTime] = useState(new Date());
     const [showContours, setShowContours] = useState(false);
 
@@ -609,7 +644,7 @@ export default function Home() {
     useEffect(() => {
         backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
             .then(resp => {
-                console.log('Measurement data:', resp.data[0]); // Log eerste measurement
+                console.log('Measurement data:', resp.data[0]);
                 setMeasurements(resp.data);
             })
             .catch(() => setErrMsg('Het ophalen van de gegevens is mislukt'));
@@ -661,13 +696,13 @@ export default function Home() {
             <MapControls
                 showTemp={showTemp} setShowTemp={setShowTemp}
                 showContours={showContours} setShowContours={setShowContours}
-                colorMode={colorMode} setColorMode={setColorMode}
-                relativeFactor={relativeFactor} setRelativeFactor={setRelativeFactor}
                 dateTime={dateTime} setDateTime={setDateTime}
                 toLocalInput={toLocalInput} fromLocalInput={fromLocalInput}
                 heatmapType={heatmapType} setHeatmapType={setHeatmapType}
+                measurements={measurements}
+                colorMode={colorMode}
+                relativeFactor={relativeFactor}
             />
         </>
     );
 }
-
