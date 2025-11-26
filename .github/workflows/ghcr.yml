@@ -79,6 +79,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create and push new Git tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git tag ${{ steps.next.outputs.patch }}
+          git push origin ${{ steps.next.outputs.patch }}
+
       - name: Push Docker image
         run: |
           docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.patch }}
