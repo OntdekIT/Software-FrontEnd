@@ -4,6 +4,8 @@ import './styles.scss'
 // eslint-disable-next-line no-unused-vars
 import * as bootstrap from 'bootstrap'
 import Home from "./pages/home.jsx";
+import NewHome from "./pages/new-home.jsx";
+import NewHeatMap from "./pages/new-heatmap.jsx";
 import Root from "./pages/root.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import About from "./pages/about.jsx";
@@ -39,7 +41,15 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Home />
+                element: <NewHome />
+            },
+            {
+                path: "/newhome",
+                element: <NewHome />
+            },
+            {
+                path: "/newheatmap",
+                element: <NewHeatMap />
             },
             {
                 path: "/map",

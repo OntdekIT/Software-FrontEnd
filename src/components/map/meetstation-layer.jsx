@@ -117,10 +117,10 @@ const MeetStationLayer = ({ stations, visible, selectedDate, userId }) => {
                     <Popup closeOnClick={false}>
                         <h4>{station.name || `Station ${station.stationid}`}</h4>
 
-                        {station.measurementDtoList && station.measurementDtoList.length > 0 ? (
+                        {station.measurements && station.measurements.length > 0 ? (
 
                             <ul>
-                                {station.measurementDtoList.map((measurement, index) => (
+                                {station.measurements.map((measurement, index) => (
                                     <li key={index}>
                                         Temp: {roundToOneDecimal(measurement.temperature)}°C | 
                                         Humidity: {roundToOneDecimal(measurement.humidity)}%

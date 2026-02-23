@@ -30,7 +30,7 @@ export default function Navbar() {
                 <div className="collapse navbar-collapse" id="navbarToggler" ref={navbarCollapseRef}>
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/map" onClick={handleNavLinkClick}>Kaart</Link>
+                            <Link className="nav-link" to="/newheatmap" onClick={handleNavLinkClick}>Heatmap</Link>
                         </li>
                         <li className="nav-item">
                             <Link className="nav-link" to="/about" onClick={handleNavLinkClick}>Over ons</Link>

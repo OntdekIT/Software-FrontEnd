@@ -1,0 +1,94 @@
+name: Frontend CI to GitHub Container Registry
+
+on:
+  push:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+  pull_request:
+    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build application
+        run: npm run build
+
+      - name: Test Docker image
+        run: |
+          docker build -t climatechecker-frontend .
+          docker run -d --name test-frontend -p 3000:5173 climatechecker-frontend
+          sleep 10
+          SUCCESS=false
+          for i in {1..10}; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 || echo "000")
+            if [ "$HTTP_STATUS" = "200" ]; then
+              SUCCESS=true
+              break
+            fi
+            sleep 3
+          done
+          if [ "$SUCCESS" = "false" ]; then
+            docker logs test-frontend
+            docker rm -f test-frontend
+            exit 1
+          fi
+          docker rm -f test-frontend
+
+      - name: Get previous Git tag
+        id: previoustag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get next semantic version
+        id: next
+        uses: WyriHaximus/github-action-next-semvers@v1
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+
+      - name: Set lowercase owner
+        id: owner
+        run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push new Git tag
+        run: |
+          git config user.name "${{ github.actor }}"
+          git tag ${{ steps.next.outputs.patch }}
+          git push origin ${{ steps.next.outputs.patch }}
+
+      - name: Push Docker image
+        run: |
+          docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.patch }}
+          docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:latest
+          docker push ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.patch }}
+          docker push ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:latest
+
