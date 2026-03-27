@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, useMap, CircleMarker, Popup } from "react-leaf
 import L from 'leaflet';
 import { contours as d3Contours } from 'd3-contour';
 import './new-heatmap.css';
+import NewMap from "../components/newmap.jsx";
 
 function TemperatureCanvasLayer({ measurements, heatmapType, show, colorMode, relativeFactor, showContours }) {
     const map = useMap();
@@ -664,7 +665,8 @@ export default function Home() {
             )}
 
             <div className="heatmap-container">
-                <MapContainer
+                <NewMap></NewMap>
+                {/* <MapContainer
                     center={[51.57898, 5.08772]}
                     zoom={12}
                     maxZoom={13}
@@ -690,10 +692,10 @@ export default function Home() {
                         measurements={measurements}
                         heatmapType={heatmapType}
                     />
-                </MapContainer>
+                </MapContainer> */}
             </div>
 
-            <MapControls
+            {/* <MapControls
                 showTemp={showTemp} setShowTemp={setShowTemp}
                 showContours={showContours} setShowContours={setShowContours}
                 dateTime={dateTime} setDateTime={setDateTime}
@@ -702,7 +704,7 @@ export default function Home() {
                 measurements={measurements}
                 colorMode={colorMode}
                 relativeFactor={relativeFactor}
-            />
+            /> */}
         </>
     );
 }
