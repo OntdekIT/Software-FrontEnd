@@ -665,7 +665,7 @@ export default function Home() {
             )}
 
             <div className="heatmap-container">
-                <NewMap></NewMap>
+                <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
                 {/* <MapContainer
                     center={[51.57898, 5.08772]}
                     zoom={12}
