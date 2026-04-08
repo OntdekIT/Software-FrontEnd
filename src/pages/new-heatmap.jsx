@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from 'prop-types';
 import { backendApi } from "../utils/backend-api.jsx";
-import { MapContainer, TileLayer, useMap, CircleMarker, Popup } from "react-leaflet";
-import L from 'leaflet';
 import { contours as d3Contours } from 'd3-contour';
 import './new-heatmap.css';
 import NewMap from "../components/newmap.jsx";
@@ -665,7 +663,6 @@ export default function Home() {
             )}
 
             <div className="heatmap-container">
-                <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
                 {/* <MapContainer
                     center={[51.57898, 5.08772]}
                     zoom={12}
@@ -675,12 +672,14 @@ export default function Home() {
                     zoomDelta={0.5}
                     wheelPxPerZoomLevel={120}
                     style={{ width: '100%', height: '100%' }}
-                >
-                    <TileLayer
+                > */}
+                    <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
+
+                    {/* <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <TemperatureCanvasLayer
+                    /> */}
+                    {/* <TemperatureCanvasLayer
                         measurements={measurements}
                         heatmapType={heatmapType}
                         show={showTemp}
@@ -691,8 +690,8 @@ export default function Home() {
                     <MeasurementMarkers
                         measurements={measurements}
                         heatmapType={heatmapType}
-                    />
-                </MapContainer> */}
+                    /> */}
+                {/* </MapContainer> */}
             </div>
 
             {/* <MapControls
