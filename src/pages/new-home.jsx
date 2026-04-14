@@ -1,16 +1,16 @@
 ﻿import {useEffect, useRef, useState} from "react";
 import {backendApi} from "../utils/backend-api.jsx";
-// import {MapContainer, TileLayer} from "react-leaflet";
-// import RegionLayer from "../components/map/region-layer.jsx";
-// import MeetStationLayer from "../components/map/meetstation-layer.jsx";
-// import RadioButtonGroup from "../components/map/radio-button-group.jsx";
-// import RadioButton from "../components/map/radio-button.jsx";
-// import Checkbox from "../components/map/checkbox.jsx";
-// import ColorLegend from "../components/map/color-legend.jsx";
-// import nl from 'date-fns/locale/nl';
-// import ReactDatePicker from "react-datepicker";
-// import HeatmapLayer from "react-leaflet-heat-layer";
-// import {gradient} from "../utils/map-utils.jsx";
+import {MapContainer, TileLayer} from "react-leaflet";
+import RegionLayer from "../components/map/region-layer.jsx";
+import MeetStationLayer from "../components/map/meetstation-layer.jsx";
+import RadioButtonGroup from "../components/map/radio-button-group.jsx";
+import RadioButton from "../components/map/radio-button.jsx";
+import Checkbox from "../components/map/checkbox.jsx";
+import ColorLegend from "../components/map/color-legend.jsx";
+import nl from 'date-fns/locale/nl';
+import ReactDatePicker from "react-datepicker";
+import HeatmapLayer from "react-leaflet-heat-layer";
+import {gradient} from "../utils/map-utils.jsx";
 import './new-home.css';
 import { fetchOpenMeteo, transformDaily, wmoCodeToEmoji } from "../utils/open-meteo.jsx";
 import NewMap from "../components/newmap.jsx";
@@ -21,53 +21,53 @@ export default function Home() {
 
     // data from API's
     const [regionData, setRegionData] = useState([]);
-    // const [stations, setStations] = useState([]);
-    // const [measurements, setMeasurements] = useState([]);
+    const [stations, setStations] = useState([]);
+    const [measurements, setMeasurements] = useState([]);
     // use states for what to show and what not to show
-    // const [showTemp, setShowTemp] = useState(false)
-    // const [showDataStations, setShowDataStations] = useState(false);
-    // const [showRegions, setShowRegions] = useState(true);
-    // const [heatmapType, setHeatmapType] = useState('temperature')
+    const [showTemp, setShowTemp] = useState(false)
+    const [showDataStations, setShowDataStations] = useState(false);
+    const [showRegions, setShowRegions] = useState(true);
+    const [heatmapType, setHeatmapType] = useState('temperature')
     const [dateTime, setDateTime] = useState(new Date());
-    // const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
+    const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
     const [weatherData, setWeatherData] = useState(null);
 
-    // const calRef = useRef();
-    // const mapRef = useRef();
+    const calRef = useRef();
+    const mapRef = useRef();
 
-    // function handleToggleTemp() {
-    //     setShowRegions(false);
-    //     setShowTemp(!showTemp);
-    // }
+    function handleToggleTemp() {
+        setShowRegions(false);
+        setShowTemp(!showTemp);
+    }
 
-    // function zoomToRegion(region) {
-    //     console.log("testing zoom to region", mapRef.current);
-    //     if (mapRef.current && Array.isArray(region.coordinates) && region.coordinates.length > 0) {
-    //         // Calculate center
-    //         const lats = region.coordinates.map(coord => coord[0]);
-    //         const lngs = region.coordinates.map(coord => coord[1]);
-    //         const center = [
-    //             lats.reduce((a, b) => a + b, 0) / lats.length,
-    //             lngs.reduce((a, b) => a + b, 0) / lngs.length
-    //         ];
-    //         console.log("zooming to region:", region, "center:", center);
-    //         mapRef.current.setView(center, 13.5);
-    //     }
-    // }
+    function zoomToRegion(region) {
+        console.log("testing zoom to region", mapRef.current);
+        if (mapRef.current && Array.isArray(region.coordinates) && region.coordinates.length > 0) {
+            // Calculate center
+            const lats = region.coordinates.map(coord => coord[0]);
+            const lngs = region.coordinates.map(coord => coord[1]);
+            const center = [
+                lats.reduce((a, b) => a + b, 0) / lats.length,
+                lngs.reduce((a, b) => a + b, 0) / lngs.length
+            ];
+            console.log("zooming to region:", region, "center:", center);
+            mapRef.current.setView(center, 13.5);
+        }
+    }
 
 
-    // function handleToggleShowDataStations() {
-    //     setShowDataStations(!showDataStations);
-    // }
+    function handleToggleShowDataStations() {
+        setShowDataStations(!showDataStations);
+    }
 
-    // function handleToggleShowRegions() {
-    //     setShowRegions(!showRegions);
-    //     setShowTemp(false);
-    // }
+    function handleToggleShowRegions() {
+        setShowRegions(!showRegions);
+        setShowTemp(false);
+    }
 
-    // function handleAxiosError(error) {
-    //     setErrMsg('Het ophalen van de gegevens is mislukt');
-    // }
+    function handleAxiosError(error) {
+        setErrMsg('Het ophalen van de gegevens is mislukt');
+    }
 
     useEffect(() => {
         try {
@@ -94,20 +94,20 @@ export default function Home() {
                 });
 
             // Get Stations
-            // backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
-            //     .then(resp => {
-            //         setStations(resp.data);
-            //     })
-            //     .catch(handleAxiosError);
+            backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${dateTime.toISOString()}`)
+                .then(resp => {
+                    setStations(resp.data);
+                })
+                .catch(handleAxiosError);
 
             // Get timestamp measurements
-            // backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
-            //     .then(resp => {
-            //         setMeasurements(resp.data);
-            //     })
-            //     .catch(function (error) {
-            //         handleAxiosError(error);
-            //     });
+            backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
+                .then(resp => {
+                    setMeasurements(resp.data);
+                })
+                .catch(function (error) {
+                    handleAxiosError(error);
+                });
 
             // Get neighbourhood data
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
@@ -139,7 +139,6 @@ export default function Home() {
 
     return (<div>
             <title>Home</title>
-            <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
 
             <section className="home-section">
                 <div className="mini-map">
@@ -150,8 +149,9 @@ export default function Home() {
                                 Opnieuw proberen
                             </button>
                         </div>)}
+                        <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
 
-{/* 
+
                     <MapContainer
                         center={[51.57898, 5.08772]}
                         zoom={12}
@@ -159,20 +159,21 @@ export default function Home() {
                         minZoom={11}
                         closePopupOnClick={false}
                         ref={mapRef}
-                    > */}
+                    >
                         
                         {/* <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         /> */}
-                        {/* {showRegions && <RegionLayer data={regionData}></RegionLayer>}
+
+                        {showRegions && <RegionLayer data={regionData}></RegionLayer>}
                         <MeetStationLayer
                             stations={stations}
                             visible={showDataStations}
                             selectedDate={dateTime}
                             userId={loggedInUser?.id ? loggedInUser.id.toString() : ''}
-                        /> */}
-                        {/* {showTemp && measurements.length > 0 && <HeatmapLayer
+                        />
+                        {showTemp && measurements.length > 0 && <HeatmapLayer
                             fitBoundsOnLoad
                             fitBoundsOnUpdate
                             latlngs={measurements
@@ -187,8 +188,8 @@ export default function Home() {
                             radius={30}
                             blur={15}
                             maxZoom={13}
-                        />} */}
-                    {/* </MapContainer> */}
+                        />}
+                    </MapContainer>
                     <div className="map-legend">
                         {/* <ColorLegend temperatures={measurements}/> */}
                     </div>
