@@ -19,10 +19,12 @@ WORKDIR /app
 # Copy dependencies from the dependencies stage
 COPY --from=dependencies /app/ ./
 
-# Copy all necessary sources
-COPY index.html ./
-COPY public ./public
-COPY src ./src
+# CRITICAL FIX 1: Copy ALL files so vite.config.js is included
+COPY . .
+
+# CRITICAL FIX 2: Catch the backend URL from docker-compose and expose it to Vite
+ARG VITE_BACKEND_API_URL
+ENV VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL
 
 # Build the application for production
 RUN npm run build:docker
@@ -39,9 +41,6 @@ EXPOSE 80
 
 # Use CMD to start NGINX
 CMD ["nginx", "-g", "daemon off;"]
-
-# To run, use the following command:
-# sudo docker run -p 3000:80 --name mynginx ontdekstation-client-release:latest
 
 # ---- Dev Stage ----
 FROM base AS dev
