@@ -150,47 +150,17 @@ export default function Home() {
                             </button>
                         </div>)}
 
-
-                    <MapContainer
-                        center={[51.57898, 5.08772]}
-                        zoom={12}
-                        maxZoom={15}
-                        minZoom={11}
-                        closePopupOnClick={false}
-                        ref={mapRef}
-                        style={{backgroundColor: "transparent"}}
-                    >
-                        <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
-                        
-                        {/* <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        /> */}
-
-                        {/* {showRegions && <RegionLayer data={regionData}></RegionLayer>} */}
-                        {/* <MeetStationLayer
-                            stations={stations}
-                            visible={showDataStations}
-                            selectedDate={dateTime}
-                            userId={loggedInUser?.id ? loggedInUser.id.toString() : ''}
-                        /> */}
-                        {showTemp && measurements.length > 0 && <HeatmapLayer
-                            fitBoundsOnLoad
-                            fitBoundsOnUpdate
-                            latlngs={measurements
-                                .filter(m => m.latitude && m.longitude)
-                                .map(m => ([m.latitude, m.longitude, m[heatmapType] || 0]))}
-                            longitudeExtractor={m => m[1]}
-                            latitudeExtractor={m => m[0]}
-                            intensityExtractor={m => m[2]}
-                            max={Math.max(...measurements.map(m => m[heatmapType] || 0))}
-                            min={Math.min(...measurements.map(m => m[heatmapType] || 0))}
-                            gradient={gradient}
-                            radius={30}
-                            blur={15}
-                            maxZoom={13}
-                        />}
-                    </MapContainer>
+                    <NewMap 
+                        centerX={5.0913} 
+                        centerY={51.5555} 
+                        zoom={12} 
+                        regionData={showRegions ? regionData : []} 
+                        onRegionClick={(region) => {
+                            console.log("User clicked region:", region.name);
+                            // You can save this to a state variable here to open a modal/popup with your charts!
+                            // setSelectedNeighbourhood(region.id); 
+                        }} 
+                    />  
                     <div className="map-legend">
                         <ColorLegend temperatures={measurements}/>
                     </div>
