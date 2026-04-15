@@ -20,15 +20,8 @@ export default function NewMap({ centerX, centerY, zoom }) {
           style: style,
           center: [centerX, centerY],
           zoom: zoom,
-          pitch: 0,
-          maxPitch: 0,
-          bearing: 0,
-          maxBearing: 0,
-          dragRotate: false,
-          pitchWithRotate: false,
-          touchZoomRotate: false,
         });
-      } azatch (err) {
+      } catch (err) {
         console.error('Error loading map style:', err);
       }
     }
