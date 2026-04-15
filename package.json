@@ -23,7 +23,7 @@
     "leaflet-heatmap": "^1.0.0",
     "leaflet.heat": "^0.2.0",
     "leaflet.webgl-temperature-map": "^0.2.0",
-    "maplibre-gl": "^5.21.1",
+    "maplibre-gl": "^5.23.0",
     "ngx-maplibre-gl": "^12.0.0",
     "openmeteo": "^1.2.1",
     "react": "^18.3.1",
@@ -34,6 +34,7 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-heat-layer": "^1.1.1",
     "react-loader-spinner": "^6.1.6",
+    "react-map-gl": "^8.1.1",
     "react-router-dom": "^6.30.1",
     "recharts": "^2.15.4"
   },

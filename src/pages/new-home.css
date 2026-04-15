@@ -18,7 +18,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
     overflow: hidden;
-    background: #fff;
+    background: transparent;
 }
 
 .sidebar-container {
@@ -225,4 +225,15 @@
     padding: 8px 12px;
     border-radius: 6px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Force all Leaflet structural panes to be transparent so NewMap shows through */
+.leaflet-container,
+.leaflet-pane,
+.leaflet-overlay-pane,
+.leaflet-overlay-pane svg,
+.leaflet-overlay-pane canvas,
+.leaflet-tile-pane {
+    background: transparent !important;
+    background-color: transparent !important;
 }

@@ -149,7 +149,6 @@ export default function Home() {
                                 Opnieuw proberen
                             </button>
                         </div>)}
-                        <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
 
 
                     <MapContainer
@@ -159,20 +158,22 @@ export default function Home() {
                         minZoom={11}
                         closePopupOnClick={false}
                         ref={mapRef}
+                        style={{backgroundColor: "transparent"}}
                     >
+                        <NewMap centerX={5.0913} centerY={51.5555} zoom={12} ></NewMap>
                         
                         {/* <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         /> */}
 
-                        {showRegions && <RegionLayer data={regionData}></RegionLayer>}
-                        <MeetStationLayer
+                        {/* {showRegions && <RegionLayer data={regionData}></RegionLayer>} */}
+                        {/* <MeetStationLayer
                             stations={stations}
                             visible={showDataStations}
                             selectedDate={dateTime}
                             userId={loggedInUser?.id ? loggedInUser.id.toString() : ''}
-                        />
+                        /> */}
                         {showTemp && measurements.length > 0 && <HeatmapLayer
                             fitBoundsOnLoad
                             fitBoundsOnUpdate
@@ -191,7 +192,7 @@ export default function Home() {
                         />}
                     </MapContainer>
                     <div className="map-legend">
-                        {/* <ColorLegend temperatures={measurements}/> */}
+                        <ColorLegend temperatures={measurements}/>
                     </div>
                 </div>
                 <div className="sidebar-container">
