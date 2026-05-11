@@ -31,6 +31,7 @@ const UserDetails = lazy(() => import('./pages/admin/users/user-details.jsx'));
 const StationOverview = lazy(() => import('./pages/admin/stations/stations-overview.jsx'));
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
+const NeighbourhoodPage = lazy(() => import('./pages/neighbourhoodPage.jsx'));
 
 const router = createBrowserRouter([
     {
@@ -49,6 +50,14 @@ const router = createBrowserRouter([
             {
                 path: "/newheatmap",
                 element: <Suspense fallback={<div>Loading...</div>}><NewHeatMap /></Suspense>
+            },
+            {
+                path: "/wijken",
+                element: <Suspense fallback={<div>Loading...</div>}><NeighbourhoodPage /></Suspense>
+            },
+            {
+                path: "/wijken/:id",
+                element: <Suspense fallback={<div>Loading...</div>}><NeighbourhoodPage /></Suspense>
             },
             {
                 path: "/about",
