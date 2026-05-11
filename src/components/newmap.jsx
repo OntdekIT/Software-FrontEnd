@@ -4,39 +4,45 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { spectralColors } from '../utils/map-utils.jsx'; // Adjust path if needed
 
 // 1. Helper function to format your API data into GeoJSON
-function createRegionGeoJSON(data) {
-  let minT = 1000, maxT = -1000;
+function createRegionGeoJSON(data, mapMode) {
+  let minV = 1000, maxV = -1000;
   data.forEach(d => {
-    const t = parseFloat(d.avgTemp);
-    if (!isNaN(t)) {
-      if (t < minT) minT = t;
-      if (t > maxT) maxT = t;
+    let value;
+    switch (mapMode) {
+      case 'humidity': value = parseFloat(d.avgHumidity); break; 
+      default: value = parseFloat(d.avgTemp); // temperature
+    }
+    if (!isNaN(value)) {
+      if (value < minV) minV = value;
+      if (value > maxV) maxV = value;
     }
   });
-  let tempDif = maxT - minT !== 0 ? maxT - minT : 1;
-
+  let span = maxV - minV !== 0 ? maxV - minV : 1;
   return {
     type: 'FeatureCollection',
     features: data.map(region => {
-      let color = "rgba(136,136,136,0.5)"; // Default gray for NaN
-      const avgTemp = parseFloat(region.avgTemp);
-      if (!isNaN(avgTemp)) {
-        let contrastValue = (avgTemp - minT) / tempDif;
-        let colorIndex = Math.round(contrastValue * (Object.keys(spectralColors).length - 1));
-        color = spectralColors[colorIndex];
+      let color = "rgba(136,136,136,0.5)";
+      let value;
+      switch (mapMode) {
+        case 'humidity': value = parseFloat(region.avgHumidity); break;
+        case 'population': value = parseFloat(region.population); break;
+        default: value = parseFloat(region.avgTemp);
       }
-
+      if (!isNaN(value)) {
+        let norm = (value - minV) / span;
+        let idx = Math.round(norm * (Object.keys(spectralColors).length - 1));
+        color = spectralColors[idx];
+      }
       return {
         type: 'Feature',
         properties: {
           id: region.id,
           name: region.name,
-          avgTemp: region.avgTemp,
-          color: color
+          [mapMode]: value,
+          color
         },
         geometry: {
           type: 'Polygon',
-          // Swap Leaflet [Lat, Lng] to MapLibre [Lng, Lat]
           coordinates: [region.coordinates.map(c => [c[1], c[0]])]
         }
       };
@@ -45,11 +51,10 @@ function createRegionGeoJSON(data) {
 }
 
 
-export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick }) {
+export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, mapMode = 'temperature' }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
 
-  // Initialize the map and load the style
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
@@ -61,7 +66,7 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
         mapInstance.current = new maplibregl.Map({
           container: mapRef.current,
-          style: styleJson, // Pass the actual JSON object here!
+          style: styleJson,
           center: [centerX, centerY],
           zoom: zoom,
           bounds: [
@@ -127,7 +132,7 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
     const updateMapData = () => {
       const source = mapInstance.current.getSource('regions');
       if (source) {
-        source.setData(createRegionGeoJSON(regionData));
+        source.setData(createRegionGeoJSON(regionData, mapMode));
       }
     };
 

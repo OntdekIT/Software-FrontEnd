@@ -18,6 +18,7 @@ import NewMap from "../components/newmap.jsx";
 export default function Home() {
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
+    const [mode, setMode] = useState('heatmap');
 
     // data from API's
     const [regionData, setRegionData] = useState([]);
@@ -155,6 +156,7 @@ export default function Home() {
                         centerY={51.5555} 
                         zoom={12} 
                         regionData={showRegions ? regionData : []} 
+                        mapMode={mode}
                         onRegionClick={(region) => {
                             console.log("User clicked region:", region.name);
                             // You can save this to a state variable here to open a modal/popup with your charts!
