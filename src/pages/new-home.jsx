@@ -1,16 +1,7 @@
-﻿import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
+import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
 import {backendApi} from "../utils/backend-api.jsx";
-import {MapContainer, TileLayer} from "react-leaflet";
-import RegionLayer from "../components/map/region-layer.jsx";
-import MeetStationLayer from "../components/map/meetstation-layer.jsx";
-import RadioButtonGroup from "../components/map/radio-button-group.jsx";
-import RadioButton from "../components/map/radio-button.jsx";
-import Checkbox from "../components/map/checkbox.jsx";
 import ColorLegend from "../components/map/color-legend.jsx";
-import nl from 'date-fns/locale/nl';
-import ReactDatePicker from "react-datepicker";
-import HeatmapLayer from "react-leaflet-heat-layer";
-import {gradient} from "../utils/map-utils.jsx";
 import './new-home.css';
 import { fetchOpenMeteo, transformDaily, wmoCodeToEmoji } from "../utils/open-meteo.jsx";
 import NewMap from "../components/newmap.jsx";
@@ -31,6 +22,12 @@ export default function Home() {
     const [dateTime, setDateTime] = useState(new Date());
     const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
     const [weatherData, setWeatherData] = useState(null);
+    const [selectedRegion, setSelectedRegion] = useState(null);
+    const [regionHistoryData, setRegionHistoryData] = useState([]);
+    const [regionLoading, setRegionLoading] = useState(false);
+    const [showMin, setShowMin] = useState(false);
+    const [showMax, setShowMax] = useState(false);
+    const [showGem, setShowGem] = useState(false);
 
     const calRef = useRef();
     const mapRef = useRef();
@@ -43,7 +40,6 @@ export default function Home() {
     function zoomToRegion(region) {
         console.log("testing zoom to region", mapRef.current);
         if (mapRef.current && Array.isArray(region.coordinates) && region.coordinates.length > 0) {
-            // Calculate center
             const lats = region.coordinates.map(coord => coord[0]);
             const lngs = region.coordinates.map(coord => coord[1]);
             const center = [
@@ -51,10 +47,11 @@ export default function Home() {
                 lngs.reduce((a, b) => a + b, 0) / lngs.length
             ];
             console.log("zooming to region:", region, "center:", center);
-            mapRef.current.setView(center, 13.5);
+            mapRef.current.setView(center, 14);
+            setSelectedRegion(region);
+            fetchRegionData(region.id);
         }
     }
-
 
     function handleToggleShowDataStations() {
         setShowDataStations(!showDataStations);
@@ -64,6 +61,32 @@ export default function Home() {
         setShowRegions(!showRegions);
         setShowTemp(false);
     }
+
+    const fetchRegionData = (regionId) => {
+        setRegionLoading(true);
+        setRegionHistoryData([]);
+        backendApi.get(`/measurement/history/average/region/${regionId}`)
+            .then(response => {
+                setRegionHistoryData(response.data);
+                setRegionLoading(false);
+            })
+            .catch(() => {
+                console.error("Failed to fetch region data");
+                setRegionHistoryData([]);
+                setRegionLoading(false);
+            });
+    };
+
+    const parseTemp = (val) => {
+        const n = parseFloat(val);
+        return isFinite(n) ? n : null;
+    };
+
+    const handleRegionLegendChange = (e) => {
+        if (e.dataKey === "min") setShowMin(prev => !prev);
+        if (e.dataKey === "max") setShowMax(prev => !prev);
+        if (e.dataKey === "avg") setShowGem(prev => !prev);
+    };
 
     function handleAxiosError(error) {
         setErrMsg('Het ophalen van de gegevens is mislukt');
@@ -150,17 +173,17 @@ export default function Home() {
                             </button>
                         </div>)}
 
-                    <NewMap 
-                        centerX={5.0913} 
-                        centerY={51.5555} 
-                        zoom={12} 
-                        regionData={showRegions ? regionData : []} 
+                    <NewMap
+                        centerX={5.0913}
+                        centerY={51.5555}
+                        zoom={12}
+                        regionData={showRegions ? regionData : []}
                         onRegionClick={(region) => {
                             console.log("User clicked region:", region.name);
-                            // You can save this to a state variable here to open a modal/popup with your charts!
-                            // setSelectedNeighbourhood(region.id); 
-                        }} 
-                    />  
+                            setSelectedRegion(region);
+                            fetchRegionData(region.id);
+                        }}
+                    />
                     <div className="map-legend">
                         <ColorLegend temperatures={measurements}/>
                     </div>
@@ -170,21 +193,70 @@ export default function Home() {
                         <div className="wijken-view-header">
                             <h2>Wijken</h2>
                         </div>
-                        <div className="wijken-list">
-                            {regionData.map((region, idx) => (
-                                <div
-                                    className="wijken-list-item"
-                                    key={region.id || idx}
-                                    onClick={() => zoomToRegion(region)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    <span className="wijken-list-name">{region.name}</span>
-                                    <span className="wijken-list-temp">
-                {typeof region.avgTemp === 'number' && !isNaN(region.avgTemp) ? `${region.avgTemp.toFixed(1)}°C` : '--'}
-            </span>
+                        {selectedRegion ? (
+                            <div className="region-details-card">
+                                <div className="region-details-header">
+                                    <h3 className="region-details-title">{selectedRegion.name}</h3>
+                                    <button className="btn btn-sm btn-outline-secondary" onClick={() => setSelectedRegion(null)}>← Terug</button>
                                 </div>
-                            ))}
-                        </div>
+                                <div className="region-current-temp">
+                                    <span className="rct-label">Gem. temperatuur nu:</span>
+                                    <span className="rct-value">
+                                        {parseTemp(selectedRegion.avgTemp) !== null
+                                            ? `${parseTemp(selectedRegion.avgTemp).toFixed(1)}°C`
+                                            : '--'}
+                                    </span>
+                                </div>
+                                {regionLoading ? (
+                                    <p className="region-loading">Historische data ophalen...</p>
+                                ) : regionHistoryData.length > 0 ? (
+                                    <div className="region-data-layout">
+                                        <div className="region-chart">
+                                            <ResponsiveContainer width="100%" height={160}>
+                                                <LineChart data={regionHistoryData}>
+                                                    <XAxis dataKey="timestamp" tick={{ fontSize: 9 }} />
+                                                    <YAxis width={28} tick={{ fontSize: 9 }} />
+                                                    <CartesianGrid stroke="#ccc" />
+                                                    <Legend onClick={handleRegionLegendChange} wrapperStyle={{ fontSize: '11px' }} />
+                                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff" hide={showMin} dot={false} />
+                                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000" hide={showMax} dot={false} />
+                                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00" hide={showGem} dot={false} />
+                                                </LineChart>
+                                            </ResponsiveContainer>
+                                        </div>
+                                        <div className="region-measurements-list">
+                                            <p className="region-measurements-label">Laatste metingen</p>
+                                            {regionHistoryData.slice(-8).reverse().map((m, i) => (
+                                                <div key={i} className="region-measurement-item">
+                                                    <span className="rm-time">{m.timestamp}</span>
+                                                    <span className="rm-val rm-min" title="Min">▼{m.min ?? '--'}</span>
+                                                    <span className="rm-val rm-avg" title="Gem">≈{m.avg ?? '--'}</span>
+                                                    <span className="rm-val rm-max" title="Max">▲{m.max ?? '--'}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <p className="text-muted region-no-data">Geen historische data beschikbaar.</p>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="wijken-list">
+                                {regionData.map((region, idx) => (
+                                    <div
+                                        className="wijken-list-item"
+                                        key={region.id || idx}
+                                        onClick={() => zoomToRegion(region)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        <span className="wijken-list-name">{region.name}</span>
+                                        <span className="wijken-list-temp">
+                                            {parseTemp(region.avgTemp) !== null ? `${parseTemp(region.avgTemp).toFixed(1)}°C` : '--'}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="weer-view">
                         <div className="weer-view-header">
@@ -202,7 +274,6 @@ export default function Home() {
                                                 {entry.date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
                                             </div>
 
-                                            {/* optional icon placeholder (you can replace with actual icons later) */}
                                             <div className="icon" aria-hidden="true" style={{ fontSize: '1.25rem' }}>
                                                 {wmoCodeToEmoji(entry.weather_code)}
                                             </div>

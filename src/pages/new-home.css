@@ -108,6 +108,123 @@
     .wijken-list::-webkit-scrollbar-thumb:hover {
         background: #d1a700;
     }
+
+    .region-details-card {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.9);
+        margin: 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        scrollbar-width: thin;
+        scrollbar-color: #e6b800 #fecb3d;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .region-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .region-details-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #009ee3;
+    }
+
+    .region-current-temp {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        padding: 4px 0;
+        border-bottom: 1px solid #f0c020;
+        margin-bottom: 4px;
+    }
+
+    .rct-label {
+        font-size: 0.8rem;
+        color: #555;
+    }
+
+    .rct-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #d84315;
+    }
+
+    .region-loading,
+    .region-no-data {
+        font-size: 0.85rem;
+        color: #888;
+        margin: 0;
+    }
+
+    .region-data-layout {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .region-chart {
+        flex: 1 1 0;
+        min-width: 0;
+        background: #fff;
+        border-radius: 6px;
+        padding: 4px 0;
+    }
+
+    .region-measurements-list {
+        flex: 0 0 110px;
+        max-height: 180px;
+        overflow-y: auto;
+        background: #fffde7;
+        border-radius: 6px;
+        padding: 4px 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #e6b800 #fffde7;
+    }
+
+    .region-measurements-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #555;
+        margin: 0 0 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .region-measurement-item {
+        display: flex;
+        flex-direction: column;
+        font-size: 0.72rem;
+        padding: 3px 0;
+        border-bottom: 1px solid #f5e49c;
+    }
+
+    .region-measurement-item:last-child {
+        border-bottom: none;
+    }
+
+    .rm-time {
+        color: #555;
+        font-size: 0.68rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rm-val {
+        font-weight: 600;
+    }
+
+    .rm-min { color: #0000cc; }
+    .rm-avg { color: #007700; }
+    .rm-max { color: #cc0000; }
 }
 
 .weer-view {
