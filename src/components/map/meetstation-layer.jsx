@@ -1,9 +1,9 @@
-import { Marker, Popup, Tooltip } from "react-leaflet";
+//import { Marker, Popup, Tooltip } from "react-leaflet";
 import { roundToOneDecimal } from "../../utils/map-utils.jsx";
 import { useEffect, useRef, useState } from "react";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import ReactDatePicker from "react-datepicker";
-import L from 'leaflet';
+//import L from 'leaflet';
 import LoadingComponent from "../loading-component.jsx";
 import { backendApi } from "../../utils/backend-api.jsx";
 import "react-datepicker/dist/react-datepicker.css";
