@@ -64,6 +64,10 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
           style: styleJson, // Pass the actual JSON object here!
           center: [centerX, centerY],
           zoom: zoom,
+          bounds: [
+            [4.98, 51.48],  // west, south
+            [5.16, 51.62]   // east, north
+          ],
         });
 
         // Wait for the map to finish drawing the base style
