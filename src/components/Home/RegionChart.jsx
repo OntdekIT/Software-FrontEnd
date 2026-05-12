@@ -30,30 +30,27 @@ export default function RegionChart({ regionHistoryData, dataView, setDataView, 
                     />
                     <YAxis
                         yAxisId="temp"
-                        width={28}
+                        width={dataView === 'pm' ? 0 : 28}
                         tick={{ fontSize: 9 }}
-                        hide={dataView === 'pm'}
+                        tickLine={dataView !== 'pm'}
+                        axisLine={dataView !== 'pm'}
                     />
                     <YAxis
                         yAxisId="pm"
                         orientation="right"
-                        width={36}
+                        width={dataView === 'temperature' ? 0 : 36}
                         tick={{ fontSize: 9 }}
-                        hide={dataView === 'temperature'}
+                        tickLine={dataView !== 'temperature'}
+                        axisLine={dataView !== 'temperature'}
                     />
                     <CartesianGrid stroke="#ccc" />
                     <Legend onClick={handleRegionLegendChange} wrapperStyle={{ fontSize: '11px' }} />
 
-                    {(dataView === 'temperature' || dataView === 'both') && (<>
-                        <Line yAxisId="temp" type="monotone" dataKey="min" name="Min temp" stroke="#0000ff" hide={showMin} dot={false} />
-                        <Line yAxisId="temp" type="monotone" dataKey="max" name="Max temp" stroke="#ff0000" hide={showMax} dot={false} />
-                        <Line yAxisId="temp" type="monotone" dataKey="avg" name="Gem temp" stroke="#00cc00" hide={showGem} dot={false} />
-                    </>)}
-
-                    {(dataView === 'pm' || dataView === 'both') && (<>
-                        <Line yAxisId="pm" type="monotone" dataKey="pm25" name="PM2.5" stroke="#ff8800" dot={false} />
-                        <Line yAxisId="pm" type="monotone" dataKey="pm10" name="PM10" stroke="#aa00ff" dot={false} />
-                    </>)}
+                    <Line yAxisId="temp" type="monotone" dataKey="min" name="Min temp" stroke="#0000ff" hide={showMin || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="temp" type="monotone" dataKey="max" name="Max temp" stroke="#ff0000" hide={showMax || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="temp" type="monotone" dataKey="avg" name="Gem temp" stroke="#00cc00" hide={showGem || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="pm" type="monotone" dataKey="pm25" name="PM2.5" stroke="#ff8800" hide={dataView === 'temperature'} dot={false} />
+                    <Line yAxisId="pm" type="monotone" dataKey="pm10" name="PM10" stroke="#aa00ff" hide={dataView === 'temperature'} dot={false} />
                 </LineChart>
             </ResponsiveContainer>
         </div>

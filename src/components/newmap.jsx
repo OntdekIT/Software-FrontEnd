@@ -67,33 +67,35 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
         });
 
         mapInstance.current.on('load', () => {
-          mapInstance.current.addSource('regions', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] }
-          });
+          if (!mapInstance.current.getSource('regions')) {
+            mapInstance.current.addSource('regions', {
+              type: 'geojson',
+              data: { type: 'FeatureCollection', features: [] }
+            });
 
-          mapInstance.current.addLayer({
-            id: 'regions-fill',
-            type: 'fill',
-            source: 'regions',
-            paint: {
-              'fill-color': ['get', 'color'],
-              'fill-opacity': 0.6,
-              'fill-outline-color': '#ffffff'
-            }
-          });
+            mapInstance.current.addLayer({
+              id: 'regions-fill',
+              type: 'fill',
+              source: 'regions',
+              paint: {
+                'fill-color': ['get', 'color'],
+                'fill-opacity': 0.6,
+                'fill-outline-color': '#ffffff'
+              }
+            });
 
-          mapInstance.current.addLayer({
-            id: 'regions-pm-highlight',
-            type: 'line',
-            source: 'regions',
-            paint: {
-              'line-color': '#ff8800',
-              'line-width': 3,
-              'line-dasharray': [2, 1]
-            },
-            filter: ['==', 'id', -1]
-          });
+            mapInstance.current.addLayer({
+              id: 'regions-pm-highlight',
+              type: 'line',
+              source: 'regions',
+              paint: {
+                'line-color': '#ff8800',
+                'line-width': 3,
+                'line-dasharray': [2, 1]
+              },
+              filter: ['==', 'id', -1]
+            });
+          }
 
           mapInstance.current.on('click', 'regions-fill', (e) => {
             if (e.features.length > 0 && onRegionClick) {
