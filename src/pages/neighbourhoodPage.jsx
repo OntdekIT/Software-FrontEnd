@@ -13,6 +13,7 @@ export default function NeighbourhoodPage() {
     const [neighbourhoods, setNeighbourhoods] = useState([]);
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(null);
     const [errMsg, setErrMsg] = useState("");
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const timestamp = new Date().toISOString();
@@ -25,6 +26,7 @@ export default function NeighbourhoodPage() {
                     const selected = response.data.find(
                         neighbourhood => Number(neighbourhood.id) === Number(id)
                     );
+
                     setSelectedNeighbourhood(selected ?? null);
                 }
             })
@@ -32,6 +34,27 @@ export default function NeighbourhoodPage() {
                 setErrMsg("Het ophalen van de wijken is mislukt.");
             });
     }, [id]);
+
+    useEffect(() => {
+        if (searchQuery.trim().length < 3) {
+            const timestamp = new Date().toISOString();
+
+            backendApi.get(`/neighbourhood/history?timestamp=${timestamp}`)
+                .then((response) => {
+                    setNeighbourhoods(response.data);
+                });
+
+            return;
+        }
+
+        backendApi.get(`/neighbourhood/search?query=${searchQuery}`)
+            .then((response) => {
+                setNeighbourhoods(response.data);
+            })
+            .catch(() => {
+                setErrMsg("Zoeken mislukt.");
+            });
+    }, [searchQuery]);
 
     return (
         <section className="neighbourhood-page">
@@ -44,6 +67,8 @@ export default function NeighbourhoodPage() {
             <NeighbourhoodSidebar
                 neighbourhoods={neighbourhoods}
                 selectedId={id}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
             />
 
             <NeighbourhoodDetail neighbourhood={selectedNeighbourhood} />
