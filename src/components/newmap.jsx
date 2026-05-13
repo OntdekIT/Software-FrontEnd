@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { spectralColors } from '../utils/map-utils.jsx'; // Adjust path if needed
+import { spectralColors } from '../utils/map-utils.jsx';
 
-// 1. Helper function to format your API data into GeoJSON
 function createRegionGeoJSON(data) {
   let minT = 1000, maxT = -1000;
   data.forEach(d => {
@@ -18,7 +17,7 @@ function createRegionGeoJSON(data) {
   return {
     type: 'FeatureCollection',
     features: data.map(region => {
-      let color = "rgba(136,136,136,0.5)"; // Default gray for NaN
+      let color = "rgba(136,136,136,0.5)";
       const avgTemp = parseFloat(region.avgTemp);
       if (!isNaN(avgTemp)) {
         let contrastValue = (avgTemp - minT) / tempDif;
@@ -32,11 +31,11 @@ function createRegionGeoJSON(data) {
           id: region.id,
           name: region.name,
           avgTemp: region.avgTemp,
+          avgPm25: region.avgPm25 ?? null,
           color: color
         },
         geometry: {
           type: 'Polygon',
-          // Swap Leaflet [Lat, Lng] to MapLibre [Lng, Lat]
           coordinates: [region.coordinates.map(c => [c[1], c[0]])]
         }
       };
@@ -44,59 +43,66 @@ function createRegionGeoJSON(data) {
   };
 }
 
-
-export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick }) {
+export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [] }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
 
-  // Initialize the map and load the style
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
     async function initMap() {
       try {
-        // Fetch the style EXACTLY like your original code did
         const res = await fetch('https://tiles.openfreemap.org/styles/liberty');
         const styleJson = await res.json();
 
         mapInstance.current = new maplibregl.Map({
           container: mapRef.current,
-          style: styleJson, // Pass the actual JSON object here!
+          style: styleJson,
           center: [centerX, centerY],
           zoom: zoom,
           bounds: [
-            [4.98, 51.48],  // west, south
-            [5.16, 51.62]   // east, north
+            [4.98, 51.48],
+            [5.16, 51.62]
           ],
         });
 
-        // Wait for the map to finish drawing the base style
         mapInstance.current.on('load', () => {
-          
-          mapInstance.current.addSource('regions', {
-            type: 'geojson',
-            data: { type: 'FeatureCollection', features: [] }
-          });
+          if (!mapInstance.current.getSource('regions')) {
+            mapInstance.current.addSource('regions', {
+              type: 'geojson',
+              data: { type: 'FeatureCollection', features: [] }
+            });
 
-          mapInstance.current.addLayer({
-            id: 'regions-fill',
-            type: 'fill',
-            source: 'regions',
-            paint: {
-              'fill-color': ['get', 'color'], 
-              'fill-opacity': 0.6,
-              'fill-outline-color': '#ffffff'
-            }
-          });
+            mapInstance.current.addLayer({
+              id: 'regions-fill',
+              type: 'fill',
+              source: 'regions',
+              paint: {
+                'fill-color': ['get', 'color'],
+                'fill-opacity': 0.6,
+                'fill-outline-color': '#ffffff'
+              }
+            });
 
-          // Handle clicks
+            mapInstance.current.addLayer({
+              id: 'regions-pm-highlight',
+              type: 'line',
+              source: 'regions',
+              paint: {
+                'line-color': '#ff8800',
+                'line-width': 3,
+                'line-dasharray': [2, 1]
+              },
+              filter: ['==', 'id', -1]
+            });
+          }
+
           mapInstance.current.on('click', 'regions-fill', (e) => {
             if (e.features.length > 0 && onRegionClick) {
               onRegionClick(e.features[0].properties);
             }
           });
 
-          // Cursor effects
           mapInstance.current.on('mouseenter', 'regions-fill', () => {
             mapInstance.current.getCanvas().style.cursor = 'pointer';
           });
@@ -120,7 +126,6 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
     };
   }, [centerX, centerY, zoom]);
 
-  // Watch for data changes and update the map layer
   useEffect(() => {
     if (!mapInstance.current || !regionData || regionData.length === 0) return;
 
@@ -131,13 +136,34 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
       }
     };
 
-    // Because the map initialization is now async, we must ensure it's fully loaded
     if (mapInstance.current.isStyleLoaded()) {
       updateMapData();
     } else {
       mapInstance.current.once('load', updateMapData);
     }
   }, [regionData]);
+
+  useEffect(() => {
+    if (!mapInstance.current) return;
+
+    const updateFilter = () => {
+      if (!mapInstance.current.getLayer('regions-pm-highlight')) return;
+
+      if (pmRegionIds.length === 0) {
+        mapInstance.current.setFilter('regions-pm-highlight', ['==', 'id', -1]);
+      } else {
+        mapInstance.current.setFilter('regions-pm-highlight', [
+          'in', ['get', 'id'], ['literal', pmRegionIds]
+        ]);
+      }
+    };
+
+    if (mapInstance.current.isStyleLoaded()) {
+      updateFilter();
+    } else {
+      mapInstance.current.once('load', updateFilter);
+    }
+  }, [pmRegionIds]);
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
 }
