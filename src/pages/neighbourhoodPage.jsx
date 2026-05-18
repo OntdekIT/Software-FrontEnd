@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { backendApi } from "../utils/backend-api.jsx";
 
@@ -14,6 +14,7 @@ export default function NeighbourhoodPage() {
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(null);
     const [errMsg, setErrMsg] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [sortOption, setSortOption] = useState("az");
 
     useEffect(() => {
         const timestamp = new Date().toISOString();
@@ -21,40 +22,64 @@ export default function NeighbourhoodPage() {
         backendApi.get(`/neighbourhood/history?timestamp=${timestamp}`)
             .then((response) => {
                 setNeighbourhoods(response.data);
-
-                if (id) {
-                    const selected = response.data.find(
-                        neighbourhood => Number(neighbourhood.id) === Number(id)
-                    );
-
-                    setSelectedNeighbourhood(selected ?? null);
-                }
             })
             .catch(() => {
                 setErrMsg("Het ophalen van de wijken is mislukt.");
             });
-    }, [id]);
+    }, []);
 
     useEffect(() => {
-        if (searchQuery.trim().length < 3) {
-            const timestamp = new Date().toISOString();
-
-            backendApi.get(`/neighbourhood/history?timestamp=${timestamp}`)
-                .then((response) => {
-                    setNeighbourhoods(response.data);
-                });
-
+        if (!id) {
+            setSelectedNeighbourhood(null);
             return;
         }
 
-        backendApi.get(`/neighbourhood/search?query=${searchQuery}`)
-            .then((response) => {
-                setNeighbourhoods(response.data);
-            })
-            .catch(() => {
-                setErrMsg("Zoeken mislukt.");
-            });
-    }, [searchQuery]);
+        const selected = neighbourhoods.find(
+            neighbourhood => Number(neighbourhood.id) === Number(id)
+        );
+
+        setSelectedNeighbourhood(selected ?? null);
+    }, [id, neighbourhoods]);
+
+    const displayedNeighbourhoods = useMemo(() => {
+        const query = searchQuery.trim().toLowerCase();
+
+        const filtered = neighbourhoods.filter((neighbourhood) =>
+            neighbourhood.name.toLowerCase().includes(query)
+        );
+
+        return [...filtered].sort((a, b) => {
+            const nameA = a.name.toLowerCase();
+            const nameB = b.name.toLowerCase();
+
+            const tempA = Number(a.avgTemp);
+            const tempB = Number(b.avgTemp);
+
+            const hasTempA = Number.isFinite(tempA);
+            const hasTempB = Number.isFinite(tempB);
+
+            switch (sortOption) {
+                case "za":
+                    return nameB.localeCompare(nameA);
+
+                case "temp-desc":
+                    if (!hasTempA && !hasTempB) return 0;
+                    if (!hasTempA) return 1;
+                    if (!hasTempB) return -1;
+                    return tempB - tempA;
+
+                case "temp-asc":
+                    if (!hasTempA && !hasTempB) return 0;
+                    if (!hasTempA) return 1;
+                    if (!hasTempB) return -1;
+                    return tempA - tempB;
+
+                case "az":
+                default:
+                    return nameA.localeCompare(nameB);
+            }
+        });
+    }, [neighbourhoods, searchQuery, sortOption]);
 
     return (
         <section className="neighbourhood-page">
@@ -65,10 +90,12 @@ export default function NeighbourhoodPage() {
             )}
 
             <NeighbourhoodSidebar
-                neighbourhoods={neighbourhoods}
+                neighbourhoods={displayedNeighbourhoods}
                 selectedId={id}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
+                sortOption={sortOption}
+                setSortOption={setSortOption}
             />
 
             <NeighbourhoodDetail neighbourhood={selectedNeighbourhood} />

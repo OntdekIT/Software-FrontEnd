@@ -1,5 +1,4 @@
-export default function NeighbourhoodSearch({searchQuery, setSearchQuery})
-{
+export default function NeighbourhoodSearch({ searchQuery, setSearchQuery }) {
     return (
         <div className="neighbourhood-search">
             <label htmlFor="neighbourhood-search">
