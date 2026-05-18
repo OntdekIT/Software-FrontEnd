@@ -28,10 +28,10 @@ export default function Home() {
     const [showTemp, setShowTemp] = useState(false)
     const [showDataStations, setShowDataStations] = useState(false);
     const [showRegions, setShowRegions] = useState(true);
-    const [heatmapType, setHeatmapType] = useState('temperature')
     const [dateTime, setDateTime] = useState(new Date());
     const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
     const [weatherData, setWeatherData] = useState(null);
+    const [ heatmapType, setHeatmapType] = useState("temperature");
 
     const calRef = useRef();
     const mapRef = useRef();
@@ -168,6 +168,15 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="sidebar-container">
+                    <RadioButtonGroup
+                        value={heatmapType}
+                        onChange={setHeatmapType}
+                        options={[
+                            { label: "Temperatuur", value: "temperature" },
+                            { label: "Luchtvochtigheid", value: "humidity" },
+                            { label: "Fijnstof", value: "pm" },
+                        ]}
+                    />
                     <div className="wijken-view">
                         <div className="wijken-view-header">
                             <h2>Wijken</h2>
