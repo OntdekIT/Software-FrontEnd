@@ -12,6 +12,8 @@ export default function NeighbourhoodSort({ sortOption, setSortOption }) {
                 <option value="za">Naam Z-A</option>
                 <option value="temp-desc">Temperatuur hoog-laag</option>
                 <option value="temp-asc">Temperatuur laag-hoog</option>
+                <option value="pm25-desc">Fijnstof hoog-laag</option>
+                <option value="pm25-asc">Fijnstof laag-hoog</option>
             </select>
         </div>
     );

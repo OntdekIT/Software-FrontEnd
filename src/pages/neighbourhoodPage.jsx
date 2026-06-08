@@ -58,6 +58,12 @@ export default function NeighbourhoodPage() {
             const hasTempA = Number.isFinite(tempA);
             const hasTempB = Number.isFinite(tempB);
 
+            const pm25A = Number(a.avgPm25);
+            const pm25B = Number(b.avgPm25);
+
+            const hasPm25A = Number.isFinite(pm25A);
+            const hasPm25B = Number.isFinite(pm25B);
+
             switch (sortOption) {
                 case "za":
                     return nameB.localeCompare(nameA);
@@ -73,6 +79,18 @@ export default function NeighbourhoodPage() {
                     if (!hasTempA) return 1;
                     if (!hasTempB) return -1;
                     return tempA - tempB;
+
+                case "pm25-desc":
+                    if (!hasPm25A && !hasPm25B) return 0;
+                    if (!hasPm25A) return 1;
+                    if (!hasPm25B) return -1;
+                    return pm25B - pm25A;
+
+                case "pm25-asc":
+                    if (!hasPm25A && !hasPm25B) return 0;
+                    if (!hasPm25A) return 1;
+                    if (!hasPm25B) return -1;
+                    return pm25A - pm25B;
 
                 case "az":
                 default:

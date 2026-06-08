@@ -1,75 +1,62 @@
 .neighbourhood-page {
     display: flex;
-    flex-direction: row;
     align-items: flex-start;
     width: 98vw;
-    height: 88vh;
-    margin-top: 2vh;
-    margin-left: 1vw;
+    min-height: 88vh;
+    margin: 2vh 0 0 1vw;
     gap: 2vw;
-    overflow: hidden;
 }
 
+/* Sidebar */
 .neighbourhood-sidebar {
+    line-height: 1.2;
     width: 32vw;
     height: 86vh;
-    background: #fecb3d;
+    background: #f5f6f8;
+    border-radius: 16px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
 }
 
-.neighbourhood-sidebar-header,
-.neighbourhood-detail-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 16px;
-    background: #009ee3;
-    color: #fff;
-    font-size: 1.2em;
-    font-weight: bold;
+.neighbourhood-sidebar h2 {
+    line-height: 1.2;
+    margin: 0 0 16px;
+    padding: 24px;
+
+
+    background: linear-gradient(
+        135deg,
+        #009ee3,
+        #0cb6ff
+    );
+
+    color: white;
+    font-size: 2.4rem;
+    font-weight: 700;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.12);
 }
 
-.neighbourhood-sidebar-header h2,
-.neighbourhood-detail-header h1 {
-    margin: 0;
+.neighbourhood-search,
+.neighbourhood-sort {
+    margin-bottom: 10px;
 }
 
-.neighbourhood-tools {
-    display: flex;
-    gap: 8px;
-    padding: 10px;
-    background: #fecb3d;
-}
-
-.neighbourhood-tool {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    gap: 4px;
-}
-
-.neighbourhood-tool label {
-    font-weight: bold;
-    color: #333;
-    font-size: 0.9rem;
-}
-
-.neighbourhood-tool input,
-.neighbourhood-tool select {
-    padding: 8px 10px;
-    border: none;
+.neighbourhood-search input,
+.neighbourhood-sort select {
+    padding: 6px 8px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #d1a700;
 }
 
 .neighbourhood-list {
     flex: 1;
     overflow-y: auto;
-    background: #fecb3d;
-    padding: 8px 0;
-    scrollbar-width: thin;
-    scrollbar-color: #e6b800 #fecb3d;
+    padding-right: 6px;
 }
 
 .neighbourhood-list-item {
@@ -77,82 +64,103 @@
     justify-content: space-between;
     align-items: center;
     text-decoration: none;
-    padding: 10px 18px;
-    margin: 0 8px 8px 8px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: box-shadow 0.2s, background 0.2s;
-    cursor: pointer;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 12px;
+    border-left: 5px solid transparent;
+    color: #222;
+    transition: 0.2s ease;
 }
 
 .neighbourhood-list-item:hover,
 .neighbourhood-list-item.selected {
-    box-shadow: 0 2px 8px rgba(30, 30, 30, 0.08);
-    background: #ffe082;
+    background: #f7fbff;
+    border-left-color: #009ee3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.neighbourhood-list-name {
-    font-weight: bold;
-    color: #009ee3;
+.neighbourhood-list-values {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
 }
 
 .neighbourhood-list-temp {
     color: #d84315;
-    font-size: 1.05em;
-    min-width: 48px;
-    text-align: right;
+    font-size: 1rem;
 }
 
+.neighbourhood-list-pm25 {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+/* Detail dashboard */
 .neighbourhood-detail {
     width: 62vw;
-    height: 86vh;
-    background: #fecb3d;
+    min-height: 86vh;
+    max-height: none;
+    padding: 24px;
+    background: #f5f6f8;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
-}
-
-.neighbourhood-detail-content {
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: 20px;
     overflow-y: auto;
 }
 
-.temperature-card,
-.graph-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 8px;
-    padding: 18px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+.neighbourhood-detail > h1 {
+    display: none;
 }
 
-.temperature-card h2,
-.graph-card h2 {
-    margin-top: 0;
-    color: #009ee3;
+.neighbourhood-detail article {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
-.temperature-value {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #d84315;
+.neighbourhood-detail article h2 {
+    margin: 0 0 12px;
+    color: #222;
+}
+
+.neighbourhood-detail article p {
     margin: 0;
+    font-size: 1.2rem;
 }
 
-.temperature-graph-placeholder {
-    height: 280px;
-    border-radius: 8px;
-    background: rgba(0, 158, 227, 0.08);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #555;
-    font-weight: bold;
+/* Eerste blok als hero */
+.neighbourhood-detail::before {
+    content: "Wijkdetails";
+    line-height: 1.2;
+    background: linear-gradient(
+        135deg,
+        #009ee3,
+        #0cb6ff
+    );
+
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+
+    font-size: 2.4rem;
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.12);
 }
 
+/* Graphs */
+.temperature-graph,
+.dust-graph {
+    width: 100%;
+    height: 300px;
+}
+
+/* Error / empty */
 .neighbourhood-empty,
 .neighbourhood-error {
     padding: 16px;
@@ -160,28 +168,14 @@
     font-weight: bold;
 }
 
-.neighbourhood-list::-webkit-scrollbar {
+/* Scrollbars */
+.neighbourhood-list::-webkit-scrollbar,
+.neighbourhood-detail::-webkit-scrollbar {
     width: 8px;
-    background: #fecb3d;
+}
+
+.neighbourhood-list::-webkit-scrollbar-thumb,
+.neighbourhood-detail::-webkit-scrollbar-thumb {
+    background: #808080;
     border-radius: 8px;
 }
-
-.neighbourhood-list::-webkit-scrollbar-thumb {
-    background: #e6b800;
-    border-radius: 8px;
-}
-
-.neighbourhood-list::-webkit-scrollbar-thumb:hover {
-    background: #d1a700;
-}
-
-
-
-
-
-
-
-
-
-
-
