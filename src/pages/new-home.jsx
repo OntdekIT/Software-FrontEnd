@@ -154,11 +154,15 @@ export default function Home() {
                                 parseTemp={parseTemp}
                             />
                         ) : (
-                            <RegionList
-                                regionData={regionData}
-                                zoomToRegion={zoomToRegion}
-                                parseTemp={parseTemp}
-                            />
+                           <RegionList
+                               regionData={regionData}
+                               zoomToRegion={zoomToRegion}
+                               parseTemp={parseTemp}
+                               onRegionClick={(region) => {
+                                   setSelectedRegion(region);
+                                   fetchRegionData(region.id);
+                               }}
+                           />
                         )}
                     </div>
                 </div>
