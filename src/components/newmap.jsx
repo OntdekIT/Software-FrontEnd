@@ -60,10 +60,10 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
           style: styleJson,
           center: [centerX, centerY],
           zoom: zoom,
-          bounds: [
-            [4.98, 51.48],
-            [5.16, 51.62]
-          ],
+          maxBounds: [
+              [4.90, 51.44],
+              [5.25, 51.68]
+            ]
         });
 
         mapInstance.current.on('load', () => {
