@@ -109,12 +109,6 @@ export default function Home() {
                             </button>
                         </div>
                     )}
-                    <button
-                        className={`toggle-btn pm-toggle ${showPmRegions ? 'active' : ''}`}
-                        onClick={() => setShowPmRegions(v => !v)}
-                    >
-                        Fijnstof regio's
-                    </button>
                     <NewMap
                         centerX={5.0913}
                         centerY={51.5555}
@@ -129,9 +123,22 @@ export default function Home() {
                             fetchRegionData(region.id);
                         }}
                     />
-                    <div className="map-legend">
-                        <ColorLegend temperatures={measurements} />
-                    </div>
+                   <div className="map-legend">
+                       <ColorLegend temperatures={measurements} />
+                   </div>
+
+                   <div className="pm-toggle">
+                       <span className="pm-toggle-text">Fijnstof wijken</span>
+
+                       <label className="switch">
+                           <input
+                               type="checkbox"
+                               checked={showPmRegions}
+                               onChange={() => setShowPmRegions(v => !v)}
+                           />
+                           <span className="slider round"></span>
+                       </label>
+                   </div>
                 </div>
                 <div className="sidebar-container">
                     <div className="wijken-view">
@@ -165,6 +172,7 @@ export default function Home() {
                            />
                         )}
                     </div>
+
                 </div>
             </section>
         </div>
