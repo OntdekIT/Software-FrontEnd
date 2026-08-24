@@ -2,7 +2,9 @@
 
 export default function RegionList({ regionData, zoomToRegion, parseTemp }) {
     return (
-        <div className="wijken-list">
+       <div className="wijken-list">
+            <input type="text" placeholder="test" />
+
             {regionData.map((region, idx) => (
                 <div
                     className="wijken-list-item"
@@ -12,12 +14,14 @@ export default function RegionList({ regionData, zoomToRegion, parseTemp }) {
                 >
                     <span className="wijken-list-name">{region.name}</span>
                     <span className="wijken-list-temp">
-                        {parseTemp(region.avgTemp) !== null ? `${parseTemp(region.avgTemp).toFixed(1)}°C` : '--'}
+                        {parseTemp(region.avgTemp) !== null
+                            ? `${parseTemp(region.avgTemp).toFixed(1)}°C`
+                            : '--'}
                     </span>
                 </div>
             ))}
         </div>
-    );
+    );  
 }
 
 RegionList.propTypes = {

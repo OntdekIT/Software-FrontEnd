@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { backendApi } from "../utils/backend-api.jsx";
 import ColorLegend from "../components/map/color-legend.jsx";
 import './new-home.css';
