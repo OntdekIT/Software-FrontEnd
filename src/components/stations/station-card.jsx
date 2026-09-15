@@ -21,15 +21,16 @@ export default function StationCard({station}) {
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
     const [stofGraphData, setStofGraphData] = useState([]);
+    const [combinedGraphData, setCombinedGraphData] = useState([]); // New state for combined
     const [graphVisible, setGraphVisible] = useState(true);
-    const [selectedGraph, setSelectedGraph] = useState('tempGraph'); // New state for selected graph type
+    const [selectedGraph, setSelectedGraph] = useState('combinedGraph'); // Default to combined
     const dateTime = new Date();
 
     useEffect(() => {
         function formatDate(date) {
             const padZero = (num) => num.toString().padStart(2, '0');
             const year = date.getFullYear();
-            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+            const month = padZero(date.getMonth() + 1);
             const day = padZero(date.getDate());
             const hours = padZero(date.getHours());
             const minutes = padZero(date.getMinutes());
@@ -37,49 +38,76 @@ export default function StationCard({station}) {
             return `${day}-${month}-${year} ${hours}:${minutes}`;
         }
 
-        if (startDate.getTime() === endDate.getTime()) {
-            let date = startDate;
-            date.setMonth(date.getMonth() - 1);
-            setStartDate(date);
+        const fetchHistoryData = () => {
+            setLoading(true);
+
+            const currentStartDate = new Date(startDate);
+            currentStartDate.setHours(0, 0, 0, 0);
+
+            const currentEndDate = new Date(endDate);
+            currentEndDate.setHours(23, 59, 59, 999);
+
+            backendApi.get("/measurement/history/average/" + selectedStation, {
+                params: {
+                    startDate: formatDate(currentStartDate),
+                    endDate: formatDate(currentEndDate)
+                }
+            }).then((response) => {
+                const combinedData = response.data.map((meting) => ({
+                    timestamp: meting.timestamp,
+                    temp: meting.avgTemp,
+                    stof: meting.avgStof
+                }));
+                setCombinedGraphData(combinedData);
+
+                const tempData = response.data.map((meting) => ({
+                    timestamp: meting.timestamp,
+                    avg: meting.avgTemp,
+                    min: meting.minTemp,
+                    max: meting.maxTemp
+                }));
+                setTempGraphData(tempData);
+
+                const humData = response.data.map((meting) => ({
+                    timestamp: meting.timestamp,
+                    avg: meting.avgHum,
+                    min: meting.minHum,
+                    max: meting.maxHum
+                }));
+                setHumGraphData(humData);
+
+                const stofData = response.data.map((meting) => ({
+                    timestamp: meting.timestamp,
+                    avg: meting.avgStof,
+                    min: meting.minStof,
+                    max: meting.maxStof
+                }));
+                setStofGraphData(stofData);
+
+                setLoading(false);
+            }).catch(handleError);
+        };
+
+        fetchHistoryData();
+
+        let interval;
+        const today = new Date();
+        if (endDate.getDate() === today.getDate() &&
+            endDate.getMonth() === today.getMonth() &&
+            endDate.getFullYear() === today.getFullYear()) {
+            interval = setInterval(() => {
+                fetchHistoryData();
+            }, 1000 * 60 * 60); // every hour
         }
-
-        setLoading(true);
-
-        backendApi.get("/measurement/history/average/" + selectedStation, {
-            params: {
-                startDate: formatDate(startDate),
-                endDate: formatDate(endDate)
-            }
-        }).then((response) => {
-            const tempData = response.data.map((meting) => ({
-                timestamp: meting.timestamp,
-                avg: meting.avgTemp,
-                min: meting.minTemp,
-                max: meting.maxTemp
-            }));
-            setTempGraphData(tempData);
-            const humData = response.data.map((meting) => ({
-                timestamp: meting.timestamp,
-                avg: meting.avgHum,
-                min: meting.minHum,
-                max: meting.maxHum
-            }));
-            setHumGraphData(humData);
-            const stofData = response.data.map((meting) => ({
-                timestamp: meting.timestamp,
-                avg: meting.avgStof,
-                min: meting.minStof,
-                max: meting.maxStof
-            }))
-            setStofGraphData(stofData);
-            setLoading(false);
-            console.log(station);
-        }).catch(handleError);
 
         if (station.isActive === false) {
             setGraphVisible(false);
-          }
-    }, [selectedStation, startDate, endDate, station.isActive, station.tempError, station.humError, station.stofError, station.locError]);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [selectedStation, station.isActive, startDate, endDate]);
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
@@ -124,7 +152,10 @@ export default function StationCard({station}) {
         setSelectedGraph(event.target.value);
     };
 
-    const graphData = selectedGraph === 'tempGraph' ? tempGraphData : selectedGraph === 'humGraph' ? humGraphData : stofGraphData;
+    const graphData =
+        selectedGraph === 'tempGraph' ? tempGraphData :
+        selectedGraph === 'humGraph' ? humGraphData :
+        selectedGraph === 'stofGraph' ? stofGraphData : [];
 
     return (
         <div className="card">
@@ -195,6 +226,7 @@ export default function StationCard({station}) {
                                 <label htmlFor="graphType" className="form-label">Kies het type grafiek</label>
                                 <select id="graphType" className="form-select" value={selectedGraph}
                                         onChange={handleGraphChange}>
+                                    <option value="combinedGraph">Gecombineerd (Temp & Fijnstof)</option>
                                     <option value="tempGraph">Temperatuur</option>
                                     <option value="humGraph">Vochtigheid</option>
                                     <option value="stofGraph">FijnStof</option>
@@ -232,28 +264,52 @@ export default function StationCard({station}) {
                                                 </span>
                                             </div>
                                         ) : null;
+                                    case "combinedGraph":
+                                        return (station.tempError || station.stofError) ? (
+                                            <div className="d-flex justify-content-center">
+                                                <span className="warning-text">
+                                                    ⚠️ LET OP: Niet alle data is beschikbaar!
+                                                </span>
+                                            </div>
+                                        ) : null;
                                     default:
                                         return null;
                                 }
                             })()}
-                            <ResponsiveContainer minWidth={250} minHeight={250}>
-                                <LineChart key={station.stationid} data={graphData}>
-                                    <XAxis dataKey="timestamp"/>
-                                    <YAxis width={30}/>
-                                    <CartesianGrid stroke="#ccc"/>
-                                    <Legend onClick={handleLegendChange}/>
-                                    <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
-                                          hide={showMinTemp}
-                                          dot={false}/>
-                                    <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
-                                          hide={showMaxTemp}
-                                          dot={false}/>
-                                    <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
-                                          hide={showGemTemp}
-                                          dot={false}/>
-                                </LineChart>
-                            </ResponsiveContainer>
-                            <div className="container text-center">
+
+                            {selectedGraph === 'combinedGraph' ? (
+                                <ResponsiveContainer minWidth={250} minHeight={250}>
+                                    <LineChart key={station.stationid} data={combinedGraphData}>
+                                        <XAxis dataKey="timestamp" />
+                                        <YAxis yAxisId="left" orientation="left" stroke="#ff0000" />
+                                        <YAxis yAxisId="right" orientation="right" stroke="#8884d8" />
+                                        <CartesianGrid stroke="#ccc" />
+                                        <Legend />
+                                        <Line yAxisId="left" type="monotone" dataKey="temp" name="Temperatuur" stroke="#ff0000" dot={false} />
+                                        <Line yAxisId="right" type="monotone" dataKey="stof" name="Fijnstof" stroke="#8884d8" dot={false} />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            ) : (
+                                <ResponsiveContainer minWidth={250} minHeight={250}>
+                                    <LineChart key={station.stationid + selectedGraph} data={graphData}>
+                                        <XAxis dataKey="timestamp"/>
+                                        <YAxis width={30}/>
+                                        <CartesianGrid stroke="#ccc"/>
+                                        <Legend onClick={handleLegendChange}/>
+                                        <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
+                                              hide={showMinTemp}
+                                              dot={false}/>
+                                        <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
+                                              hide={showMaxTemp}
+                                              dot={false}/>
+                                        <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
+                                              hide={showGemTemp}
+                                              dot={false}/>
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            )}
+
+                            <div className="container text-center mt-3">
                                 <div className="row gy-2">
                                     <div className="col-12 col-md-6">
                                         <label>Startdatum</label>

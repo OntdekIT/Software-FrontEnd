@@ -1,0 +1,181 @@
+.neighbourhood-page {
+    display: flex;
+    align-items: flex-start;
+    width: 98vw;
+    min-height: 88vh;
+    margin: 2vh 0 0 1vw;
+    gap: 2vw;
+}
+
+/* Sidebar */
+.neighbourhood-sidebar {
+    line-height: 1.2;
+    width: 32vw;
+    height: 86vh;
+    background: #f5f6f8;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.neighbourhood-sidebar h2 {
+    line-height: 1.2;
+    margin: 0 0 16px;
+    padding: 24px;
+
+
+    background: linear-gradient(
+        135deg,
+        #009ee3,
+        #0cb6ff
+    );
+
+    color: white;
+    font-size: 2.4rem;
+    font-weight: 700;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.neighbourhood-search,
+.neighbourhood-sort {
+    margin-bottom: 10px;
+}
+
+.neighbourhood-search input,
+.neighbourhood-sort select {
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid #d1a700;
+}
+
+.neighbourhood-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.neighbourhood-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 12px;
+    border-left: 5px solid transparent;
+    color: #222;
+    transition: 0.2s ease;
+}
+
+.neighbourhood-list-item:hover,
+.neighbourhood-list-item.selected {
+    background: #f7fbff;
+    border-left-color: #009ee3;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.neighbourhood-list-values {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.neighbourhood-list-temp {
+    color: #d84315;
+    font-size: 1rem;
+}
+
+.neighbourhood-list-pm25 {
+    color: #666;
+    font-size: 0.8rem;
+}
+
+/* Detail dashboard */
+.neighbourhood-detail {
+    width: 62vw;
+    min-height: 86vh;
+    max-height: none;
+    padding: 24px;
+    background: #f5f6f8;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.neighbourhood-detail > h1 {
+    display: none;
+}
+
+.neighbourhood-detail article {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+.neighbourhood-detail article h2 {
+    margin: 0 0 12px;
+    color: #222;
+}
+
+.neighbourhood-detail article p {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+/* Eerste blok als hero */
+.neighbourhood-detail::before {
+    content: "Wijkdetails";
+    line-height: 1.2;
+    background: linear-gradient(
+        135deg,
+        #009ee3,
+        #0cb6ff
+    );
+
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+
+    font-size: 2.4rem;
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.12);
+}
+
+/* Graphs */
+.temperature-graph,
+.dust-graph {
+    width: 100%;
+    height: 300px;
+}
+
+/* Error / empty */
+.neighbourhood-empty,
+.neighbourhood-error {
+    padding: 16px;
+    color: #d32f2f;
+    font-weight: bold;
+}
+
+/* Scrollbars */
+.neighbourhood-list::-webkit-scrollbar,
+.neighbourhood-detail::-webkit-scrollbar {
+    width: 8px;
+}
+
+.neighbourhood-list::-webkit-scrollbar-thumb,
+.neighbourhood-detail::-webkit-scrollbar-thumb {
+    background: #808080;
+    border-radius: 8px;
+}

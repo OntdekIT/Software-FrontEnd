@@ -32,6 +32,11 @@ export default function Navbar() {
                         <li className="nav-item">
                             <Link className="nav-link" to="/newheatmap" onClick={handleNavLinkClick}>Heatmap</Link>
                         </li>
+
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/wijken" onClick={handleNavLinkClick}>Wijken</Link>
+                        </li>
+
                         <li className="nav-item">
                             <Link className="nav-link" to="/about" onClick={handleNavLinkClick}>Over ons</Link>
                         </li>
