@@ -7,10 +7,11 @@ export default defineConfig({
   esbuild: {
     jsxInject: `import React from 'react'`
   },
-  optimizeDeps: {
-    // maplibre-gl v6 ships a web worker that Vite's dep pre-bundler
-    // mishandles ("maplibre-gl-worker.mjs ... does not exist"); excluding
-    // it from optimization lets the worker resolve at runtime.
-    exclude: ['maplibre-gl']
+  worker: {
+    // maplibre-gl v6 spawns its worker as an ES module (new Worker(url,
+    // {type:'module'})) and that worker statically imports a shared chunk.
+    // Bundling workers in ES format lets Rollup emit the worker AND its
+    // maplibre-gl-shared chunk as hashed assets, so nothing 404s in prod.
+    format: 'es'
   }
 })
