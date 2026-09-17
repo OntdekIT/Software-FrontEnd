@@ -4,6 +4,7 @@ import { backendApi } from "../utils/backend-api.jsx";
 
 import NeighbourhoodSidebar from "../components/neighbourhoods/neighbourhoodSidebar.jsx";
 import NeighbourhoodDetail from "../components/neighbourhoods/neighbourhoodDetail.jsx";
+import Preloader from "../components/ui/Preloader.jsx";
 
 import "./neighbourhood-page.css";
 
@@ -15,6 +16,7 @@ export default function NeighbourhoodPage() {
     const [errMsg, setErrMsg] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const [sortOption, setSortOption] = useState("az");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const timestamp = new Date().toISOString();
@@ -25,6 +27,9 @@ export default function NeighbourhoodPage() {
             })
             .catch(() => {
                 setErrMsg("Het ophalen van de wijken is mislukt.");
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -99,11 +104,15 @@ export default function NeighbourhoodPage() {
         });
     }, [neighbourhoods, searchQuery, sortOption]);
 
+    if (loading) {
+        return <Preloader message="Wijken laden…" />;
+    }
+
     return (
         <section className="neighbourhood-page">
             {errMsg && (
                 <div className="neighbourhood-error">
-                    <p>{errMsg}</p>
+                    <p><i className="bi bi-exclamation-triangle" aria-hidden="true"></i> {errMsg}</p>
                 </div>
             )}
 

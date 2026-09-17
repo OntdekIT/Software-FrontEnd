@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import LoadingComponent from "../../../components/loading-component.jsx";
+import {SkeletonTable} from "../../../components/ui/Skeleton.jsx";
+import Button from "../../../components/ui/Button.jsx";
 import StationFilters from "../../../components/stations/station-filters.jsx"
 import {Link, useNavigate} from "react-router-dom";
 
@@ -78,48 +79,54 @@ export default function StationOverview() {
 
     return (
         <>
-            <div className="offcanvas offcanvas-start" tabIndex="-1" id="stationFilterOffcanvas">
-                <div className="offcanvas-header">
-                    <h5>Filters</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas"></button>
-                </div>
-                <div className="offcanvas-body">
-                    <StationFilters onFiltersChange={onFiltersChanged} filters={filters}/>
-                </div>
-            </div>
-            <main className="container-fluid">
-                <div className="row">
-                    <aside className="d-none d-xxl-block col-xxl-2 border-end shadow-sm">
-                        <h2>Filters</h2>
+            <main className="mx-auto w-full px-4">
+                <div className="flex flex-col gap-6 xl:flex-row">
+                    <aside className="hidden w-full shrink-0 border-r border-gray-200 pr-4 shadow-sm 2xl:block 2xl:w-1/6">
+                        <h2 className="mb-3 text-xl font-semibold">Filters</h2>
                         <StationFilters filters={filters} onFiltersChange={onFiltersChanged} clearAllFilters={clearAllFilters}/>
                     </aside>
-                    <section className="col-12 col-xxl-10">
-                        <h1 className="page-header-margin text-center">Meetstations</h1> <Link to="/admin/stations/toevoegen" className="btn btn-primary">Voeg Meetstation Toe</Link>
-                        {errMsg && <div className="error-msg">{errMsg}</div>}
-                        {loading ? <LoadingComponent message="Stations aan het ophalen..." isFullScreen={true}/> : (
+                    <section className="w-full 2xl:w-5/6">
+                        <div className="mb-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+                            <h1 className="flex items-center justify-center gap-2 text-center text-2xl font-bold">
+                                <i className="bi bi-broadcast text-brand-500"></i>
+                                Meetstations
+                            </h1>
+                            <Link to="/admin/stations/toevoegen">
+                                <Button variant="primary" size="md">
+                                    <i className="bi bi-plus-lg"></i>
+                                    Voeg Meetstation Toe
+                                </Button>
+                            </Link>
+                        </div>
+                        {errMsg && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700">{errMsg}</div>}
+                        {loading ? <SkeletonTable rows={6} columns={6}/> : (
                             stations.length > 0 ? (
-                                <div className="table-responsive">
-                                    <table className="table table-hover">
-                                        <thead>
+                                <div className="overflow-x-auto rounded-xl border border-gray-200">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-gray-50 text-gray-600">
                                         <tr>
-                                            <th>Naam</th>
-                                            <th>Gebruiker</th>
-                                            <th>Actief</th>
-                                            <th>Publiek</th>
-                                            <th>Database Tag</th>
-                                            <th></th>
+                                            <th className="px-4 py-3 font-semibold">Naam</th>
+                                            <th className="px-4 py-3 font-semibold">Gebruiker</th>
+                                            <th className="px-4 py-3 font-semibold">Actief</th>
+                                            <th className="px-4 py-3 font-semibold">Publiek</th>
+                                            <th className="px-4 py-3 font-semibold">Database Tag</th>
+                                            <th className="px-4 py-3"></th>
                                         </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="divide-y divide-gray-100">
                                         {stations.map(station => (
-                                            <tr key={station.stationid} onClick={() => navigateToDetails(station)}>
-                                                <td>{station.name}</td>
-                                                <td>{station.username ? `${station.username} (${station.userid})` : `Geen gebruiker (${station.userid || 'Geen ID'})`}</td>
-                                                <td>{station.isActive ? 'Ja' : 'Nee'}</td>
-                                                <td>{station.is_public ? 'Ja' : 'Nee'}</td>
-                                                <td>{station.database_tag}</td>
-                                                <td>
-                                                    <Link className="btn btn-sm btn-outline-dark">
+                                            <tr
+                                                key={station.stationid}
+                                                onClick={() => navigateToDetails(station)}
+                                                className="cursor-pointer transition-colors hover:bg-gray-50"
+                                            >
+                                                <td className="px-4 py-3">{station.name}</td>
+                                                <td className="px-4 py-3">{station.username ? `${station.username} (${station.userid})` : `Geen gebruiker (${station.userid || 'Geen ID'})`}</td>
+                                                <td className="px-4 py-3">{station.isActive ? 'Ja' : 'Nee'}</td>
+                                                <td className="px-4 py-3">{station.is_public ? 'Ja' : 'Nee'}</td>
+                                                <td className="px-4 py-3">{station.database_tag}</td>
+                                                <td className="px-4 py-3">
+                                                    <Link className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-2.5 py-1.5 text-gray-800 transition-colors hover:bg-gray-50">
                                                         <i className="bi bi-arrow-right"></i>
                                                     </Link>
                                                 </td>
@@ -128,7 +135,12 @@ export default function StationOverview() {
                                         </tbody>
                                     </table>
                                 </div>
-                            ) : <div>Geen stations gevonden.</div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+                                    <i className="bi bi-broadcast text-3xl text-gray-400"></i>
+                                    <p>Geen stations gevonden.</p>
+                                </div>
+                            )
                         )}
                     </section>
                 </div>

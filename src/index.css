@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Project theme tokens (Tailwind v4 @theme) mirroring the original Bootstrap
+   palette so the migrated UI keeps the exact same colours:
+     primary   #fecb3d (amber)   secondary rgb(32,75,153) (blue)
+     success   #33a567           info      rgb(113,201,243)
+     warning   #f57325           danger    #dc3545
+     light     #e9ecef           dark      #424043
+   `brand-*` is the primary ramp (amber) so existing brand-500/600 usages
+   resolve to the real primary. Semantic colours are exposed by name too. */
+@theme {
+  --color-brand-50:  #fff9e6;
+  --color-brand-100: #fff0bf;
+  --color-brand-200: #ffe488;
+  --color-brand-300: #fed964;
+  --color-brand-400: #fecf4d;
+  --color-brand-500: #fecb3d;
+  --color-brand-600: #e6ad12;
+  --color-brand-700: #b9880a;
+  --color-brand-800: #8a6408;
+  --color-brand-900: #5c4305;
+
+  --color-primary:   #fecb3d;
+  --color-secondary: #204b99;
+  --color-success:   #33a567;
+  --color-info:      #71c9f3;
+  --color-warning:   #f57325;
+  --color-danger:    #dc3545;
+  --color-light:     #e9ecef;
+  --color-dark:      #424043;
+
+  --navbar-height: 3.5rem;
+}
+
+/* Skeleton shimmer animation used by the Skeleton component. */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer utilities {
+  .animate-skeleton {
+    background-image: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.06) 25%,
+      rgb(0 0 0 / 0.12) 37%,
+      rgb(0 0 0 / 0.06) 63%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}

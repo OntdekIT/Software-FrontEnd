@@ -3,6 +3,7 @@ import {useForm} from "react-hook-form";
 import {useEffect} from "react";
 import UserRole from "../../domain/user-role.jsx";
 import UserUtils from "../../utils/user-utils.jsx";
+import Button from "../ui/Button.jsx";
 
 export default function UserFilters({filters, onFiltersChange}) {
     const {register, setValue, reset, handleSubmit} = useForm();
@@ -24,33 +25,35 @@ export default function UserFilters({filters, onFiltersChange}) {
         reset();
     };
 
+    const fieldClass = "w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500";
+
     return (
         <form>
             {/*First Name*/}
             <div className="mb-3">
-                <label htmlFor="firstName" className="form-label mb-0">Voornaam:</label>
-                <input type="text" placeholder="Voornaam" className="form-control form-control-sm"
+                <label htmlFor="firstName" className="mb-1 block text-sm font-medium text-gray-700">Voornaam:</label>
+                <input type="text" placeholder="Voornaam" className={fieldClass}
                        id="firstName" {...register("firstName")} />
             </div>
 
             {/*Last Name*/}
             <div className="mb-3">
-                <label htmlFor="lastName" className="form-label mb-0">Achternaam:</label>
-                <input type="text" placeholder="Achternaam" className="form-control form-control-sm"
+                <label htmlFor="lastName" className="mb-1 block text-sm font-medium text-gray-700">Achternaam:</label>
+                <input type="text" placeholder="Achternaam" className={fieldClass}
                        id="lastName" {...register("lastName")} />
             </div>
 
             {/*Email*/}
             <div className="mb-3">
-                <label htmlFor="email" className="form-label mb-0">E-mailadres:</label>
-                <input type="email" placeholder="E-mailadres" className="form-control form-control-sm"
+                <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">E-mailadres:</label>
+                <input type="email" placeholder="E-mailadres" className={fieldClass}
                        id="email" {...register("email")} />
             </div>
 
             {/*Role*/}
             <div className="mb-3">
-                <label htmlFor="role" className="form-label mb-0">Rol:</label>
-                <select className="form-select form-select-sm" id="role" {...register("role")}>
+                <label htmlFor="role" className="mb-1 block text-sm font-medium text-gray-700">Rol:</label>
+                <select className={fieldClass} id="role" {...register("role")}>
                     <option value={""}>Alles</option>
                     {Object.values(UserRole).map(role => (
                         <option key={role} value={role}>{UserUtils.translateRole(role)}</option>
@@ -58,9 +61,9 @@ export default function UserFilters({filters, onFiltersChange}) {
                 </select>
             </div>
 
-            <div className="d-flex justify-content-between">
-                <button type="button" className="btn btn-dark flex-grow-1 me-1" onClick={clearFilters}>Reset</button>
-                <button type="submit" className="btn btn-primary flex-grow-1 ms-1" onClick={handleSubmit(onSubmit)}>Pas toe</button>
+            <div className="flex justify-between gap-2">
+                <Button variant="secondary" type="button" className="flex-1" onClick={clearFilters}><i className="bi bi-arrow-counterclockwise"></i> Reset</Button>
+                <Button variant="primary" type="submit" className="flex-1" onClick={handleSubmit(onSubmit)}><i className="bi bi-funnel"></i> Pas toe</Button>
             </div>
         </form>
     )

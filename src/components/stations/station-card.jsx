@@ -2,7 +2,8 @@ import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
-import LoadingComponent from "../loading-component.jsx";
+import {Spinner} from "../ui/Preloader.jsx";
+import Button from "../ui/Button.jsx";
 import ReactDatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 
@@ -148,20 +149,24 @@ export default function StationCard({station}) {
         selectedGraph === 'stofGraph' ? stofGraphData : [];
 
     return (
-        <div className="card">
-            <div className="card-header d-flex align-items-center">
-                <h4 className="card-title flex-grow-1">{station.name}: {station.stationid}</h4>
-                <Link to={`/stations/${station.stationid}`} className="btn btn-outline-dark btn-sm ms-2"><i
-                    className="bi bi-info"></i></Link>
-                <Link to={`/stations/${station.stationid}/edit`} className="btn btn-outline-dark btn-sm ms-2"><i
-                    className="bi bi-pencil"></i></Link>
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center border-b border-gray-200 px-4 py-3">
+                <h4 className="flex flex-grow items-center gap-2 text-lg font-semibold text-gray-800">
+                    <i className="bi bi-broadcast text-brand-500"></i>{station.name}: {station.stationid}
+                </h4>
+                <Link to={`/stations/${station.stationid}`} aria-label="Station details" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-info-circle"></i></Button>
+                </Link>
+                <Link to={`/stations/${station.stationid}/edit`} aria-label="Station bewerken" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-pencil"></i></Button>
+                </Link>
             </div>
-            <div className="card-body">
+            <div className="p-4">
                 <div className="p-0">
                 <div key={station.stationid} style={{ padding: "5%" }}>
                 {station.locError === true ? (
                 station.isActive === true ? (
-                    <div className="d-flex justify-content-center">
+                    <div className="flex justify-center">
                         <span className="warning-text">
                             ⚠️ LET OP: De locatie wordt niet meer gemeten!
                         </span>
@@ -170,12 +175,12 @@ export default function StationCard({station}) {
                 ) : (
                 <>
                     {!station.is_public && (
-                    <div className="form-text">
+                    <div className="text-sm text-gray-500">
                         Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
                     </div>
                     )}
                     {station.is_public && (
-                    <div className="form-text">
+                    <div className="text-sm text-gray-500">
                         Het station is zichtbaar en kan door iedereen bekeken worden.
                     </div>
                     )}
@@ -184,20 +189,20 @@ export default function StationCard({station}) {
 
                 </div>
 
-                    
-                    
+
+
                     {station.isActive === true ? (
-                        <div className="d-flex justify-content-center" onClick={toggleGraphVisibility} style={{cursor: 'pointer'}}>
+                        <div className="flex cursor-pointer justify-center" onClick={toggleGraphVisibility}>
                             {/* Toggle button */}
                             {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
                         </div>
                     ) : (
-                        <div className="d-flex justify-content-center">
+                        <div className="flex justify-center">
                             <span className="warning-text">
                                 ⚠️ LET OP: Dit station is inactief!
                             </span>
                         </div>
-                        
+
                     )}
 
                     
@@ -206,15 +211,14 @@ export default function StationCard({station}) {
                     {graphVisible && (
                         <div>
                             <hr style={{margin: "0"}}></hr>
-                            <label className="fst-italic mt-1">Meting
+                            <label className="mt-1 block italic">Meting
                                 van: {dateTime.toLocaleString('nl-NL')}</label>
-                            <br></br>
-                            <label className="bold mt-2">Historische data</label>
+                            <label className="mt-2 block font-bold">Historische data</label>
 
                             {/* Dropdown for graph selection */}
                             <div className="mb-3">
-                                <label htmlFor="graphType" className="form-label">Kies het type grafiek</label>
-                                <select id="graphType" className="form-select" value={selectedGraph}
+                                <label htmlFor="graphType" className="mb-1 block text-sm font-medium text-gray-700">Kies het type grafiek</label>
+                                <select id="graphType" className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500" value={selectedGraph}
                                         onChange={handleGraphChange}>
                                     <option value="combinedGraph">Gecombineerd (Temp & Fijnstof)</option>
                                     <option value="tempGraph">Temperatuur</option>
@@ -222,17 +226,17 @@ export default function StationCard({station}) {
                                     <option value="stofGraph">FijnStof</option>
                                 </select>
                             </div>
-                            <div className="position-relative">
-                                {loading && (
-                                    <LoadingComponent message="Data aan het ophalen..."
-                                                      isFullScreen={false}></LoadingComponent>
-                                )}
-                            </div>
+                            {loading && (
+                                <div className="flex items-center justify-center gap-2 py-2 text-sm text-gray-500">
+                                    <Spinner className="h-5 w-5 text-brand-500" />
+                                    Data aan het ophalen...
+                                </div>
+                            )}
                             {(() => {
                                 switch (selectedGraph) {
                                     case "tempGraph":
                                         return station.tempError ? (
-                                            <div className="d-flex justify-content-center">
+                                            <div className="flex justify-center">
                                                 <span className="warning-text">
                                                     ⚠️ LET OP: De temperatuur wordt niet meer gemeten!
                                                 </span>
@@ -240,7 +244,7 @@ export default function StationCard({station}) {
                                         ) : null;
                                     case "humGraph":
                                         return station.humError ? (
-                                            <div className="d-flex justify-content-center">
+                                            <div className="flex justify-center">
                                                 <span className="warning-text">
                                                     ⚠️ LET OP: De luchtvochtigheid wordt niet meer gemeten!
                                                 </span>
@@ -248,7 +252,7 @@ export default function StationCard({station}) {
                                         ) : null;
                                     case "stofGraph":
                                         return station.stofError ? (
-                                            <div className="d-flex justify-content-center">
+                                            <div className="flex justify-center">
                                                 <span className="warning-text">
                                                     ⚠️ LET OP: De Fijnstof wordt niet meer gemeten!
                                                 </span>
@@ -256,7 +260,7 @@ export default function StationCard({station}) {
                                         ) : null;
                                     case "combinedGraph":
                                         return (station.tempError || station.stofError) ? (
-                                            <div className="d-flex justify-content-center">
+                                            <div className="flex justify-center">
                                                 <span className="warning-text">
                                                     ⚠️ LET OP: Niet alle data is beschikbaar!
                                                 </span>
@@ -299,22 +303,22 @@ export default function StationCard({station}) {
                                 </ResponsiveContainer>
                             )}
 
-                            <div className="container text-center mt-3">
-                                <div className="row gy-2">
-                                    <div className="col-12 col-md-6">
-                                        <label>Startdatum</label>
+                            <div className="mt-3 text-center">
+                                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                                    <div>
+                                        <label className="block">Startdatum</label>
                                         <ReactDatePicker
-                                            className="form-control"
+                                            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                             dateFormat="dd-MM-yyyy"
                                             selected={startDate}
                                             onChange={handleStartDateChange}
                                             maxDate={endDate}
                                             showMonthYearDropdown={true}/>
                                     </div>
-                                    <div className="col-12 col-md-6">
-                                        <label>Einddatum</label>
+                                    <div>
+                                        <label className="block">Einddatum</label>
                                         <ReactDatePicker
-                                            className="form-control"
+                                            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                             dateFormat="dd-MM-yyyy"
                                             selected={endDate}
                                             onChange={handleEndDateChange}

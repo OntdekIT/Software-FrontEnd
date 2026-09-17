@@ -5,13 +5,15 @@ import './new-home.css';
 import NewMap from "../components/newmap.jsx";
 import RegionList from "../components/Home/RegionList.jsx";
 import RegionDetails from "../components/Home/RegionDetails.jsx";
+import Button from "../components/ui/Button.jsx";
 
 export default function Home() {
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
 
     const [regionData, setRegionData] = useState([]);
-    const [, setStations] = useState([]);
+    const [regionsLoading, setRegionsLoading] = useState(true);
+    const [stations, setStations] = useState([]);
     const [measurements, setMeasurements] = useState([]);
     const [showRegions] = useState(true);
     const [dateTime] = useState(new Date());
@@ -90,9 +92,11 @@ export default function Home() {
 
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
                 .then(response => setRegionData(response.data))
-                .catch(handleAxiosError);
+                .catch(handleAxiosError)
+                .finally(() => setRegionsLoading(false));
         } catch {
             setErrMsg('Fout bij ophalen kaart-data.');
+            setRegionsLoading(false);
         }
     }, [dateTime]);
 
@@ -103,10 +107,12 @@ export default function Home() {
                 <div className="mini-map">
                     {errMsg && (
                         <div className="error-overlay">
+                            <i className="bi bi-exclamation-triangle text-2xl text-danger" aria-hidden="true"></i>
                             <p ref={errRef} aria-live="assertive">{errMsg}</p>
-                            <button className="btn btn-primary" onClick={() => window.location.reload(false)}>
+                            <Button variant="primary" onClick={() => window.location.reload(false)}>
+                                <i className="bi bi-arrow-clockwise" aria-hidden="true"></i>
                                 Opnieuw proberen
-                            </button>
+                            </Button>
                         </div>
                     )}
                     <NewMap
@@ -114,6 +120,7 @@ export default function Home() {
                         centerY={51.5555}
                         zoom={12}
                         regionData={showRegions ? regionData : []}
+                        stations={stations}
                         pmRegionIds={showPmRegions
                             ? regionData.filter(r => r.avgPm25 != null).map(r => r.id)
                             : []
@@ -143,7 +150,10 @@ export default function Home() {
                 <div className="sidebar-container">
                     <div className="wijken-view">
                         <div className="wijken-view-header">
-                            <h2>Wijken</h2>
+                            <h2 className="flex items-center gap-2">
+                                <i className="bi bi-geo-alt" aria-hidden="true"></i>
+                                Wijken
+                            </h2>
                         </div>
                         {selectedRegion ? (
                             <RegionDetails
@@ -163,6 +173,7 @@ export default function Home() {
                         ) : (
                            <RegionList
                                regionData={regionData}
+                               loading={regionsLoading}
                                zoomToRegion={zoomToRegion}
                                parseTemp={parseTemp}
                                onRegionClick={(region) => {

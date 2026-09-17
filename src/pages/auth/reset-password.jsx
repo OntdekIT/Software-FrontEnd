@@ -1,22 +1,26 @@
 import {useState} from "react";
 import {useForm} from "react-hook-form";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
+import Button from "../../components/ui/Button.jsx";
+import {Spinner} from "../../components/ui/Preloader.jsx";
+import {useToast} from "../../components/ui/toast.jsx";
 
 export default function ResetPassword() {
-    const [errMsg, setErrMsg] = useState('');
     const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
+    const [hasError, setHasError] = useState(false);
     const [searchParams] = useSearchParams();
     const [email] = useState(searchParams.get('email'));
     const [token] = useState(searchParams.get('token'));
     const navigate = useNavigate();
+    const toast = useToast();
     const {register, handleSubmit, formState: {errors}, watch} = useForm({
         mode: "onBlur"
     });
 
     const onSubmit = async (data) => {
         setIsSubmitProcessing(true);
-        setErrMsg('');
+        setHasError(false);
 
         const body = {
             password: data.password,
@@ -27,33 +31,39 @@ export default function ResetPassword() {
         try {
             const response = await backendApi.post('/authentication/reset-password', body);
             if (response?.status === 200) {
+                toast.success('Je wachtwoord is opnieuw ingesteld. Je kunt nu inloggen.');
                 navigate('/auth/login');
             }
         } catch (err) {
             console.error(err);
+            setHasError(true);
             if (err.status === 400) {
                 if (err.response?.data?.message?.includes('password')) {
-                    setErrMsg('Wachtwoord voldoet niet aan de minimale eisen');
+                    toast.error('Wachtwoord voldoet niet aan de minimale eisen');
                 } else {
-                    setErrMsg('Er is geen account gevonden met dit e-mailadres of de aanvraag is verlopen.');
+                    toast.error('Er is geen account gevonden met dit e-mailadres of de aanvraag is verlopen.');
                 }
             } else {
-                setErrMsg('Er is iets misgegaan');
+                toast.error('Er is iets misgegaan');
             }
         } finally {
             setIsSubmitProcessing(false);
         }
     }
 
-    return (<div className="container">
-        <div className="row">
-            <div className="col-12 col-md-8 col-lg-6 col-xxl-4 offset-md-2 offset-lg-3 offset-xxl-4">
-                <h1 className="page-header-margin text-center">Wachtwoord resetten</h1>
-                {errMsg && <div className="error-msg">{errMsg}</div>}
-                <p>Vul hieronder een nieuw wachtwoord in voor het account met e-mailadres <b>{email}</b></p>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    {/*Password input*/}
-                    <div className="form-floating mb-3">
+    return (<div className="mx-auto w-full max-w-md px-4 py-8">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h1 className="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold text-gray-900">
+                <i className="bi bi-lock text-brand-500" aria-hidden="true"></i>
+                Wachtwoord resetten
+            </h1>
+            <p className="mb-4 text-sm text-gray-700">Vul hieronder een nieuw wachtwoord in voor het account met e-mailadres <b>{email}</b></p>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                {/*Password input*/}
+                <div>
+                    <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">Wachtwoord</label>
+                    <div className="relative">
+                        <i className="bi bi-lock pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
                         <input
                             type="password"
                             id="password"
@@ -69,16 +79,19 @@ export default function ResetPassword() {
                                     message: 'Wachtwoord moet minimaal één hoofdletter en één cijfer bevatten'
                                 }
                             })}
-                            className={`form-control ${errors.password || errMsg ? 'is-invalid' : ''}`}
+                            className={`w-full rounded-lg border px-3 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${errors.password || hasError ? 'border-red-500' : 'border-gray-300'}`}
                             placeholder="Wachtwoord"
                             disabled={isSubmitProcessing} // Disable input when submitting
                         />
-                        <label htmlFor="password" className="form-label">Wachtwoord</label>
-                        {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
                     </div>
+                    {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+                </div>
 
-                    {/*Confirm password input*/}
-                    <div className="form-floating mb-3">
+                {/*Confirm password input*/}
+                <div>
+                    <label htmlFor="confirmPassword" className="mb-1 block text-sm font-medium text-gray-700">Herhaal wachtwoord</label>
+                    <div className="relative">
+                        <i className="bi bi-lock pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
                         <input
                             type="password"
                             id="confirmPassword"
@@ -87,26 +100,22 @@ export default function ResetPassword() {
                                 required: 'Herhaal wachtwoord is verplicht',
                                 validate: value => value === watch('password') || 'Wachtwoorden komen niet overeen'
                             })}
-                            className={`form-control ${errors.confirmPassword || errMsg ? 'is-invalid' : ''}`}
+                            className={`w-full rounded-lg border px-3 py-2 pl-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${errors.confirmPassword || hasError ? 'border-red-500' : 'border-gray-300'}`}
                             placeholder="Herhaal wachtwoord"
                             disabled={isSubmitProcessing} // Disable input when submitting
                         />
-                        <label htmlFor="confirmPassword" className="form-label">Herhaal wachtwoord</label>
-                        {errors.confirmPassword &&
-                            <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
                     </div>
+                    {errors.confirmPassword &&
+                        <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>}
+                </div>
 
-                    <div className="d-grid mb-2">
-                        <button className="btn btn-lg btn-primary"
-                                type={"submit"}
-                                disabled={isSubmitProcessing}>
-                            {isSubmitProcessing && (<div className="spinner-border spinner-border-sm" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>)} Wachtwoord resetten
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <Button type="submit" size="lg" disabled={isSubmitProcessing} className="w-full">
+                    {isSubmitProcessing ? <Spinner className="h-4 w-4" /> : <i className="bi bi-lock" aria-hidden="true"></i>} Wachtwoord resetten
+                </Button>
+                <Link to={"/auth/login"} className="flex items-center justify-center gap-1 text-sm text-brand-600 hover:underline">
+                    <i className="bi bi-arrow-left" aria-hidden="true"></i> Terug naar inloggen
+                </Link>
+            </form>
         </div>
     </div>);
 }

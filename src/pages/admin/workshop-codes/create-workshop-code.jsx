@@ -1,8 +1,10 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import WorkshopUtils from "../../../utils/workshop-utils.jsx";
+import Button from "../../../components/ui/Button.jsx";
+import {useToast} from "../../../components/ui/toast.jsx";
 
 export default function CreateWorkshopCode() {
     const {register, handleSubmit, formState: {errors}} = useForm({
@@ -10,16 +12,11 @@ export default function CreateWorkshopCode() {
     });
 
     const navigate = useNavigate();
+    const toast = useToast();
     const [loading, setLoading] = useState(false);
-    const [errMsg, setErrMsg] = useState('');
-
-    useEffect(() => {
-        setErrMsg('');
-    }, []);
 
     const onSubmit = async (data) => {
         setLoading(true);
-        setErrMsg('');
         try {
             const body = {
                 expirationDate: WorkshopUtils.generateExpirationDate(data.duration)
@@ -35,11 +32,12 @@ export default function CreateWorkshopCode() {
 
             if (response?.status === 201) {
                 localStorage.setItem('workshopcode', response.data);
+                toast.success('Workshopcode succesvol aangemaakt');
                 navigate("/admin/workshop-codes");
             }
         } catch (err) {
             console.error('Error:', err);
-            setErrMsg('Er is iets misgegaan');
+            toast.error('Er is iets misgegaan');
             setLoading(false);
 
             if (err.response?.status === 401) {
@@ -49,17 +47,28 @@ export default function CreateWorkshopCode() {
     };
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-12 col-md-8 col-lg-6 offset-md-2 offset-lg-3">
+        <div className="mx-auto max-w-2xl px-4 py-6">
+            <div className="mx-auto w-full max-w-lg">
+                <div className="mb-4">
+                    <Link to="/admin/workshop-codes">
+                        <Button variant="ghost" size="sm">
+                            <i className="bi bi-arrow-left"></i>
+                            Terug
+                        </Button>
+                    </Link>
+                </div>
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <h1 className="page-header-margin text-center">Workshopcode aanmaken</h1>
-                        {errMsg && <div className="error-msg">{errMsg}</div>}
-                        <p className="text-center">Hier kan een workshopcode aangemaakt worden. De code wordt gegenereerd met willekeurige
+                        <h1 className="flex items-center justify-center gap-2 text-center text-3xl font-bold">
+                            <i className="bi bi-plus-circle text-brand-500"></i>
+                            Workshopcode aanmaken
+                        </h1>
+                        <p className="mt-2 text-center text-gray-600">Hier kan een workshopcode aangemaakt worden. De code wordt gegenereerd met willekeurige
                             cijfers</p>
 
-                        <div className="form-floating mb-3">
-                            <select className={`form-select ${errors.duration ? 'is-invalid' : ''}`}
+                        <div className="mb-3 mt-6">
+                            <label htmlFor="duration" className="mb-1 block text-sm font-medium text-gray-700">Geldigheidsduur</label>
+                            <select className={`w-full rounded border bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 ${errors.duration ? 'border-red-500' : 'border-gray-300'}`}
                                     id="duration" {...register("duration", {required: true, valueAsNumber: true})}>
                                 <option value={''} selected={true}>Kies hoelang de code geldig is</option>
                                 <option value={15}>15 min</option>
@@ -72,14 +81,13 @@ export default function CreateWorkshopCode() {
                                 <option value={4320}>3 dagen</option>
                                 <option value={10080}>1 week</option>
                             </select>
-                            <label htmlFor="duration" className="form-label">Geldigheidsduur</label>
-                            {errors.duration && <div className="invalid-feedback">Geldigheidsduur is verplicht</div>}
+                            {errors.duration && <div className="mt-1 text-sm text-red-600">Geldigheidsduur is verplicht</div>}
                         </div>
-                        <div className="d-grid mb-2">
-                            <button className="btn btn-lg btn-primary"
-                                    disabled={loading}>
+                        <div className="mb-2 flex flex-col">
+                            <Button type="submit" variant="primary" size="lg" disabled={loading}>
+                                <i className="bi bi-plus-lg"></i>
                                 Workshopcode aanmaken
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>

@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import LoadingComponent from "../../../components/loading-component.jsx";
+import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
+import Button from "../../../components/ui/Button.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function MyStationsOverview() {
@@ -29,36 +30,37 @@ export default function MyStationsOverview() {
 
     return (
         <>
-            <div className="toolbar fixed-top d-flex justify-content-between align-items-center">
+            <div className="toolbar fixed-top flex items-center justify-between">
                 <span>Welkom {name}</span>
-                <Link to={"./claim"} className="btn btn-primary btn-sm">Nieuw station toevoegen</Link>
+                <Link to={"./claim"} aria-label="Nieuw station toevoegen">
+                    <Button variant="primary" size="sm">
+                        <i className="bi bi-plus-lg"></i> Nieuw station toevoegen
+                    </Button>
+                </Link>
             </div>
-            <div className="container">
-                <div className="row">
-                    <div className="col">
-                        <div className="nav-size"></div>
-                        <h1>Mijn stations</h1>
+            <div className="mx-auto max-w-6xl px-4 py-6">
+                <div className="nav-size"></div>
+                <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
+                    <i className="bi bi-broadcast text-brand-500"></i> Mijn stations
+                </h1>
+                {errMsg && <div className="error-msg">{errMsg}</div>}
+                {loading ? (
+                    <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                        {Array.from({length: 6}).map((_, i) => (
+                            <SkeletonCard key={i}/>
+                        ))}
                     </div>
-                    {loading && (
-                        <div className="position-relative">
-                            {loading && (
-                                <LoadingComponent message="Account data aan het ophalen..."
-                                                  isFullScreen={true}></LoadingComponent>
-                            )}
-                        </div>
-                    )}
-                    {errMsg && <div className="error-msg">{errMsg}</div>}
-                    <div className="row g-2">
+                ) : (
+                    <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                         {stations
                             .sort((a, b) => a.stationid - b.stationid)
                             .map((station) => (
-                                <div className="col-12 col-md-6 col-lg-4" key={station.stationid}>
+                                <div key={station.stationid}>
                                     <StationCard station={station}></StationCard>
                                 </div>
                             ))}
                     </div>
-                    {stations.length % 3 !== 0 && <div className="w-100"></div>}
-                </div>
+                )}
             </div>
         </>
     )

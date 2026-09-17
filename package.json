@@ -32,13 +32,13 @@
     "react-hook-form": "^7.63.0",
     "react-leaflet": "^4.2.1",
     "react-leaflet-heat-layer": "^1.1.1",
-    "react-loader-spinner": "^8.0.2",
     "react-map-gl": "^8.1.1",
     "react-router-dom": "^7.18.4",
     "recharts": "^2.15.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^18.3.25",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
@@ -52,6 +52,7 @@
     "mailslurp-client": "^15.24.2",
     "prop-types": "^15.8.1",
     "sass": "^1.93.2",
+    "tailwindcss": "^4.3.3",
     "vite": "^7.1.11"
   }
 }

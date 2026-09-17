@@ -5,7 +5,7 @@ import ReactDatePicker from "react-datepicker";
 import {spectralColors, roundToOneDecimal} from "../../utils/map-utils.jsx";
 import {backendApi} from "../../utils/backend-api.jsx";
 import PropTypes from "prop-types";
-import LoadingComponent from "../loading-component.jsx";
+import { Spinner } from "../ui/Preloader.jsx";
 
 export default function RegionLayer({data}) {
     //use states for what to show and what not to show
@@ -155,7 +155,7 @@ export default function RegionLayer({data}) {
                         eventHandlers={{click: handleClick}}
                     >
                         <Popup>
-                            <label className="bold">{neighbourhood.name}</label> <br/>
+                            <label className="font-bold">{neighbourhood.name}</label> <br/>
 
                             <div>
                                 <label>
@@ -165,12 +165,12 @@ export default function RegionLayer({data}) {
 
                             <hr></hr>
 
-                            <label className="bold mt-2">Historische data</label>
+                            <label className="font-bold mt-2">Historische data</label>
 
                             {
                                 errorMessage && (
                                     <div>
-                                        <p className={'text-danger m-0'} ref={errRef}
+                                        <p className="text-red-600 m-0" ref={errRef}
                                            aria-live="assertive">{errorMessage}</p>
                                     </div>
                                 )
@@ -178,19 +178,21 @@ export default function RegionLayer({data}) {
 
                             {/* Dropdown for graph selection */}
                             <div className="mb-3">
-                                <label htmlFor={`graphType-${neighbourhood.id}`} className="form-label">Kies het type
+                                <label htmlFor={`graphType-${neighbourhood.id}`} className="block mb-1 font-medium">Kies het type
                                     grafiek</label>
-                                <select id={`graphType-${neighbourhood.id}`} className="form-select"
+                                <select id={`graphType-${neighbourhood.id}`} className="w-full rounded border border-gray-300 px-3 py-2"
                                         value={selectedGraph} onChange={handleGraphChange}>
                                     <option value="tempGraph">Temperatuur</option>
                                     <option value="humGraph">Vochtigheid</option>
                                     <option value="stofGraph">Fijnstof</option>
                                 </select>
                             </div>
-                            <div className="position-relative">
+                            <div className="relative">
                                 {loading && (
-                                    <LoadingComponent message="Data aan het ophalen..."
-                                                      isFullScreen={false}></LoadingComponent>
+                                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
+                                        <Spinner className="h-5 w-5 text-brand-500" />
+                                        Data aan het ophalen…
+                                    </div>
                                 )}
                             </div>
 
@@ -206,22 +208,22 @@ export default function RegionLayer({data}) {
                                     </LineChart>
                                 </ResponsiveContainer>
 
-                            <div className="container text-center">
-                                <div className="row gy-2">
-                                    <div className="col">
-                                        <label className="me-2">Start datum</label>
+                            <div className="mx-auto w-full text-center">
+                                <div className="flex flex-wrap gap-2">
+                                    <div className="flex-1">
+                                        <label className="mr-2">Start datum</label>
                                         <ReactDatePicker
-                                            className="border border-secondary"
+                                            className="rounded border border-gray-400 px-2 py-1"
                                             dateFormat="dd-MM-yyyy"
                                             selected={startDate}
                                             onChange={handleStartDateChange}
                                             maxDate={endDate}
                                         />
                                     </div>
-                                    <div className="col">
-                                        <label className="me-2">Eind datum</label>
+                                    <div className="flex-1">
+                                        <label className="mr-2">Eind datum</label>
                                         <ReactDatePicker
-                                            className="border border-secondary"
+                                            className="rounded border border-gray-400 px-2 py-1"
                                             dateFormat="dd-MM-yyyy"
                                             selected={endDate}
                                             onChange={handleEndDateChange}
