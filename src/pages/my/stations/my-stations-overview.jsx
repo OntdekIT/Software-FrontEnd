@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import LoadingComponent from "../../../components/loading-component.jsx";
+import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function MyStationsOverview() {
@@ -29,36 +29,36 @@ export default function MyStationsOverview() {
 
     return (
         <>
-            <div className="toolbar fixed-top d-flex justify-content-between align-items-center">
+            <div className="toolbar fixed-top flex items-center justify-between">
                 <span>Welkom {name}</span>
-                <Link to={"./claim"} className="btn btn-primary btn-sm">Nieuw station toevoegen</Link>
+                <Link
+                    to={"./claim"}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+                >
+                    Nieuw station toevoegen
+                </Link>
             </div>
-            <div className="container">
-                <div className="row">
-                    <div className="col">
-                        <div className="nav-size"></div>
-                        <h1>Mijn stations</h1>
+            <div className="mx-auto max-w-6xl px-4">
+                <div className="nav-size"></div>
+                <h1 className="text-2xl font-bold text-gray-800">Mijn stations</h1>
+                {errMsg && <div className="error-msg">{errMsg}</div>}
+                {loading ? (
+                    <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                        {Array.from({length: 6}).map((_, i) => (
+                            <SkeletonCard key={i}/>
+                        ))}
                     </div>
-                    {loading && (
-                        <div className="position-relative">
-                            {loading && (
-                                <LoadingComponent message="Account data aan het ophalen..."
-                                                  isFullScreen={true}></LoadingComponent>
-                            )}
-                        </div>
-                    )}
-                    {errMsg && <div className="error-msg">{errMsg}</div>}
-                    <div className="row g-2">
+                ) : (
+                    <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                         {stations
                             .sort((a, b) => a.stationid - b.stationid)
                             .map((station) => (
-                                <div className="col-12 col-md-6 col-lg-4" key={station.stationid}>
+                                <div key={station.stationid}>
                                     <StationCard station={station}></StationCard>
                                 </div>
                             ))}
                     </div>
-                    {stations.length % 3 !== 0 && <div className="w-100"></div>}
-                </div>
+                )}
             </div>
         </>
     )

@@ -2,6 +2,8 @@ import {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
+import Button from "../../components/ui/Button.jsx";
+import {Spinner} from "../../components/ui/Preloader.jsx";
 
 export default function ResetPassword() {
     const [errMsg, setErrMsg] = useState('');
@@ -45,68 +47,60 @@ export default function ResetPassword() {
         }
     }
 
-    return (<div className="container">
-        <div className="row">
-            <div className="col-12 col-md-8 col-lg-6 col-xxl-4 offset-md-2 offset-lg-3 offset-xxl-4">
-                <h1 className="page-header-margin text-center">Wachtwoord resetten</h1>
-                {errMsg && <div className="error-msg">{errMsg}</div>}
-                <p>Vul hieronder een nieuw wachtwoord in voor het account met e-mailadres <b>{email}</b></p>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    {/*Password input*/}
-                    <div className="form-floating mb-3">
-                        <input
-                            type="password"
-                            id="password"
-                            autoComplete="off"
-                            {...register("password", {
-                                required: 'Wachtwoord is verplicht',
-                                minLength: {
-                                    value: 8,
-                                    message: 'Wachtwoord moet minimaal 8 tekens lang zijn'
-                                },
-                                pattern: {
-                                    value: /^(?=.*[A-Z])(?=.*\d).+$/,
-                                    message: 'Wachtwoord moet minimaal één hoofdletter en één cijfer bevatten'
-                                }
-                            })}
-                            className={`form-control ${errors.password || errMsg ? 'is-invalid' : ''}`}
-                            placeholder="Wachtwoord"
-                            disabled={isSubmitProcessing} // Disable input when submitting
-                        />
-                        <label htmlFor="password" className="form-label">Wachtwoord</label>
-                        {errors.password && <div className="invalid-feedback">{errors.password.message}</div>}
-                    </div>
-
-                    {/*Confirm password input*/}
-                    <div className="form-floating mb-3">
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            autoComplete="off"
-                            {...register("confirmPassword", {
-                                required: 'Herhaal wachtwoord is verplicht',
-                                validate: value => value === watch('password') || 'Wachtwoorden komen niet overeen'
-                            })}
-                            className={`form-control ${errors.confirmPassword || errMsg ? 'is-invalid' : ''}`}
-                            placeholder="Herhaal wachtwoord"
-                            disabled={isSubmitProcessing} // Disable input when submitting
-                        />
-                        <label htmlFor="confirmPassword" className="form-label">Herhaal wachtwoord</label>
-                        {errors.confirmPassword &&
-                            <div className="invalid-feedback">{errors.confirmPassword.message}</div>}
-                    </div>
-
-                    <div className="d-grid mb-2">
-                        <button className="btn btn-lg btn-primary"
-                                type={"submit"}
-                                disabled={isSubmitProcessing}>
-                            {isSubmitProcessing && (<div className="spinner-border spinner-border-sm" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>)} Wachtwoord resetten
-                        </button>
-                    </div>
-                </form>
+    return (<div className="mx-auto w-full max-w-md px-4 py-8">
+        <h1 className="mb-6 text-center text-2xl font-bold text-gray-900">Wachtwoord resetten</h1>
+        {errMsg && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{errMsg}</div>
+        )}
+        <p className="mb-4 text-sm text-gray-700">Vul hieronder een nieuw wachtwoord in voor het account met e-mailadres <b>{email}</b></p>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            {/*Password input*/}
+            <div>
+                <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">Wachtwoord</label>
+                <input
+                    type="password"
+                    id="password"
+                    autoComplete="off"
+                    {...register("password", {
+                        required: 'Wachtwoord is verplicht',
+                        minLength: {
+                            value: 8,
+                            message: 'Wachtwoord moet minimaal 8 tekens lang zijn'
+                        },
+                        pattern: {
+                            value: /^(?=.*[A-Z])(?=.*\d).+$/,
+                            message: 'Wachtwoord moet minimaal één hoofdletter en één cijfer bevatten'
+                        }
+                    })}
+                    className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${errors.password || errMsg ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Wachtwoord"
+                    disabled={isSubmitProcessing} // Disable input when submitting
+                />
+                {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
             </div>
-        </div>
+
+            {/*Confirm password input*/}
+            <div>
+                <label htmlFor="confirmPassword" className="mb-1 block text-sm font-medium text-gray-700">Herhaal wachtwoord</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    autoComplete="off"
+                    {...register("confirmPassword", {
+                        required: 'Herhaal wachtwoord is verplicht',
+                        validate: value => value === watch('password') || 'Wachtwoorden komen niet overeen'
+                    })}
+                    className={`w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 ${errors.confirmPassword || errMsg ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Herhaal wachtwoord"
+                    disabled={isSubmitProcessing} // Disable input when submitting
+                />
+                {errors.confirmPassword &&
+                    <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>}
+            </div>
+
+            <Button type="submit" size="lg" disabled={isSubmitProcessing} className="w-full">
+                {isSubmitProcessing && <Spinner className="h-4 w-4" />} Wachtwoord resetten
+            </Button>
+        </form>
     </div>);
 }

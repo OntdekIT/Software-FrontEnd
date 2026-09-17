@@ -47,7 +47,7 @@ export default function GraphView({graphData, dataType}) {
                 <p>Min: {measurement.min}<br/>
                     Max: {measurement.max}<br/>
                     Avg: {measurement.avg}</p>
-                <hr style={{ margin: "2px" }} />
+                <hr className="my-0.5 border-gray-200" />
             </div>
         ));
     };
@@ -62,13 +62,13 @@ export default function GraphView({graphData, dataType}) {
     };
 
     return (
-        <div style={{ display: "flex" }}>
-            <div ref={colorContainerRef} key={"colorContainer"} className={"color"} style={{ marginRight: "1px", flex: "5", height: "30%" }}>
+        <div className="flex">
+            <div ref={colorContainerRef} key={"colorContainer"} className="color mr-px h-[30%] flex-[5]">
                 <br />
-                <div className={"container gy-5"}>
-                    <label className="fst-italic mt-1">Meting van: {new Date().toLocaleString('nl-NL')}</label>
+                <div className="mx-auto max-w-3xl px-4">
+                    <label className="mt-1 italic">Meting van: {new Date().toLocaleString('nl-NL')}</label>
                     <br></br>
-                    <label className="bold mt-2">Historische {dataType} data</label>
+                    <label className="mt-2 font-bold">Historische {dataType} data</label>
                     <ResponsiveContainer minWidth={250} minHeight={250}>
                         <LineChart data={graphData}>
                             <XAxis dataKey="timestamp"/>
@@ -88,9 +88,9 @@ export default function GraphView({graphData, dataType}) {
                     </ResponsiveContainer>
                 </div>
             </div>
-            <div ref={secondColorDivRef} className={"color hide-scrollbar"} style={{ flex: "1", overflowY: "auto" }}>
-                <div className={"container gy-5"} style={{ width: "calc(100%) - 20px" }}>
-                    <label className="bold mt-2">Laatste 10 Metingen</label>
+            <div ref={secondColorDivRef} className="color hide-scrollbar flex-1 overflow-y-auto">
+                <div className="mx-auto max-w-3xl px-4" style={{ width: "calc(100%) - 20px" }}>
+                    <label className="mt-2 font-bold">Laatste 10 Metingen</label>
                     <div>
                         {getLastTenMeasurements()}
                     </div>

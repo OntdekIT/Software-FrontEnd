@@ -5,6 +5,7 @@ import EditUserRoleModal from "../../../components/users/edit-user-role-modal.js
 import DeleteUserModal from "../../../components/users/delete-user-modal.jsx";
 import UserUtils from "../../../utils/user-utils.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
+import Button from "../../../components/ui/Button.jsx";
 
 export default function UserDetails() {
     const {user} = useLoaderData();
@@ -63,47 +64,45 @@ export default function UserDetails() {
 
     return (
         <>
-            <div className="toolbar fixed-top d-flex align-items-center">
-                <p className="flex-grow-1 mb-0">{user.firstName} {user.lastName}</p>
+            <div className="toolbar fixed-top flex items-center">
+                <p className="mb-0 flex-grow">{user.firstName} {user.lastName}</p>
                 {user.id !== loggedInUser?.id && (
                     <>
-                        <button className="btn btn-primary btn-sm ms-2"
+                        <Button variant="primary" size="sm" className="ml-2"
                                 onClick={() => handleEditButtonClick()}>
-                            <i className="bi bi-pencil"></i></button>
-                        <button className="btn btn-danger btn-sm ms-2"
+                            <i className="bi bi-pencil"></i></Button>
+                        <Button variant="danger" size="sm" className="ml-2"
                                 onClick={() => handleDeleteButtonClick()}>
-                            <i className="bi bi-trash"></i></button>
+                            <i className="bi bi-trash"></i></Button>
                     </>)
                 }
 
             </div>
-            <div className="container">
-                <div className="row">
-                    <div className="col">
-                        <div className="nav-size"></div>
-                        <div className="card page-header-margin">
-                            <div className="card-header">
-                                Algemene informatie
-                            </div>
-                            <div className="card-body d-flex flex-column">
-                                <span><b>Naam: </b> {user.firstName} {user.lastName}</span>
-                                <span><b>E-mailadres: </b> {user.email}</span>
-                                <span><b>Rol: </b> {UserUtils.translateRole(user.role)}</span>
-                            </div>
+            <div className="mx-auto max-w-5xl px-4">
+                <div>
+                    <div className="nav-size"></div>
+                    <div className="page-header-margin rounded-xl border border-gray-200 bg-white shadow-sm">
+                        <div className="border-b border-gray-200 px-4 py-3 font-medium text-gray-700">
+                            Algemene informatie
                         </div>
-                        <h2 className="text-center mt-4">Stations</h2>
-                        <div className="row g-2">
-                            {user.stations.length === 0 && (
-                                <p className="text-body-tertiary text-center">Geen meetstations gevonden</p>
-                            )}
-                            {user.stations.length > 0 && user.stations
-                                .sort((a, b) => a.stationid - b.stationid)
-                                .map((station) => (
-                                    <div className="col-12 col-md-6 col-lg-4" key={station.stationid}>
-                                        <StationCard station={station}></StationCard>
-                                    </div>
-                                ))}
+                        <div className="flex flex-col gap-1 px-4 py-4">
+                            <span><b>Naam: </b> {user.firstName} {user.lastName}</span>
+                            <span><b>E-mailadres: </b> {user.email}</span>
+                            <span><b>Rol: </b> {UserUtils.translateRole(user.role)}</span>
                         </div>
+                    </div>
+                    <h2 className="mt-4 text-center">Stations</h2>
+                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                        {user.stations.length === 0 && (
+                            <p className="col-span-full text-center text-gray-400">Geen meetstations gevonden</p>
+                        )}
+                        {user.stations.length > 0 && user.stations
+                            .sort((a, b) => a.stationid - b.stationid)
+                            .map((station) => (
+                                <div key={station.stationid}>
+                                    <StationCard station={station}></StationCard>
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

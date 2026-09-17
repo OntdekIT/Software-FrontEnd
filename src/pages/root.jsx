@@ -8,9 +8,9 @@ export default function Root() {
     return (
         <>
             <Navbar/>
-            <div className="container-fluid p-0">
+            <div className="w-full p-0">
                 {/* Navbar spacer element */}
-                <div className="nav-size"></div>
+                <div className="h-16"></div>
                 <Outlet/>
             </div>
         </>

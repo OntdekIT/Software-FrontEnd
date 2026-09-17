@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { backendApi } from "../../utils/backend-api.jsx";
+import Button from "../../components/ui/Button.jsx";
 
 export default function EditStation() {
     const inputValues = {
@@ -90,65 +91,56 @@ export default function EditStation() {
     return (
         <div className="color">
             <br />
-            <div className="container gy-5">
+            <div className="mx-auto max-w-3xl px-4">
                 <div>
-                    <div className="row">
-                        <div className="col-4"></div>
-                        <div className="col-4">
-                            <h4><b>Aanpassen station nummer {station.stationid}</b></h4>
-                            <label className="labelMargin">
-                                <div className="form-text">Hier kunnen de meetstation gegevens aangepast worden</div>
-                            </label>
-                        </div>
+                    <div className="text-center">
+                        <h4 className="text-xl"><b>Aanpassen station nummer {station.stationid}</b></h4>
+                        <label className="mt-1 block">
+                            <div className="text-sm text-gray-500">Hier kunnen de meetstation gegevens aangepast worden</div>
+                        </label>
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        <div className="row mt-1">
-                            <div className="col-4"></div>
-                            <div className="col-4">
-                                <label className="label">Station naam</label>
-                                <input
-                                    onChange={handleChange}
-                                    className={`form-control ${errorMessage ? 'is-invalid' : ''}`} 
-                                    value={station.name}
-                                    name="name"
-                                    type="text"
-                                />
-                                {errorMessage && <div className="invalid-feedback">{errorMessage}</div>}
+                        <div className="mx-auto mt-4 max-w-md">
+                            <label className="mb-1 block font-medium">Station naam</label>
+                            <input
+                                onChange={handleChange}
+                                className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 ${errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                                value={station.name}
+                                name="name"
+                                type="text"
+                            />
+                            {errorMessage && <div className="mt-1 text-sm text-red-600">{errorMessage}</div>}
 
-                                <div className="form-group">
-                                    <label className="form-label">Zichtbaarheid van meetstation</label>
-                                    <select
-                                        value={visibility}
-                                        onChange={dropdownHandler}
-                                        className="form-select"
-                                        name="visibility"
-                                    >
-                                        <option value="0">Onzichtbaar</option>
-                                        <option value="1">Zichtbaar</option>
-                                    </select>
-                                    {visibility === '0' && (
-                                        <div className="form-text">
-                                            Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
-                                        </div>
-                                    )}
-                                    {visibility === '1' && (
-                                        <div className="form-text">
-                                            Het station is zichtbaar en kan door iedereen bekeken worden.
-                                        </div>
-                                    )}
-                                </div>
-                            </div>n
+                            <div className="mt-4">
+                                <label className="mb-1 block font-medium">Zichtbaarheid van meetstation</label>
+                                <select
+                                    value={visibility}
+                                    onChange={dropdownHandler}
+                                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                    name="visibility"
+                                >
+                                    <option value="0">Onzichtbaar</option>
+                                    <option value="1">Zichtbaar</option>
+                                </select>
+                                {visibility === '0' && (
+                                    <div className="mt-1 text-sm text-gray-500">
+                                        Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
+                                    </div>
+                                )}
+                                {visibility === '1' && (
+                                    <div className="mt-1 text-sm text-gray-500">
+                                        Het station is zichtbaar en kan door iedereen bekeken worden.
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
-                        <div className="row mt-5">
-                            <div className="col-4"></div>
-                            <div className="col-5">
-                                <button type="button" className="btn btn-primary" onClick={() => navigate(-1)}>
-                                    Terug
-                                </button>
-                                <button className="btn btn-primary" type="submit">Opslaan</button>
-                            </div>
+                        <div className="mx-auto mt-8 flex max-w-md gap-2">
+                            <Button type="button" variant="secondary" onClick={() => navigate(-1)}>
+                                Terug
+                            </Button>
+                            <Button variant="primary" type="submit">Opslaan</Button>
                         </div>
                     </form>
                 </div>

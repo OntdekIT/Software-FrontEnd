@@ -128,51 +128,50 @@ export default function StationDetails() {
             {loading && (
                 <LoadingComponent message="Data aan het ophalen..." isFullScreen={true}></LoadingComponent>
             )}
-            <div className="row align-items-center" style={{
-                backgroundColor: "#e9ecef",
-                margin: "0",
-                padding: "10px",
-                borderTopLeftRadius: "0.375rem",
-                borderTopRightRadius: "0.375rem"
-            }}>
-                <div className="col">
-                    <label className="bold fs-6">{meetstation.name}: {meetstation.stationid}</label>
+            <div className="flex items-center gap-2 rounded-t-md bg-gray-200 m-0 p-2.5">
+                <div className="flex-1">
+                    <label className="font-bold text-base">{meetstation.name}: {meetstation.stationid}</label>
                 </div>
-                <div className="col-auto">
-                    <Link to={`/stations/${meetstation.stationid}/edit`} className="btn btn-outline-dark"><i
-                        className="bi bi-pencil"></i></Link>
+                <div className="shrink-0">
+                    <Link
+                        to={`/stations/${meetstation.stationid}/edit`}
+                        aria-label="Station bewerken"
+                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
+                    >
+                        <i className="bi bi-pencil"></i>
+                    </Link>
                 </div>
             </div>
             <div className="p-0">
-                <div key={meetstation.stationid} style={{padding: "1%"}}>
+                <div key={meetstation.stationid} className="p-1">
                     {meetstation.is_public === false && (
-                        <div className={"form-text"}>Het station is onzichtbaar, maar de data wordt gebruikt binnen
+                        <div className="text-sm text-gray-500">Het station is onzichtbaar, maar de data wordt gebruikt binnen
                             de metingen van een wijk.</div>
                     )}
                     {meetstation.is_public === true && (
-                        <div className={"form-text"}>Het station is zichtbaar en kan door iedereen bekeken
+                        <div className="text-sm text-gray-500">Het station is zichtbaar en kan door iedereen bekeken
                             worden.</div>
                     )}
                 </div>
 
-                <div style={{padding: "5%", paddingTop: "0"}}>
-                    <hr style={{margin: "2"}}></hr>
-                    <div className="container text-center">
-                        <div className="row gy-2" style={{paddingBottom: "1%"}}>
-                            <div className="col-12 col-md-6">
-                                <label className="me-2">Start datum</label>
+                <div className="px-[5%] pb-[5%]">
+                    <hr className="my-2 border-gray-200" />
+                    <div className="mx-auto max-w-3xl text-center">
+                        <div className="grid grid-cols-1 gap-2 pb-4 md:grid-cols-2">
+                            <div>
+                                <label className="mr-2">Start datum</label>
                                 <ReactDatePicker
-                                    className="border border-secondary"
+                                    className="rounded border border-gray-400 px-3 py-2"
                                     dateFormat="dd-MM-yyyy"
                                     selected={startDate}
                                     onChange={handleStartDateChange}
                                     maxDate={endDate}
                                     showMonthYearDropdown={true}/>
                             </div>
-                            <div className="col-12 col-md-6">
-                                <label className="me-2">Eind datum</label>
+                            <div>
+                                <label className="mr-2">Eind datum</label>
                                 <ReactDatePicker
-                                    className="border border-secondary"
+                                    className="rounded border border-gray-400 px-3 py-2"
                                     dateFormat="dd-MM-yyyy"
                                     selected={endDate}
                                     onChange={handleEndDateChange}
@@ -182,18 +181,18 @@ export default function StationDetails() {
                             </div>
                         </div>
                     </div>
-                    {/*<div style={{padding: "5%", paddingTop: "0"}}>*/}
+                    {/*<div className="px-[5%] pb-[5%]">*/}
                     {/*    <a href="#" onClick={getPDF}>*/}
                     {/*        Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}*/}
                     {/*    </a>*/}
                     {/*</div>*/}
-                    <hr style={{margin: "2"}}></hr>
+                    <hr className="my-2 border-gray-200" />
                     <GraphView graphData={tempGraphData} dataType={"temperatuur"}></GraphView>
-                    <hr style={{margin: "2"}}></hr>
+                    <hr className="my-2 border-gray-200" />
                     <GraphView graphData={humGraphData} dataType={"luchtvochtigheid"}></GraphView>
-                    <hr style={{margin: "2"}}></hr>
+                    <hr className="my-2 border-gray-200" />
                     <GraphView graphData={stofGraphData} dataType={"fijnstof"}></GraphView>
-                    <hr style={{margin: "2"}}></hr>
+                    <hr className="my-2 border-gray-200" />
                 </div>
             </div>
         </>

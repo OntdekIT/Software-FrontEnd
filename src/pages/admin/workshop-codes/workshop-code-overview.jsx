@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {Link} from "react-router-dom";
-import LoadingComponent from "../../../components/loading-component.jsx";
+import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
 import DeleteWorkshopModal from "../../../components/workshop/delete-workshop-modal.jsx";
+import Button from "../../../components/ui/Button.jsx";
 
 export default function WorkshopCodeOverview() {
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array
@@ -75,46 +76,48 @@ export default function WorkshopCodeOverview() {
 
     return (
         <>
-            <div className="toolbar fixed-top d-flex justify-content-between align-items-center">
-                <Link to={"./create"} className="btn btn-primary btn-sm ms-auto">Workshopcode aanmaken</Link>
-                <button className="btn btn-secondary btn-sm ms-2" onClick={toggleShowExpired}>
+            <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-end gap-2 border-b border-gray-200 bg-white px-4 py-2 shadow-sm">
+                <Link to={"./create"}>
+                    <Button variant="primary" size="sm">Workshopcode aanmaken</Button>
+                </Link>
+                <Button variant="secondary" size="sm" onClick={toggleShowExpired}>
                     {showExpired ? "toon actieve codes" : "toon verlopen codes"}
-                </button>
+                </Button>
             </div>
-            <div className="container">
-                <div className="row">
-                    <div className="col text-center">
-                        <div className="nav-size"></div>
-                        <h1>Workshopcodes</h1>
-                    </div>
+            <div className="mx-auto max-w-3xl px-4">
+                <div className="text-center">
+                    <div className="nav-size"></div>
+                    <h1 className="text-3xl font-bold">Workshopcodes</h1>
                 </div>
-                <div className="row">
-                    <div className="col">
-                        {errMsg && <div className="error-msg">{errMsg}</div>}
-                        {loading ? (
-                            <LoadingComponent message="Workshopcodes aan het ophalen..."
-                                              isFullScreen={true}></LoadingComponent>
-                        ) : (
-                            <div>
-                                {workshopCodes && workshopCodes.map(workshopCode => (
-                                    <div key={workshopCode.id}
-                                         className={`card mb-2 ${showExpired ? 'bg-danger-subtle' : ''}`}>
-                                        <div className="card-body d-flex align-items-center">
-                                            <h4 className="card-title mb-0">{workshopCode.code}</h4>
-                                            {workshopCode?.expirationDate && (
-                                                <p className="ms-auto text-body-tertiary mb-0"><i
-                                                    className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)}
-                                                </p>)}
-                                            <button className="btn btn-outline-danger btn-sm ms-2"
-                                                    onClick={() => handleDeleteButtonClick(workshopCode)}>
-                                                <i className="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                <div>
+                    {errMsg && <div className="my-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{errMsg}</div>}
+                    {loading ? (
+                        <div className="flex flex-col gap-2">
+                            {Array.from({length: 5}).map((_, i) => (
+                                <SkeletonCard key={i}/>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-2">
+                            {workshopCodes && workshopCodes.map(workshopCode => (
+                                <div key={workshopCode.id}
+                                     className={`rounded-xl border p-4 ${showExpired ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
+                                    <div className="flex items-center">
+                                        <h4 className="text-lg font-semibold">{workshopCode.code}</h4>
+                                        {workshopCode?.expirationDate && (
+                                            <p className="ml-auto flex items-center gap-1 text-gray-500"><i
+                                                className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)}
+                                            </p>)}
+                                        <Button variant="outline" size="sm" className="ml-2 text-red-600 hover:bg-red-50"
+                                                onClick={() => handleDeleteButtonClick(workshopCode)}
+                                                aria-label="Workshopcode verwijderen">
+                                            <i className="bi bi-trash"></i>
+                                        </Button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
             {selectedWorkshop && (

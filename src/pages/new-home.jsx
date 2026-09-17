@@ -5,13 +5,14 @@ import './new-home.css';
 import NewMap from "../components/newmap.jsx";
 import RegionList from "../components/Home/RegionList.jsx";
 import RegionDetails from "../components/Home/RegionDetails.jsx";
+import Button from "../components/ui/Button.jsx";
 
 export default function Home() {
     const errRef = useRef();
     const [errMsg, setErrMsg] = useState('');
 
     const [regionData, setRegionData] = useState([]);
-    const [, setStations] = useState([]);
+    const [stations, setStations] = useState([]);
     const [measurements, setMeasurements] = useState([]);
     const [showRegions] = useState(true);
     const [dateTime] = useState(new Date());
@@ -104,9 +105,9 @@ export default function Home() {
                     {errMsg && (
                         <div className="error-overlay">
                             <p ref={errRef} aria-live="assertive">{errMsg}</p>
-                            <button className="btn btn-primary" onClick={() => window.location.reload(false)}>
+                            <Button variant="primary" onClick={() => window.location.reload(false)}>
                                 Opnieuw proberen
-                            </button>
+                            </Button>
                         </div>
                     )}
                     <NewMap
@@ -114,6 +115,7 @@ export default function Home() {
                         centerY={51.5555}
                         zoom={12}
                         regionData={showRegions ? regionData : []}
+                        stations={stations}
                         pmRegionIds={showPmRegions
                             ? regionData.filter(r => r.avgPm25 != null).map(r => r.id)
                             : []

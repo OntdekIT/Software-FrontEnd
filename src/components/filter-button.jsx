@@ -1,20 +1,23 @@
 import PropTypes from "prop-types";
+import Button from "./ui/Button.jsx";
 
-export default function FilterButton({ areFiltersActive, targetId }) {
+// Opens the filter panel. Bootstrap's offcanvas JS was removed in the Tailwind
+// migration, so this is now a plain onClick the parent wires to open state.
+export default function FilterButton({ areFiltersActive, onClick }) {
     return (
-        <button
+        <Button
             type="button"
-            className={`btn btn-sm ${areFiltersActive ? "btn-secondary" : "btn-primary"}`}
-            data-bs-toggle="offcanvas"
-            data-bs-target={`#${targetId}`}
-            aria-controls={targetId}
+            variant={areFiltersActive ? "secondary" : "primary"}
+            size="sm"
+            onClick={onClick}
+            aria-label="Filters openen"
         >
             <i className="bi bi-funnel"></i>
-        </button>
+        </Button>
     );
 }
 
 FilterButton.propTypes = {
     areFiltersActive: PropTypes.bool.isRequired,
-    targetId: PropTypes.string.isRequired
+    onClick: PropTypes.func.isRequired
 };

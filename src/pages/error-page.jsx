@@ -24,10 +24,10 @@ export default function ErrorPage() {
     }, [error]);
 
     return (
-        <div className="row">
-            <div className="col text-center page-header-margin">
-                <h1>{title}</h1>
-                <p>{message}</p>
+        <div className="mx-auto max-w-5xl px-4">
+            <div className="mt-8 text-center">
+                <h1 className="mb-4 text-3xl font-bold text-gray-900">{title}</h1>
+                <p className="text-gray-600">{message}</p>
             </div>
         </div>
     );

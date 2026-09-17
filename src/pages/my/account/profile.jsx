@@ -2,11 +2,13 @@ import { useState } from "react";
 import EditUserProfileModal from "../../../components/users/edit-user-modal.jsx";
 import UserUtils from "../../../utils/user-utils";
 import { useAuth } from "../../../providers/auth-provider.jsx";
+import Button from "../../../components/ui/Button.jsx";
+import { useToast } from "../../../components/ui/toast.jsx";
 
 export default function Profile() {
     const { loggedInUser, refreshUserInfo } = useAuth();
     const [showEditModal, setShowEditModal] = useState(false);
-    const [successMessage, setSuccessMessage] = useState("");
+    const toast = useToast();
 
     const handleModalClose = () => {
         setShowEditModal(false);
@@ -15,38 +17,26 @@ export default function Profile() {
     const handleProfileUpdated = () => {
         refreshUserInfo();
         setShowEditModal(false);
-        setSuccessMessage("Veranderingen succesvol bijgewerkt!");
-
-        // Hide the message after 3 seconds
-        setTimeout(() => setSuccessMessage(""), 3000);
+        toast.success("Veranderingen succesvol bijgewerkt!");
     };
 
     return (
         <>
             {/* Page Content */}
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-8 offset-md-2">
-                        <div className="card mt-4">
-                            <div className="card-header">
-                                <h5>Mijn profiel</h5>
-                            </div>
-                            <div className="card-body">
-                                {/* Success Message */}
-                                {successMessage && (
-                                    <div className="alert alert-success" role="alert">
-                                        {successMessage}
-                                    </div>
-                                )}
+            <div className="mx-auto max-w-6xl px-4">
+                <div className="mx-auto mt-8 w-full max-w-2xl">
+                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                        <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                            <h5 className="text-lg font-semibold text-gray-800">Mijn profiel</h5>
+                        </div>
+                        <div className="space-y-3 p-6">
+                            <p><strong>Naam:</strong> {loggedInUser?.firstName} {loggedInUser?.lastName}</p>
+                            <p><strong>Email:</strong> {loggedInUser?.email}</p>
+                            <p><strong>Rol:</strong> {UserUtils.translateRole(loggedInUser?.role)}</p>
 
-                                <p><strong>Naam:</strong> {loggedInUser?.firstName} {loggedInUser?.lastName}</p>
-                                <p><strong>Email:</strong> {loggedInUser?.email}</p>
-                                <p><strong>Rol:</strong> {UserUtils.translateRole(loggedInUser?.role)}</p>
-
-                                <button className="btn btn-primary" onClick={() => setShowEditModal(true)}>
-                                    <i className="bi bi-pencil"></i> Profiel bijwerken
-                                </button>
-                            </div>
+                            <Button variant="primary" onClick={() => setShowEditModal(true)}>
+                                <i className="bi bi-pencil"></i> Profiel bijwerken
+                            </Button>
                         </div>
                     </div>
                 </div>
