@@ -56,25 +56,38 @@ jobs:
           fi
           docker rm -f test-frontend
 
+      # Everything below only runs on push to a branch, never on pull_request:
+      # PRs should build/lint/test but must not create release tags or publish
+      # images (that also avoids two concurrent runs racing for the same tag).
       - name: Compute next semantic version
         id: next
+        if: github.event_name == 'push'
         run: |
           # Consider only semver release tags (e.g. 1.0.5); milestone tags such
           # as "s3vj26-final" are ignored so they never reach version parsing.
-          latest=$(git tag -l '[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n1)
-          if [ -z "$latest" ]; then
-            latest="0.0.0"
-          fi
-          IFS='.' read -r major minor patch <<< "$latest"
-          next="${major}.${minor}.$((patch + 1))"
-          echo "Latest semver tag: ${latest} -> next: ${next}"
-          echo "patch=${next}" >> "$GITHUB_OUTPUT"
+          # Retry a few times so concurrent pushes don't collide on the same tag.
+          git fetch --tags --force origin
+          for attempt in 1 2 3 4 5; do
+            latest=$(git tag -l '[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n1)
+            [ -z "$latest" ] && latest="0.0.0"
+            IFS='.' read -r major minor patch <<< "$latest"
+            next="${major}.${minor}.$((patch + 1))"
+            if git rev-parse -q --verify "refs/tags/${next}" >/dev/null; then
+              echo "Tag ${next} already exists locally, retrying..."
+              git fetch --tags --force origin; continue
+            fi
+            echo "Latest semver tag: ${latest} -> next: ${next}"
+            echo "patch=${next}" >> "$GITHUB_OUTPUT"
+            break
+          done
 
       - name: Set lowercase owner
         id: owner
+        if: github.event_name == 'push'
         run: echo "owner=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -82,12 +95,20 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create and push new Git tag
+        if: github.event_name == 'push'
         run: |
           git config user.name "${{ github.actor }}"
-          git tag ${{ steps.next.outputs.patch }}
-          git push origin ${{ steps.next.outputs.patch }}
+          TAG="${{ steps.next.outputs.patch }}"
+          # If a concurrent run already published this tag, skip rather than fail.
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists on origin; skipping tag push."
+          else
+            git tag "${TAG}"
+            git push origin "${TAG}"
+          fi
 
       - name: Push Docker image
+        if: github.event_name == 'push'
         run: |
           docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:${{ steps.next.outputs.patch }}
           docker tag climatechecker-frontend ghcr.io/${{ steps.owner.outputs.owner }}/climatechecker-frontend:latest
