@@ -2,7 +2,7 @@ import ReactDatePicker from "react-datepicker";
 import {useEffect, useState} from "react";
 import {Link, Outlet, useParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
-import Preloader from "../../components/ui/Preloader.jsx";
+import Preloader, { Spinner } from "../../components/ui/Preloader.jsx";
 import Button from "../../components/ui/Button.jsx";
 import GraphView from "../../components/stations/graph-view.jsx";
 
@@ -12,7 +12,8 @@ export default function StationDetails() {
     const [startDate, setStartDate] = useState(new Date());
     const [startDatePDF, setStartDatePDF] = useState(new Date());
     const [meetstation, setMeetstation] = useState({});
-    const [loading, setLoading] = useState(false); // whole-page Preloader state
+    const [loading, setLoading] = useState(false); // true while any fetch is in flight
+    const [ready, setReady] = useState(false); // becomes true after the first load
     // data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
@@ -93,9 +94,11 @@ export default function StationDetails() {
                 }))
                 setStofGraphData(stofData);
                 setLoading(false); // End loading
+                setReady(true);
             } catch (err) {
                 console.error("error: ", err);
                 setLoading(false); // End loading
+                setReady(true);
             }
         };
 
@@ -124,7 +127,10 @@ export default function StationDetails() {
         setStartDatePDF(date2);
     }
 
-    if (loading) {
+    // Only blank the whole page on the very first load. Later refetches (date /
+    // period changes) keep the page visible and show a subtle inline indicator,
+    // so the loader no longer flashes on every action.
+    if (!ready) {
         return <Preloader message="Data aan het ophalen..." />;
     }
 
@@ -260,6 +266,11 @@ export default function StationDetails() {
             <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                     <span className="mr-1 text-sm font-medium text-gray-700">Periode:</span>
+                    {loading && (
+                        <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-gray-400">
+                            <Spinner className="h-3 w-3" /> bijwerken…
+                        </span>
+                    )}
                     {[{ d: 1, l: "24u" }, { d: 7, l: "7d" }, { d: 30, l: "30d" }, { d: 90, l: "3 mnd" }].map((q) => (
                         <Button
                             key={q.d}
