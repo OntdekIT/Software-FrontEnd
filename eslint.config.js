@@ -42,6 +42,7 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
+        ...globals.node,
         ...globals.mocha,
         cy: 'readonly',
         Cypress: 'readonly',

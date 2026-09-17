@@ -4,9 +4,24 @@ import {backendApi} from "../utils/backend-api.jsx";
 
 const AuthContext = createContext(null);
 
+// Safely read a JSON value from localStorage. A corrupt/non-JSON entry must
+// not crash the whole app on mount, so fall back to null and clear it.
+function readStoredUser() {
+    const raw = localStorage.getItem("loggedInUser");
+    if (!raw) {
+        return null;
+    }
+    try {
+        return JSON.parse(raw);
+    } catch {
+        localStorage.removeItem("loggedInUser");
+        return null;
+    }
+}
+
 export default function AuthProvider({children}) {
     const [token, setToken] = useState(localStorage.getItem("token"));
-    const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
+    const [loggedInUser, setLoggedInUser] = useState(readStoredUser);
 
     const updateToken = (newToken) => {
         setToken(newToken);
