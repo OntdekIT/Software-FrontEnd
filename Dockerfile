@@ -30,7 +30,7 @@ ENV VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL
 RUN npm run build:docker
 
 # ---- Release with NGINX ----
-FROM nginx:alpine AS release
+FROM nginx:1.27-alpine AS release
 WORKDIR /usr/share/nginx/html
 
 # Copy the built React app to NGINX's public folder

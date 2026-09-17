@@ -25,12 +25,22 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 import { MailSlurp } from "mailslurp-client";
 
+// The API key is injected at runtime (see cypress.config.js) from the
+// MAILSLURP_API_KEY environment variable. It must never be hardcoded here.
+const mailslurpApiKey = () => {
+  const apiKey = Cypress.env("MAILSLURP_API_KEY");
+  if (!apiKey) {
+    throw new Error("MAILSLURP_API_KEY is not set. Provide it via the CYPRESS_MAILSLURP_API_KEY environment variable.");
+  }
+  return apiKey;
+};
+
 Cypress.Commands.add("createInbox", () => {
-  const mailslurp = new MailSlurp({ apiKey: "70219ee2c07e783c5144d620709c96148a2c198710648bc6b3a003c1a5041591" });
+  const mailslurp = new MailSlurp({ apiKey: mailslurpApiKey() });
   return mailslurp.createInbox();
 });
 
 Cypress.Commands.add("waitForLatestEmail", (inboxId, timeout = 30000) => {
-  const mailslurp = new MailSlurp({ apiKey: "70219ee2c07e783c5144d620709c96148a2c198710648bc6b3a003c1a5041591" });
+  const mailslurp = new MailSlurp({ apiKey: mailslurpApiKey() });
   return mailslurp.waitForLatestEmail(inboxId, timeout);
 });
