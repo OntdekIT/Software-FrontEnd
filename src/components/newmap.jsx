@@ -53,7 +53,8 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
     async function initMap() {
       try {
-        const res = await fetch('https://tiles.openfreemap.org/styles/liberty');
+        const styleUrl = import.meta.env.VITE_MAP_STYLE_URL ?? 'https://tiles.openfreemap.org/styles/liberty';
+        const res = await fetch(styleUrl);
         const styleJson = await res.json();
 
         mapInstance.current = new maplibregl.Map({
