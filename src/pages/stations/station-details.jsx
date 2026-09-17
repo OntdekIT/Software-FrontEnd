@@ -128,81 +128,109 @@ export default function StationDetails() {
         return <Preloader message="Data aan het ophalen..." />;
     }
 
-    return (
-        <>
-            <div className="flex items-center gap-2 rounded-t-md bg-gray-200 m-0 p-2.5">
-                <div className="shrink-0">
-                    <Link to="/stations" aria-label="Terug naar stations">
-                        <Button variant="outline" size="sm">
-                            <i className="bi bi-arrow-left"></i>
-                        </Button>
-                    </Link>
-                </div>
-                <div className="flex flex-1 items-center gap-2">
-                    <i className="bi bi-geo-alt text-brand-500"></i>
-                    <h1 className="text-base font-bold text-gray-800">{meetstation.name}: {meetstation.stationid}</h1>
-                </div>
-                <div className="shrink-0">
-                    <Link to={`/stations/${meetstation.stationid}/edit`} aria-label="Station bewerken">
-                        <Button variant="outline" size="sm">
-                            <i className="bi bi-pencil"></i> Bewerken
-                        </Button>
-                    </Link>
-                </div>
-            </div>
-            <div className="p-0">
-                <div key={meetstation.stationid} className="p-1">
-                    {meetstation.is_public === false && (
-                        <div className="text-sm text-gray-500">Het station is onzichtbaar, maar de data wordt gebruikt binnen
-                            de metingen van een wijk.</div>
-                    )}
-                    {meetstation.is_public === true && (
-                        <div className="text-sm text-gray-500">Het station is zichtbaar en kan door iedereen bekeken
-                            worden.</div>
-                    )}
-                </div>
+    const latest = (arr) => (arr.length ? arr[arr.length - 1].avg : null);
+    const fmt = (v, unit) => (v == null || isNaN(v) ? "—" : `${Number(v).toFixed(1)} ${unit}`);
+    const isActive = meetstation.isActive !== false;
 
-                <div className="px-[5%] pb-[5%]">
-                    <hr className="my-2 border-gray-200" />
-                    <div className="mx-auto max-w-3xl text-center">
-                        <div className="grid grid-cols-1 gap-2 pb-4 md:grid-cols-2">
-                            <div>
-                                <label className="mr-2">Start datum</label>
-                                <ReactDatePicker
-                                    className="rounded border border-gray-400 px-3 py-2"
-                                    dateFormat="dd-MM-yyyy"
-                                    selected={startDate}
-                                    onChange={handleStartDateChange}
-                                    maxDate={endDate}
-                                    showMonthYearDropdown={true}/>
-                            </div>
-                            <div>
-                                <label className="mr-2">Eind datum</label>
-                                <ReactDatePicker
-                                    className="rounded border border-gray-400 px-3 py-2"
-                                    dateFormat="dd-MM-yyyy"
-                                    selected={endDate}
-                                    onChange={handleEndDateChange}
-                                    minDate={startDate}
-                                    maxDate={new Date()}
-                                    showMonthYearDropdown={true}/>
-                            </div>
+    const summaryCards = [
+        { label: "Temperatuur", value: fmt(latest(tempGraphData), "°C"), icon: "bi-thermometer-half", tint: "text-warning" },
+        { label: "Luchtvochtigheid", value: fmt(latest(humGraphData), "%"), icon: "bi-droplet-half", tint: "text-info" },
+        { label: "Fijnstof", value: fmt(latest(stofGraphData), "µg/m³"), icon: "bi-wind", tint: "text-secondary" },
+    ];
+
+    const graphs = [
+        { data: tempGraphData, type: "temperatuur", title: "Temperatuur", icon: "bi-thermometer-half" },
+        { data: humGraphData, type: "luchtvochtigheid", title: "Luchtvochtigheid", icon: "bi-droplet-half" },
+        { data: stofGraphData, type: "fijnstof", title: "Fijnstof", icon: "bi-wind" },
+    ];
+
+    return (
+        <div className="mx-auto max-w-5xl px-4 py-6">
+            {/* Hero header */}
+            <div className="mb-6 flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <Link to="/stations" aria-label="Terug naar stations">
+                        <Button variant="ghost" size="sm"><i className="bi bi-arrow-left" aria-hidden="true"></i></Button>
+                    </Link>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-100 text-brand-600">
+                        <i className="bi bi-geo-alt text-xl" aria-hidden="true"></i>
+                    </div>
+                    <div>
+                        <h1 className="text-xl font-bold text-gray-900">{meetstation.name || `Station ${meetstation.stationid}`}</h1>
+                        <div className="mt-0.5 flex items-center gap-2 text-sm text-gray-500">
+                            <span>Stationnummer {meetstation.stationid}</span>
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${isActive ? "bg-success/10 text-success" : "bg-gray-100 text-gray-500"}`}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${isActive ? "bg-success" : "bg-gray-400"}`}></span>
+                                {isActive ? "Actief" : "Inactief"}
+                            </span>
                         </div>
                     </div>
-                    {/*<div className="px-[5%] pb-[5%]">*/}
-                    {/*    <a href="#" onClick={getPDF}>*/}
-                    {/*        Download metingen van: {formatDate(startDatePDF)} tot: {formatDate(endDate)}*/}
-                    {/*    </a>*/}
-                    {/*</div>*/}
-                    <hr className="my-2 border-gray-200" />
-                    <GraphView graphData={tempGraphData} dataType={"temperatuur"}></GraphView>
-                    <hr className="my-2 border-gray-200" />
-                    <GraphView graphData={humGraphData} dataType={"luchtvochtigheid"}></GraphView>
-                    <hr className="my-2 border-gray-200" />
-                    <GraphView graphData={stofGraphData} dataType={"fijnstof"}></GraphView>
-                    <hr className="my-2 border-gray-200" />
+                </div>
+                <Link to={`/stations/${meetstation.stationid}/edit`} aria-label="Station bewerken">
+                    <Button variant="outline" size="sm"><i className="bi bi-pencil" aria-hidden="true"></i> Bewerken</Button>
+                </Link>
+            </div>
+
+            {meetstation.is_public === false && (
+                <p className="mb-4 rounded-lg bg-gray-50 px-4 py-2 text-sm text-gray-500">
+                    Dit station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
+                </p>
+            )}
+
+            {/* Summary stat cards */}
+            <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {summaryCards.map((c) => (
+                    <div key={c.label} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <div className={`flex h-11 w-11 items-center justify-center rounded-lg bg-gray-50 ${c.tint}`}>
+                            <i className={`bi ${c.icon} text-xl`} aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-500">{c.label}</p>
+                            <p className="text-lg font-semibold text-gray-900">{c.value}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Date range filter */}
+            <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+                    <div className="flex-1">
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Startdatum</label>
+                        <ReactDatePicker
+                            className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            dateFormat="dd-MM-yyyy"
+                            selected={startDate}
+                            onChange={handleStartDateChange}
+                            maxDate={endDate}
+                            showMonthYearDropdown={true}/>
+                    </div>
+                    <div className="flex-1">
+                        <label className="mb-1 block text-sm font-medium text-gray-700">Einddatum</label>
+                        <ReactDatePicker
+                            className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                            dateFormat="dd-MM-yyyy"
+                            selected={endDate}
+                            onChange={handleEndDateChange}
+                            minDate={startDate}
+                            maxDate={new Date()}
+                            showMonthYearDropdown={true}/>
+                    </div>
                 </div>
             </div>
-        </>
+
+            {/* Graphs, each in its own card */}
+            <div className="space-y-6">
+                {graphs.map((g) => (
+                    <div key={g.type} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                        <h2 className="mb-3 flex items-center gap-2 font-semibold text-gray-800">
+                            <i className={`bi ${g.icon} text-brand-500`} aria-hidden="true"></i>
+                            {g.title}
+                        </h2>
+                        <GraphView graphData={g.data} dataType={g.type}></GraphView>
+                    </div>
+                ))}
+            </div>
+        </div>
     )
 }

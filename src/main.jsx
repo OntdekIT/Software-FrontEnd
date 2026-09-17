@@ -22,6 +22,7 @@ const ResetPassword = lazy(() => import('./pages/auth/reset-password.jsx'));
 const MyStationsOverview = lazy(() => import('./pages/my/stations/my-stations-overview.jsx'));
 const ClaimStation = lazy(() => import('./pages/my/stations/claim-station.jsx'));
 const Profile = lazy(() => import('./pages/my/account/profile.jsx'));
+const StationsList = lazy(() => import('./pages/stations/stations-list.jsx'));
 const StationDetails = lazy(() => import('./pages/stations/station-details.jsx'));
 const EditStation = lazy(() => import('./pages/stations/edit-station.jsx'));
 const AdminDashboard = lazy(() => import('./pages/admin/admin-dashboard.jsx'));
@@ -91,6 +92,7 @@ const router = createBrowserRouter([
             {
                 path: "/stations",
                 children: [
+                    { index: true, element: <Suspense fallback={<Preloader />}><StationsList /></Suspense> },
                     { path: ":stationId", element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> },
                     { path: ":stationId/edit", element: <Suspense fallback={<Preloader />}><EditStation /></Suspense> }
                 ]
