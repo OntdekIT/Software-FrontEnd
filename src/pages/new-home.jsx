@@ -75,7 +75,7 @@ export default function Home() {
     };
 
     function handleAxiosError() {
-        setErrMsg('Het ophalen van de gegevens is mislukt, en je bent gay');
+        setErrMsg('Het ophalen van de gegevens is mislukt');
     }
 
     useEffect(() => {
