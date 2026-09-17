@@ -1,7 +1,15 @@
 import { useEffect, useRef } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+// maplibre-gl v6 loads its web worker via `new URL(..., import.meta.url)`, which
+// Vite/Rollup does not emit as an asset in the production build -> 404 on
+// maplibre-gl-worker.mjs and the map fails to render. Import the worker with
+// Vite's `?url` suffix so it becomes a real hashed asset, and point maplibre at
+// it explicitly. Works in both the dev server and the nginx production build.
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { spectralColors } from '../utils/map-utils.jsx';
+
+maplibregl.setWorkerUrl(maplibreWorkerUrl);
 
 function createRegionGeoJSON(data) {
   let minT = 1000, maxT = -1000;
