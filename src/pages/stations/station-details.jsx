@@ -103,47 +103,6 @@ export default function StationDetails() {
         }
     }, [meetstation, startDate, endDate]);
 
-    function formatDate(date) {
-        const padZero = (num) => num.toString().padStart(2, '0');
-        const year = date.getFullYear();
-        const month = padZero(date.getMonth() + 1);
-        const day = padZero(date.getDate());
-        const hours = padZero(date.getHours());
-        const minutes = padZero(date.getMinutes());
-
-        return `${day}-${month}-${year} ${hours}:${minutes}`;
-    }
-
-    const getPDF = () => {
-        backendApi.get("/Meetstation/measurements/" + meetstation.stationid, {
-            params: {
-                startDate: formatDate(startDatePDF),
-                endDate: formatDate(endDate)
-            },
-            responseType: 'blob'
-        }).then((response) => {
-            console.log("pdf response: ",)
-
-            const contentType = response.headers['content-type'];
-            const contentDisposition = response.headers['content-disposition'];
-
-            const blob = new Blob([response.data], {type: contentType});
-
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-
-            const fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-            const matches = fileNameRegex.exec(contentDisposition);
-            const fileName = matches != null && matches[1] ? matches[1].replace(/['"]/g, '') : `measurements ${formatDate(startDatePDF)} tot ${formatDate(endDate)}.pdf`;
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }).catch((error) => {
-            console.error(error);
-        });
-    };
-
     const handleStartDateChange = (date) => {
         if (date.getDate() === endDate.getDate()) {
             date.setDate(date.getDate() - 1)
