@@ -1,6 +1,6 @@
 import ReactDatePicker from "react-datepicker";
 import {useEffect, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {Link, Outlet, useParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import Preloader from "../../components/ui/Preloader.jsx";
 import Button from "../../components/ui/Button.jsx";
@@ -231,6 +231,9 @@ export default function StationDetails() {
                     </div>
                 ))}
             </div>
+
+            {/* Nested edit route renders its modal here, over the detail page. */}
+            <Outlet />
         </div>
     )
 }

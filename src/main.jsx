@@ -93,8 +93,15 @@ const router = createBrowserRouter([
                 path: "/stations",
                 children: [
                     { index: true, element: <Suspense fallback={<Preloader />}><StationsList /></Suspense> },
-                    { path: ":stationId", element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> },
-                    { path: ":stationId/edit", element: <Suspense fallback={<Preloader />}><EditStation /></Suspense> }
+                    {
+                        path: ":stationId",
+                        element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense>,
+                        // edit is nested so StationDetails stays mounted underneath and
+                        // the edit modal renders via <Outlet/> as a real overlay.
+                        children: [
+                            { path: "edit", element: <Suspense fallback={<Preloader />}><EditStation /></Suspense> }
+                        ]
+                    }
                 ]
             },
             {

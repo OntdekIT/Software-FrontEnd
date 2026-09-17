@@ -40,14 +40,28 @@ export default function GraphView({graphData, dataType}) {
             return <div>Er zijn geen metingen voor deze datum</div>;
         }
 
-        // Return the last 10 valid measurements
-        return validMeasurements.slice(-10).map((measurement, index) => (
-            <div key={index}>
-                <b>Meting {validMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
-                <p>Min: {measurement.min}<br/>
-                    Max: {measurement.max}<br/>
-                    Avg: {measurement.avg}</p>
-                <hr className="my-0.5 border-gray-200" />
+        const round = (v) => (v == null || isNaN(v) ? '—' : Number(v).toFixed(1));
+        // Return the last 10 valid measurements, most recent first, as tidy cards.
+        return validMeasurements.slice(-10).reverse().map((measurement, index) => (
+            <div key={index} className="rounded-lg border border-gray-200 bg-white p-3">
+                <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <i className="bi bi-calendar3 text-brand-500" aria-hidden="true"></i>
+                    {measurement.timestamp}
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-md bg-blue-50 py-1">
+                        <div className="text-xs text-gray-500">Min</div>
+                        <div className="font-semibold text-blue-600">{round(measurement.min)}</div>
+                    </div>
+                    <div className="rounded-md bg-red-50 py-1">
+                        <div className="text-xs text-gray-500">Max</div>
+                        <div className="font-semibold text-red-600">{round(measurement.max)}</div>
+                    </div>
+                    <div className="rounded-md bg-brand-50 py-1">
+                        <div className="text-xs text-gray-500">Gem.</div>
+                        <div className="font-semibold text-brand-700">{round(measurement.avg)}</div>
+                    </div>
+                </div>
             </div>
         ));
     };
@@ -92,10 +106,10 @@ export default function GraphView({graphData, dataType}) {
             </div>
             <div ref={secondColorDivRef} className="color hide-scrollbar flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-3xl px-4" style={{ width: "calc(100%) - 20px" }}>
-                    <label className="mt-2 flex items-center gap-2 font-bold">
+                    <label className="mb-2 mt-2 flex items-center gap-2 font-bold">
                         <i className="bi bi-list-ol text-brand-500"></i> Laatste 10 Metingen
                     </label>
-                    <div>
+                    <div className="space-y-2 pb-4">
                         {getLastTenMeasurements()}
                     </div>
                 </div>

@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* react-datepicker's own stylesheet — without it the calendar popup renders
+   unstyled/broken (it used to come in via Bootstrap's global CSS). */
+@import "react-datepicker/dist/react-datepicker.css";
 
 /* Project theme tokens (Tailwind v4 @theme) mirroring the original Bootstrap
    palette so the migrated UI keeps the exact same colours:
