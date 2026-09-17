@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 
 const VARIANTS = {
-    primary: 'bg-brand-500 hover:bg-brand-600 text-white focus-visible:ring-brand-500',
-    secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-800 focus-visible:ring-gray-400',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-500',
+    // amber primary needs dark text for contrast (matches the old Bootstrap look)
+    primary: 'bg-brand-500 hover:bg-brand-600 text-dark focus-visible:ring-brand-500',
+    secondary: 'bg-secondary hover:bg-secondary/90 text-white focus-visible:ring-secondary',
+    success: 'bg-success hover:bg-success/90 text-white focus-visible:ring-success',
+    danger: 'bg-danger hover:bg-danger/90 text-white focus-visible:ring-danger',
     outline: 'border border-gray-300 hover:bg-gray-50 text-gray-800 focus-visible:ring-gray-400',
     ghost: 'hover:bg-gray-100 text-gray-700 focus-visible:ring-gray-300',
 };
@@ -38,7 +40,7 @@ export default function Button({
 }
 
 Button.propTypes = {
-    variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'outline', 'ghost']),
+    variant: PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'outline', 'ghost']),
     size: PropTypes.oneOf(['sm', 'md', 'lg']),
     type: PropTypes.oneOf(['button', 'submit', 'reset']),
     className: PropTypes.string,

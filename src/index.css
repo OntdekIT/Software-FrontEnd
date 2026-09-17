@@ -1,18 +1,35 @@
 @import "tailwindcss";
 
-/* Project theme tokens (Tailwind v4 @theme). The green matches the previous
-   spinner/brand colour so the migration keeps the app's identity. */
+/* Project theme tokens (Tailwind v4 @theme) mirroring the original Bootstrap
+   palette so the migrated UI keeps the exact same colours:
+     primary   #fecb3d (amber)   secondary rgb(32,75,153) (blue)
+     success   #33a567           info      rgb(113,201,243)
+     warning   #f57325           danger    #dc3545
+     light     #e9ecef           dark      #424043
+   `brand-*` is the primary ramp (amber) so existing brand-500/600 usages
+   resolve to the real primary. Semantic colours are exposed by name too. */
 @theme {
-  --color-brand-50: #ecfdf3;
-  --color-brand-100: #d1fadf;
-  --color-brand-200: #a6f4c5;
-  --color-brand-300: #6ce9a6;
-  --color-brand-400: #32d583;
-  --color-brand-500: #4fa94d;
-  --color-brand-600: #2f8f3e;
-  --color-brand-700: #256d31;
-  --color-brand-800: #1f5528;
-  --color-brand-900: #1a4523;
+  --color-brand-50:  #fff9e6;
+  --color-brand-100: #fff0bf;
+  --color-brand-200: #ffe488;
+  --color-brand-300: #fed964;
+  --color-brand-400: #fecf4d;
+  --color-brand-500: #fecb3d;
+  --color-brand-600: #e6ad12;
+  --color-brand-700: #b9880a;
+  --color-brand-800: #8a6408;
+  --color-brand-900: #5c4305;
+
+  --color-primary:   #fecb3d;
+  --color-secondary: #204b99;
+  --color-success:   #33a567;
+  --color-info:      #71c9f3;
+  --color-warning:   #f57325;
+  --color-danger:    #dc3545;
+  --color-light:     #e9ecef;
+  --color-dark:      #424043;
+
+  --navbar-height: 3.5rem;
 }
 
 /* Skeleton shimmer animation used by the Skeleton component. */
