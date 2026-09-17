@@ -101,6 +101,10 @@ export default function StationDetails() {
         if (meetstation.stationid) {
             fetchGraphData();
         }
+        // startDatePDF is normalised in-effect and also set here; adding it as a
+        // dep would re-trigger the fetch/normalisation loop. Intentionally scoped
+        // to the graph date range.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [meetstation, startDate, endDate]);
 
     const handleStartDateChange = (date) => {

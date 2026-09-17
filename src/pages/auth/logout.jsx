@@ -13,6 +13,8 @@ export default function Logout() {
 
     useEffect(() => {
         handleLogout();
+        // Run once on mount; adding handleLogout would re-run the logout every render.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (<div>Aan het uitloggen...</div>);

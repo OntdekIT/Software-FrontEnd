@@ -57,6 +57,8 @@ export default function UserDetails() {
 
     useEffect(() => {
         getLoggedInUser().then();
+        // Fetch once on mount; getLoggedInUser is stable for this purpose.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

@@ -127,6 +127,10 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
         mapInstance.current = null;
       }
     };
+    // onRegionClick intentionally omitted: including it would re-create the
+    // whole map on every parent render. The click handler reads the latest
+    // prop via closure at call time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centerX, centerY, zoom]);
 
   useEffect(() => {
