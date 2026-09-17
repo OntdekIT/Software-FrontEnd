@@ -56,17 +56,19 @@ jobs:
           fi
           docker rm -f test-frontend
 
-      - name: Get previous Git tag
-        id: previoustag
-        uses: WyriHaximus/github-action-get-previous-tag@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Get next semantic version
+      - name: Compute next semantic version
         id: next
-        uses: WyriHaximus/github-action-next-semvers@v1
-        with:
-          version: ${{ steps.previoustag.outputs.tag }}
+        run: |
+          # Consider only semver release tags (e.g. 1.0.5); milestone tags such
+          # as "s3vj26-final" are ignored so they never reach version parsing.
+          latest=$(git tag -l '[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n1)
+          if [ -z "$latest" ]; then
+            latest="0.0.0"
+          fi
+          IFS='.' read -r major minor patch <<< "$latest"
+          next="${major}.${minor}.$((patch + 1))"
+          echo "Latest semver tag: ${latest} -> next: ${next}"
+          echo "patch=${next}" >> "$GITHUB_OUTPUT"
 
       - name: Set lowercase owner
         id: owner

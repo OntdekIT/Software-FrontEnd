@@ -3,8 +3,8 @@ import { backendApi } from "../utils/backend-api.jsx";
 import ColorLegend from "../components/map/color-legend.jsx";
 import './new-home.css';
 import NewMap from "../components/newmap.jsx";
-import RegionList from "../components/home/RegionList.jsx";
-import RegionDetails from "../components/home/RegionDetails.jsx";
+import RegionList from "../components/Home/RegionList.jsx";
+import RegionDetails from "../components/Home/RegionDetails.jsx";
 
 export default function Home() {
     const errRef = useRef();
