@@ -35,4 +35,19 @@ export default [
       ],
     },
   },
+  {
+    // Cypress e2e specs use Cypress + Mocha globals (cy, Cypress, describe, it,
+    // expect). Register them so they aren't flagged as no-undef.
+    files: ['cypress/**/*.{js,jsx}', 'cypress.config.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.mocha,
+        cy: 'readonly',
+        Cypress: 'readonly',
+        expect: 'readonly',
+        assert: 'readonly',
+      },
+    },
+  },
 ]
