@@ -1,5 +1,5 @@
-import {useEffect, useRef, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
 import LoadingComponent from "../loading-component.jsx";
@@ -10,12 +10,11 @@ export default function StationCard({station}) {
 //use states for what to show and what not to show
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
-    const [selectedStation, setSelectedStation] = useState(station.stationid);
+    const [selectedStation] = useState(station.stationid);
     const [showMinTemp, setShowMinTemp] = useState(false);
     const [showMaxTemp, setShowMaxTemp] = useState(false);
     const [showGemTemp, setShowGemTemp] = useState(false);
-    const errRef = useRef();
-    const [errorMessage, setErrorMessage] = useState('');
+    const [, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     //data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
@@ -111,15 +110,6 @@ export default function StationCard({station}) {
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
-    }
-
-    const handleClick = (e) => {
-        if (startDate.getTime() === endDate.getTime()) {
-            let date = startDate;
-            date.setMonth(date.getMonth() - 1);
-            setStartDate(date);
-        }
-        setSelectedStation(e.target.options.id);
     }
 
     const handleLegendChange = (e) => {

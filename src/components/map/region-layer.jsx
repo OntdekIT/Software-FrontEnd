@@ -12,9 +12,9 @@ export default function RegionLayer({data}) {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
     const [selectedNeighbourhood, setSelectedNeighbourhood] = useState(null);
-    const [showMinTemp, setShowMinTemp] = useState(false);
-    const [showMaxTemp, setShowMaxTemp] = useState(false);
-    const [showGemTemp, setShowGemTemp] = useState(false);
+    const [showMinTemp] = useState(false);
+    const [showMaxTemp] = useState(false);
+    const [showGemTemp] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [tempGraphData, setTempGraphData] = useState([]);
@@ -116,15 +116,6 @@ export default function RegionLayer({data}) {
         }
 
         setSelectedNeighbourhood(e.target.options.id);
-    }
-
-    const handleLegendChange = (e) => {
-        if (e.dataKey === "minTemp")
-            setShowMinTemp(!showMinTemp);
-        if (e.dataKey === "maxTemp")
-            setShowMaxTemp(!showMaxTemp);
-        if (e.dataKey === "avgTemp")
-            setShowGemTemp(!showGemTemp);
     }
 
     const handleStartDateChange = (date) => {

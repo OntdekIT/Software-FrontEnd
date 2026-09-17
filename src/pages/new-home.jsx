@@ -11,10 +11,10 @@ export default function Home() {
     const [errMsg, setErrMsg] = useState('');
 
     const [regionData, setRegionData] = useState([]);
-    const [stations, setStations] = useState([]);
+    const [, setStations] = useState([]);
     const [measurements, setMeasurements] = useState([]);
-    const [showRegions, setShowRegions] = useState(true);
-    const [dateTime, setDateTime] = useState(new Date());
+    const [showRegions] = useState(true);
+    const [dateTime] = useState(new Date());
     const [selectedRegion, setSelectedRegion] = useState(null);
     const [regionHistoryData, setRegionHistoryData] = useState([]);
     const [regionLoading, setRegionLoading] = useState(false);
@@ -91,7 +91,7 @@ export default function Home() {
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
                 .then(response => setRegionData(response.data))
                 .catch(handleAxiosError);
-        } catch (error) {
+        } catch {
             setErrMsg('Fout bij ophalen kaart-data.');
         }
     }, [dateTime]);

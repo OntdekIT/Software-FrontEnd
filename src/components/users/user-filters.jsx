@@ -5,7 +5,7 @@ import UserRole from "../../domain/user-role.jsx";
 import UserUtils from "../../utils/user-utils.jsx";
 
 export default function UserFilters({filters, onFiltersChange}) {
-    const {register, setValue, reset, handleSubmit, formState: {errors}} = useForm();
+    const {register, setValue, reset, handleSubmit} = useForm();
 
     useEffect(() => {
         if (filters) {

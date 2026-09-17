@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {
     ResponsiveContainer,
     LineChart,
@@ -38,3 +39,7 @@ export default function DustGraph({ data }) {
         </div>
     );
 }
+
+DustGraph.propTypes = {
+    data: PropTypes.array,
+};

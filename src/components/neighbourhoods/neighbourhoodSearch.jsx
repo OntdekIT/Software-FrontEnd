@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function NeighbourhoodSearch({ searchQuery, setSearchQuery }) {
     return (
         <div className="neighbourhood-search">
@@ -15,3 +17,8 @@ export default function NeighbourhoodSearch({ searchQuery, setSearchQuery }) {
         </div>
     );
 }
+
+NeighbourhoodSearch.propTypes = {
+    searchQuery: PropTypes.string,
+    setSearchQuery: PropTypes.func.isRequired,
+};

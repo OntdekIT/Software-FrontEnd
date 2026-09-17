@@ -37,6 +37,9 @@ export default function AuthProvider({children}) {
             setLoggedInUser(null);
             localStorage.removeItem("loggedInUser");
         }
+        // Only react to token changes; refreshUserInfo is stable and including
+        // it would re-run this auth side-effect unnecessarily.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
     const contextValue = useMemo(() => ({
@@ -44,6 +47,9 @@ export default function AuthProvider({children}) {
         updateToken,
         loggedInUser,
         refreshUserInfo
+        // refreshUserInfo is a stable reference; memo only needs to change on
+        // token/loggedInUser.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }), [token, loggedInUser]);
 
     return (

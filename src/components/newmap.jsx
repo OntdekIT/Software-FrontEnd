@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -53,7 +54,8 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
     async function initMap() {
       try {
-        const res = await fetch('https://tiles.openfreemap.org/styles/liberty');
+        const styleUrl = import.meta.env.VITE_MAP_STYLE_URL ?? 'https://tiles.openfreemap.org/styles/liberty';
+        const res = await fetch(styleUrl);
         const styleJson = await res.json();
 
         mapInstance.current = new maplibregl.Map({
@@ -125,6 +127,10 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
         mapInstance.current = null;
       }
     };
+    // onRegionClick intentionally omitted: including it would re-create the
+    // whole map on every parent render. The click handler reads the latest
+    // prop via closure at call time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centerX, centerY, zoom]);
 
   useEffect(() => {
@@ -168,3 +174,12 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
 }
+
+NewMap.propTypes = {
+  centerX: PropTypes.number,
+  centerY: PropTypes.number,
+  zoom: PropTypes.number,
+  regionData: PropTypes.array,
+  onRegionClick: PropTypes.func,
+  pmRegionIds: PropTypes.array,
+};

@@ -34,6 +34,8 @@ export default function ClaimStation() {
         } else {
             SetStepValues(1);
         }
+        // Initialise step once on mount; adding station would re-run on every edit.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const SetStepValues = (num) => {
@@ -141,7 +143,7 @@ export default function ClaimStation() {
             headers: {'Content-Type': 'application/json'},
             withCredentials: true
         })
-            .then((response) => {
+            .then(() => {
                 localStorage.removeItem("stationId");
                 navigate('/my/stations');
             })

@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import NeighbourhoodSearch from "./neighbourhoodSearch";
 import NeighbourhoodSort from "./neighbourhoodSort";
 import NeighbourhoodList from "./neighbourhoodList";
@@ -31,3 +32,12 @@ export default function NeighbourhoodSidebar({
         </aside>
     );
 }
+
+NeighbourhoodSidebar.propTypes = {
+    neighbourhoods: PropTypes.array,
+    selectedId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    searchQuery: PropTypes.string,
+    setSearchQuery: PropTypes.func.isRequired,
+    sortOption: PropTypes.string,
+    setSortOption: PropTypes.func.isRequired,
+};

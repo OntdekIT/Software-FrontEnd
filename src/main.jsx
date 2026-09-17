@@ -1,7 +1,7 @@
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.scss'
-import * as bootstrap from 'bootstrap'
+import 'bootstrap'
 import Root from "./pages/root.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthProvider from "./providers/auth-provider.jsx";

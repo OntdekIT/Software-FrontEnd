@@ -9,7 +9,7 @@ export default function Checkbox (props) {
     return (
         <div>
             <label>
-                <input type="checkbox" checked={checked} onChange={e => {handleChange(); props.handleToggleShowDataStations();}} />
+                <input type="checkbox" checked={checked} onChange={() => {handleChange(); props.handleToggleShowDataStations();}} />
                 Meetstations
             </label>
         </div>
