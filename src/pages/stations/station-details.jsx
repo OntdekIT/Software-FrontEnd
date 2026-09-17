@@ -128,15 +128,59 @@ export default function StationDetails() {
         return <Preloader message="Data aan het ophalen..." />;
     }
 
-    const latest = (arr) => (arr.length ? arr[arr.length - 1].avg : null);
     const fmt = (v, unit) => (v == null || isNaN(v) ? "—" : `${Number(v).toFixed(1)} ${unit}`);
     const isActive = meetstation.isActive !== false;
 
-    const summaryCards = [
-        { label: "Temperatuur", value: fmt(latest(tempGraphData), "°C"), icon: "bi-thermometer-half", tint: "text-warning" },
-        { label: "Luchtvochtigheid", value: fmt(latest(humGraphData), "%"), icon: "bi-droplet-half", tint: "text-info" },
-        { label: "Fijnstof", value: fmt(latest(stofGraphData), "µg/m³"), icon: "bi-wind", tint: "text-secondary" },
-    ];
+    // Period statistics over the selected date range: min/max/avg + a trend
+    // computed by comparing the average of the first vs the second half.
+    const computeStats = (arr) => {
+        const avgs = arr.map((d) => Number(d.avg)).filter((n) => !isNaN(n));
+        if (!avgs.length) return { min: null, max: null, avg: null, delta: null };
+        const min = Math.min(...arr.map((d) => Number(d.min)).filter((n) => !isNaN(n)));
+        const max = Math.max(...arr.map((d) => Number(d.max)).filter((n) => !isNaN(n)));
+        const avg = avgs.reduce((a, b) => a + b, 0) / avgs.length;
+        const mid = Math.floor(avgs.length / 2);
+        let delta = null;
+        if (avgs.length >= 2) {
+            const firstHalf = avgs.slice(0, mid);
+            const secondHalf = avgs.slice(mid);
+            const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+            delta = mean(secondHalf) - mean(firstHalf);
+        }
+        return { min, max, avg, delta };
+    };
+
+    const metrics = [
+        { key: "temp", label: "Temperatuur", unit: "°C", data: tempGraphData, icon: "bi-thermometer-half", tint: "text-warning" },
+        { key: "hum", label: "Luchtvochtigheid", unit: "%", data: humGraphData, icon: "bi-droplet-half", tint: "text-info" },
+        { key: "stof", label: "Fijnstof", unit: "µg/m³", data: stofGraphData, icon: "bi-wind", tint: "text-secondary" },
+    ].map((m) => ({ ...m, stats: computeStats(m.data) }));
+
+    // Quick-range selector: set start N days before end (= now).
+    const setQuickRange = (days) => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(start.getDate() - days);
+        setEndDate(end);
+        setStartDate(start);
+    };
+    const rangeDays = Math.max(1, Math.round((endDate - startDate) / 86400000));
+
+    // Export the selected period's measurements to CSV (replaces the dead PDF code).
+    const exportCsv = () => {
+        const rows = [["datum", "metric", "min", "max", "gemiddeld"]];
+        metrics.forEach((m) => m.data.forEach((d) => {
+            rows.push([d.timestamp, m.label, d.min, d.max, d.avg]);
+        }));
+        const csv = rows.map((r) => r.join(",")).join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `metingen-station-${meetstation.stationid}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+    };
 
     const graphs = [
         { data: tempGraphData, type: "temperatuur", title: "Temperatuur", icon: "bi-thermometer-half" },
@@ -166,9 +210,14 @@ export default function StationDetails() {
                         </div>
                     </div>
                 </div>
-                <Link to={`/stations/${meetstation.stationid}/edit`} aria-label="Station bewerken">
-                    <Button variant="outline" size="sm"><i className="bi bi-pencil" aria-hidden="true"></i> Bewerken</Button>
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={exportCsv} aria-label="Exporteer metingen als CSV">
+                        <i className="bi bi-download" aria-hidden="true"></i> CSV
+                    </Button>
+                    <Link to={`/stations/${meetstation.stationid}/edit`} aria-label="Station bewerken">
+                        <Button variant="outline" size="sm"><i className="bi bi-pencil" aria-hidden="true"></i> Bewerken</Button>
+                    </Link>
+                </div>
             </div>
 
             {meetstation.is_public === false && (
@@ -177,23 +226,51 @@ export default function StationDetails() {
                 </p>
             )}
 
-            {/* Summary stat cards */}
+            {/* Period stat cards: min / max / avg + trend over the selected range */}
             <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {summaryCards.map((c) => (
-                    <div key={c.label} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                        <div className={`flex h-11 w-11 items-center justify-center rounded-lg bg-gray-50 ${c.tint}`}>
-                            <i className={`bi ${c.icon} text-xl`} aria-hidden="true"></i>
+                {metrics.map((m) => {
+                    const up = m.stats.delta != null && m.stats.delta > 0.05;
+                    const down = m.stats.delta != null && m.stats.delta < -0.05;
+                    return (
+                        <div key={m.key} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                            <div className="mb-3 flex items-center justify-between">
+                                <span className="flex items-center gap-2 font-medium text-gray-700">
+                                    <i className={`bi ${m.icon} ${m.tint}`} aria-hidden="true"></i>
+                                    {m.label}
+                                </span>
+                                {m.stats.delta != null && (
+                                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${up ? "bg-red-50 text-red-600" : down ? "bg-blue-50 text-blue-600" : "bg-gray-100 text-gray-500"}`}>
+                                        <i className={`bi ${up ? "bi-arrow-up" : down ? "bi-arrow-down" : "bi-dash"}`} aria-hidden="true"></i>
+                                        {m.stats.delta > 0 ? "+" : ""}{m.stats.delta.toFixed(1)} {m.unit}
+                                    </span>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 text-center">
+                                <div><div className="text-xs text-gray-500">Min</div><div className="font-semibold text-blue-600">{fmt(m.stats.min, "")}</div></div>
+                                <div><div className="text-xs text-gray-500">Gem.</div><div className="text-lg font-bold text-gray-900">{fmt(m.stats.avg, "")}</div></div>
+                                <div><div className="text-xs text-gray-500">Max</div><div className="font-semibold text-red-600">{fmt(m.stats.max, "")}</div></div>
+                            </div>
+                            <div className="mt-1 text-center text-xs text-gray-400">{m.unit}</div>
                         </div>
-                        <div>
-                            <p className="text-sm text-gray-500">{c.label}</p>
-                            <p className="text-lg font-semibold text-gray-900">{c.value}</p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
-            {/* Date range filter */}
+            {/* Date range filter + quick-range buttons */}
             <div className="mb-6 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                    <span className="mr-1 text-sm font-medium text-gray-700">Periode:</span>
+                    {[{ d: 1, l: "24u" }, { d: 7, l: "7d" }, { d: 30, l: "30d" }, { d: 90, l: "3 mnd" }].map((q) => (
+                        <Button
+                            key={q.d}
+                            variant={rangeDays === q.d ? "primary" : "outline"}
+                            size="sm"
+                            onClick={() => setQuickRange(q.d)}
+                        >
+                            {q.l}
+                        </Button>
+                    ))}
+                </div>
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
                     <div className="flex-1">
                         <label className="mb-1 block text-sm font-medium text-gray-700">Startdatum</label>
