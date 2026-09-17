@@ -2,9 +2,9 @@ name: Frontend CI to GitHub Container Registry
 
 on:
   push:
-    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+    branches: [ "main", "develop", "s3nj26", "s3nj26_dev" ]
   pull_request:
-    branches: [ "main", "develop", "s3nj25", "s3nj25_dev" ]
+    branches: [ "main", "develop", "s3nj26", "s3nj26_dev" ]
 
 jobs:
   build-and-deploy:
