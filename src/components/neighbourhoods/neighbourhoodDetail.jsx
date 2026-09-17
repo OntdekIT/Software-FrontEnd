@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TemperatureGraph from "./temperatureGraph";
 import { backendApi } from "../../utils/backend-api.jsx";
-import DustGraph from "./DustGraph";
+import DustGraph from "./dustGraph";
 
 function formatDateForApi(date, time) {
     return `${String(date.getDate()).padStart(2, "0")}-${String(date.getMonth() + 1).padStart(2, "0")}-${date.getFullYear()} ${time}`;
