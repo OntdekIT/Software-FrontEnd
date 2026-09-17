@@ -2,7 +2,9 @@ import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {SkeletonTable} from "../../../components/ui/Skeleton.jsx";
 import Button from "../../../components/ui/Button.jsx";
+import Modal from "../../../components/ui/Modal.jsx";
 import StationFilters from "../../../components/stations/station-filters.jsx"
+import MeetstationForm from "../../../components/stations/meetstation-form.jsx";
 import {Link, useNavigate} from "react-router-dom";
 
 export default function StationOverview() {
@@ -11,6 +13,7 @@ export default function StationOverview() {
     const [loading, setLoading] = useState(true);
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
+    const [showAddModal, setShowAddModal] = useState(false);
 
     const getAllStations = async (filters = {}) => {
         setErrMsg(null);
@@ -91,12 +94,10 @@ export default function StationOverview() {
                                 <i className="bi bi-broadcast text-brand-500"></i>
                                 Meetstations
                             </h1>
-                            <Link to="/admin/stations/toevoegen">
-                                <Button variant="primary" size="md">
-                                    <i className="bi bi-plus-lg"></i>
-                                    Voeg Meetstation Toe
-                                </Button>
-                            </Link>
+                            <Button variant="primary" size="md" onClick={() => setShowAddModal(true)}>
+                                <i className="bi bi-plus-lg"></i>
+                                Voeg Meetstation Toe
+                            </Button>
                         </div>
                         {errMsg && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700">{errMsg}</div>}
                         {loading ? <SkeletonTable rows={6} columns={6}/> : (
@@ -145,6 +146,19 @@ export default function StationOverview() {
                     </section>
                 </div>
             </main>
+            <Modal
+                show={showAddModal}
+                onClose={() => setShowAddModal(false)}
+                title="Nieuw Meetstation Toevoegen"
+            >
+                <MeetstationForm
+                    onSuccess={() => {
+                        setShowAddModal(false);
+                        getAllStations(filters);
+                    }}
+                    onCancel={() => setShowAddModal(false)}
+                />
+            </Modal>
         </>
     );
 }

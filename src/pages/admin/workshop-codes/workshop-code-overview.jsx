@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import {Link} from "react-router-dom";
 import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
 import DeleteWorkshopModal from "../../../components/workshop/delete-workshop-modal.jsx";
 import Button from "../../../components/ui/Button.jsx";
+import Modal from "../../../components/ui/Modal.jsx";
+import WorkshopCodeForm from "../../../components/workshop/workshop-code-form.jsx";
 
 export default function WorkshopCodeOverview() {
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array
@@ -12,6 +13,7 @@ export default function WorkshopCodeOverview() {
     const [showModal, setShowModal] = useState(false);
     const [selectedWorkshop, setSelectedWorkshop] = useState(null);
     const [showExpired, setShowExpired] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     const parseDate = (dateString) => {
         let date = new Date(dateString);
@@ -77,12 +79,10 @@ export default function WorkshopCodeOverview() {
     return (
         <>
             <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-end gap-2 border-b border-gray-200 bg-white px-4 py-2 shadow-sm">
-                <Link to={"./create"}>
-                    <Button variant="primary" size="sm">
-                        <i className="bi bi-plus-lg"></i>
-                        Workshopcode aanmaken
-                    </Button>
-                </Link>
+                <Button variant="primary" size="sm" onClick={() => setShowCreateModal(true)}>
+                    <i className="bi bi-plus-lg"></i>
+                    Workshopcode aanmaken
+                </Button>
                 <Button variant="secondary" size="sm" onClick={toggleShowExpired}>
                     <i className={`bi ${showExpired ? 'bi-check-circle' : 'bi-clock-history'}`}></i>
                     {showExpired ? "toon actieve codes" : "toon verlopen codes"}
@@ -140,6 +140,12 @@ export default function WorkshopCodeOverview() {
                     onWorkshopDeleted={handleWorkshopDeleted}
                 />
             )}
+            <Modal show={showCreateModal} onClose={() => setShowCreateModal(false)} title="Workshopcode aanmaken">
+                <WorkshopCodeForm onSuccess={async () => {
+                    setShowCreateModal(false);
+                    await getData(showExpired);
+                }}/>
+            </Modal>
         </>
     );
 }

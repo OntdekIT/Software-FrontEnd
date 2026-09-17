@@ -2,6 +2,7 @@ import {backendApi} from "../../../utils/backend-api.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Button from "../../../components/ui/Button.jsx";
+import Modal from "../../../components/ui/Modal.jsx";
 import Preloader, {Spinner} from "../../../components/ui/Preloader.jsx";
 import {useToast} from "../../../components/ui/toast.jsx";
 
@@ -166,19 +167,33 @@ export default function ClaimStation() {
             });
     };
 
+    // Route-driven modal wizard: reached via /my/stations/claim, rendered as an
+    // overlay; closing (backdrop/Escape/X) returns to the stations overview.
+    const closeWizard = () => navigate('/my/stations');
+
     if (!step.num) {
-        return <Preloader message="Meetstation claimen voorbereiden…" />;
+        return (
+            <Modal show={true} onClose={closeWizard} title="Meetstation claimen" size="md">
+                <Preloader message="Meetstation claimen voorbereiden…" />
+            </Modal>
+        );
     }
 
     return (
-        <div className="color">
-            <div className="mx-auto max-w-6xl px-4 py-8">
+        <Modal
+            show={true}
+            onClose={closeWizard}
+            size="md"
+            title={(
+                <span className="flex items-center gap-2">
+                    <i className="bi bi-broadcast" aria-hidden="true"></i>
+                    ({step.num}/4) {step.title}
+                </span>
+            )}
+        >
+            <div>
                 <div className="mx-auto max-w-md">
-                    <h4 className="flex items-center gap-2 text-xl font-bold text-gray-900">
-                        <i className="bi bi-broadcast" aria-hidden="true"></i>
-                        ({step.num}/4) {step.title}
-                    </h4>
-                    <label className="mt-2 block">
+                    <label className="block">
                         <h5 className="text-lg font-semibold">{step.subTitle} </h5>
                         <div className="text-sm text-gray-500">{step.description}</div>
                     </label>
@@ -282,6 +297,6 @@ export default function ClaimStation() {
                     </Button>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }
