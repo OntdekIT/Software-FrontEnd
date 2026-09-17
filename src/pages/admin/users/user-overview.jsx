@@ -7,6 +7,8 @@ import FilterButton from "../../../components/filter-button.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import UserUtils from "../../../utils/user-utils.jsx";
 
+const PAGE_SIZE = 20;
+
 export default function UserOverview() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
@@ -15,12 +17,16 @@ export default function UserOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
     const [filterOpen, setFilterOpen] = useState(false);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const getAllUsers = async (filters = {}) => {
+    const getAllUsers = async (filters = {}, pageToLoad = 0) => {
         setErrMsg(null);
         setLoading(true);
         try {
             const queryParams = new URLSearchParams();
+            queryParams.append("page", pageToLoad);
+            queryParams.append("pageSize", PAGE_SIZE);
             Object.keys(filters).forEach(key => {
                 if (filters[key] !== "" && filters[key] !== null && filters[key] !== undefined) {
                     if (Array.isArray(filters[key])) {
@@ -34,9 +40,12 @@ export default function UserOverview() {
             });
 
             const response = await backendApi.get(`/users?${queryParams.toString()}`);
-            setUsers(response.data);
+            // Backend returns a Spring Data Page: { content, totalPages, number, ... }.
+            setUsers(response.data.content ?? []);
+            setPage(response.data.number ?? pageToLoad);
+            setTotalPages(response.data.totalPages ?? 0);
 
-            if (response.data.length === 0) {
+            if ((response.data.content ?? []).length === 0) {
                 setErrMsg("Geen gebruikers gevonden");
             }
 
@@ -49,6 +58,7 @@ export default function UserOverview() {
 
             setErrMsg(errorMessage);
             setUsers([]);
+            setTotalPages(0);
         } finally {
             setLoading(false);
             setReady(true);
@@ -57,12 +67,18 @@ export default function UserOverview() {
 
     const onFiltersChanged = (filters) => {
         setFilters(filters);
-        getAllUsers(filters).then();
+        // Filtering resets to the first page.
+        getAllUsers(filters, 0).then();
     }
 
     const clearAllFilters = () => {
         setFilters({});
-        getAllUsers().then();
+        getAllUsers({}, 0).then();
+    }
+
+    const goToPage = (nextPage) => {
+        if (nextPage < 0 || nextPage >= totalPages || nextPage === page) return;
+        getAllUsers(filters, nextPage).then();
     }
 
     const navigateToDetails = (user) => {
@@ -134,6 +150,7 @@ export default function UserOverview() {
                         {!ready ? (
                             <SkeletonTable rows={6} columns={4}/>
                         ) : users?.length > 0 ? (
+                            <>
                             <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
                                 <table className="w-full text-left text-sm">
                                     <thead className="bg-gray-50 text-gray-600">
@@ -160,6 +177,32 @@ export default function UserOverview() {
                                     </tbody>
                                 </table>
                             </div>
+                            {totalPages > 1 && (
+                                <nav className="mt-4 flex items-center justify-between gap-3" aria-label="Paginering">
+                                    <button
+                                        type="button"
+                                        onClick={() => goToPage(page - 1)}
+                                        disabled={page <= 0 || loading}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        <i className="bi bi-chevron-left"></i>
+                                        Vorige
+                                    </button>
+                                    <span className="text-sm text-gray-600">
+                                        Pagina {page + 1} van {totalPages}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => goToPage(page + 1)}
+                                        disabled={page >= totalPages - 1 || loading}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        Volgende
+                                        <i className="bi bi-chevron-right"></i>
+                                    </button>
+                                </nav>
+                            )}
+                            </>
                         ) : (
                             <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
                                 <i className="bi bi-people text-3xl text-gray-400"></i>

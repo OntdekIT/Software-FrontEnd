@@ -34,16 +34,17 @@ export default function StationOverview() {
             });
             
             const stationsData = response.data;
-            
-            // Fetch usernames for each station userId
-            const userIds = stationsData.map(station => station.userid).filter(id => id != null);
-            const userResponse = await backendApi.get(`/users?ids=${userIds.join(',')}`, {
+
+            // Fetch users to resolve owner names. /api/users is paginated
+            // (Spring Page); request a large page so every station owner is
+            // covered, and read the page's content array.
+            const userResponse = await backendApi.get(`/users?page=0&pageSize=100`, {
                 headers: { 'Content-Type': 'application/json' },
                 withCredentials: false
             });
-            
-            const users = userResponse.data;
-            
+
+            const users = userResponse.data.content ?? [];
+
             // Map usernames to stations
             const updatedStations = stationsData.map(station => {
                 const user = users.find(u => u.id === station.userid);
