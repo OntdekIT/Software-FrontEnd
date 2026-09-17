@@ -6,13 +6,13 @@ export default function Root() {
     useTokenExpirationCheck();
 
     return (
-        <>
+        <div className="min-h-screen bg-gray-50 text-gray-900">
             <Navbar/>
-            <div className="w-full p-0">
-                {/* Navbar spacer element */}
-                <div className="h-16"></div>
+            {/* Navbar spacer element (matches the fixed 4rem/h-16 navbar) */}
+            <div className="h-16" aria-hidden="true"></div>
+            <main className="w-full">
                 <Outlet/>
-            </div>
-        </>
+            </main>
+        </div>
     )
 }

@@ -71,7 +71,7 @@ export default function VerifyEmail({ email, message }) {
 
                 <div className="mb-2 flex flex-col">
                     <Button data-testid="verifyCode" type="submit" size="lg" disabled={loading || !code}>
-                        {loading && <Spinner className="h-4 w-4" />}
+                        {loading ? <Spinner className="h-4 w-4" /> : <i className="bi bi-envelope-check"></i>}
                         Code verifiëren
                     </Button>
                 </div>

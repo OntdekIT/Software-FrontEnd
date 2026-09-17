@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {SkeletonTable} from "../../../components/ui/Skeleton.jsx";
+import Button from "../../../components/ui/Button.jsx";
 import StationFilters from "../../../components/stations/station-filters.jsx"
 import {Link, useNavigate} from "react-router-dom";
 
@@ -86,12 +87,15 @@ export default function StationOverview() {
                     </aside>
                     <section className="w-full 2xl:w-5/6">
                         <div className="mb-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-                            <h1 className="text-center text-2xl font-bold">Meetstations</h1>
-                            <Link
-                                to="/admin/stations/toevoegen"
-                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
-                            >
-                                Voeg Meetstation Toe
+                            <h1 className="flex items-center justify-center gap-2 text-center text-2xl font-bold">
+                                <i className="bi bi-broadcast text-brand-500"></i>
+                                Meetstations
+                            </h1>
+                            <Link to="/admin/stations/toevoegen">
+                                <Button variant="primary" size="md">
+                                    <i className="bi bi-plus-lg"></i>
+                                    Voeg Meetstation Toe
+                                </Button>
                             </Link>
                         </div>
                         {errMsg && <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-red-700">{errMsg}</div>}
@@ -131,7 +135,12 @@ export default function StationOverview() {
                                         </tbody>
                                     </table>
                                 </div>
-                            ) : <div className="text-gray-600">Geen stations gevonden.</div>
+                            ) : (
+                                <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+                                    <i className="bi bi-broadcast text-3xl text-gray-400"></i>
+                                    <p>Geen stations gevonden.</p>
+                                </div>
+                            )
                         )}
                     </section>
                 </div>

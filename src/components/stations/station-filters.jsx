@@ -23,7 +23,7 @@ export default function StationFilters({ filters, onFiltersChange }) {
         reset();
     };
 
-    const fieldClass = "w-full rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500";
+    const fieldClass = "w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500";
     const labelClass = "mb-0 block text-sm font-medium text-gray-700";
 
     return (
@@ -71,8 +71,8 @@ export default function StationFilters({ filters, onFiltersChange }) {
             </div>
 
             <div className="flex justify-between gap-2">
-                <Button type="button" variant="secondary" className="flex-grow" onClick={clearFilters}>Reset</Button>
-                <Button type="submit" variant="primary" className="flex-grow" onClick={handleSubmit(onSubmit)}>Pas toe</Button>
+                <Button type="button" variant="secondary" className="flex-grow" onClick={clearFilters}><i className="bi bi-arrow-counterclockwise"></i> Reset</Button>
+                <Button type="submit" variant="primary" className="flex-grow" onClick={handleSubmit(onSubmit)}><i className="bi bi-funnel"></i> Pas toe</Button>
             </div>
         </form>
     );

@@ -2,7 +2,8 @@ import ReactDatePicker from "react-datepicker";
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
-import LoadingComponent from "../../components/loading-component.jsx";
+import Preloader from "../../components/ui/Preloader.jsx";
+import Button from "../../components/ui/Button.jsx";
 import GraphView from "../../components/stations/graph-view.jsx";
 
 export default function StationDetails() {
@@ -11,7 +12,7 @@ export default function StationDetails() {
     const [startDate, setStartDate] = useState(new Date());
     const [startDatePDF, setStartDatePDF] = useState(new Date());
     const [meetstation, setMeetstation] = useState({});
-    const [loading, setLoading] = useState(false); // LoadingComponent state
+    const [loading, setLoading] = useState(false); // whole-page Preloader state
     // data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
@@ -123,22 +124,29 @@ export default function StationDetails() {
         setStartDatePDF(date2);
     }
 
+    if (loading) {
+        return <Preloader message="Data aan het ophalen..." />;
+    }
+
     return (
         <>
-            {loading && (
-                <LoadingComponent message="Data aan het ophalen..." isFullScreen={true}></LoadingComponent>
-            )}
             <div className="flex items-center gap-2 rounded-t-md bg-gray-200 m-0 p-2.5">
-                <div className="flex-1">
-                    <label className="font-bold text-base">{meetstation.name}: {meetstation.stationid}</label>
+                <div className="shrink-0">
+                    <Link to="/stations" aria-label="Terug naar stations">
+                        <Button variant="outline" size="sm">
+                            <i className="bi bi-arrow-left"></i>
+                        </Button>
+                    </Link>
+                </div>
+                <div className="flex flex-1 items-center gap-2">
+                    <i className="bi bi-geo-alt text-brand-500"></i>
+                    <h1 className="text-base font-bold text-gray-800">{meetstation.name}: {meetstation.stationid}</h1>
                 </div>
                 <div className="shrink-0">
-                    <Link
-                        to={`/stations/${meetstation.stationid}/edit`}
-                        aria-label="Station bewerken"
-                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2"
-                    >
-                        <i className="bi bi-pencil"></i>
+                    <Link to={`/stations/${meetstation.stationid}/edit`} aria-label="Station bewerken">
+                        <Button variant="outline" size="sm">
+                            <i className="bi bi-pencil"></i> Bewerken
+                        </Button>
                     </Link>
                 </div>
             </div>

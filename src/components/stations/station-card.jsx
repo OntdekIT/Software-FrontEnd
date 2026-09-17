@@ -2,7 +2,8 @@ import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
-import LoadingComponent from "../loading-component.jsx";
+import {Spinner} from "../ui/Preloader.jsx";
+import Button from "../ui/Button.jsx";
 import ReactDatePicker from "react-datepicker";
 import PropTypes from "prop-types";
 
@@ -150,11 +151,15 @@ export default function StationCard({station}) {
     return (
         <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
             <div className="flex items-center border-b border-gray-200 px-4 py-3">
-                <h4 className="flex-grow text-lg font-semibold text-gray-800">{station.name}: {station.stationid}</h4>
-                <Link to={`/stations/${station.stationid}`} className="ml-2 inline-flex items-center justify-center rounded-lg border border-gray-800 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-800 hover:text-white"><i
-                    className="bi bi-info"></i></Link>
-                <Link to={`/stations/${station.stationid}/edit`} className="ml-2 inline-flex items-center justify-center rounded-lg border border-gray-800 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-800 hover:text-white"><i
-                    className="bi bi-pencil"></i></Link>
+                <h4 className="flex flex-grow items-center gap-2 text-lg font-semibold text-gray-800">
+                    <i className="bi bi-broadcast text-brand-500"></i>{station.name}: {station.stationid}
+                </h4>
+                <Link to={`/stations/${station.stationid}`} aria-label="Station details" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-info-circle"></i></Button>
+                </Link>
+                <Link to={`/stations/${station.stationid}/edit`} aria-label="Station bewerken" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-pencil"></i></Button>
+                </Link>
             </div>
             <div className="p-4">
                 <div className="p-0">
@@ -221,12 +226,12 @@ export default function StationCard({station}) {
                                     <option value="stofGraph">FijnStof</option>
                                 </select>
                             </div>
-                            <div className="relative">
-                                {loading && (
-                                    <LoadingComponent message="Data aan het ophalen..."
-                                                      isFullScreen={false}></LoadingComponent>
-                                )}
-                            </div>
+                            {loading && (
+                                <div className="flex items-center justify-center gap-2 py-2 text-sm text-gray-500">
+                                    <Spinner className="h-5 w-5 text-brand-500" />
+                                    Data aan het ophalen...
+                                </div>
+                            )}
                             {(() => {
                                 switch (selectedGraph) {
                                     case "tempGraph":

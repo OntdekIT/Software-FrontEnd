@@ -78,27 +78,39 @@ export default function WorkshopCodeOverview() {
         <>
             <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-end gap-2 border-b border-gray-200 bg-white px-4 py-2 shadow-sm">
                 <Link to={"./create"}>
-                    <Button variant="primary" size="sm">Workshopcode aanmaken</Button>
+                    <Button variant="primary" size="sm">
+                        <i className="bi bi-plus-lg"></i>
+                        Workshopcode aanmaken
+                    </Button>
                 </Link>
                 <Button variant="secondary" size="sm" onClick={toggleShowExpired}>
+                    <i className={`bi ${showExpired ? 'bi-check-circle' : 'bi-clock-history'}`}></i>
                     {showExpired ? "toon actieve codes" : "toon verlopen codes"}
                 </Button>
             </div>
-            <div className="mx-auto max-w-3xl px-4">
+            <div className="mx-auto max-w-3xl px-4 py-6">
                 <div className="text-center">
                     <div className="nav-size"></div>
-                    <h1 className="text-3xl font-bold">Workshopcodes</h1>
+                    <h1 className="flex items-center justify-center gap-2 text-3xl font-bold">
+                        <i className="bi bi-123 text-brand-500"></i>
+                        Workshopcodes
+                    </h1>
                 </div>
                 <div>
                     {errMsg && <div className="my-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">{errMsg}</div>}
                     {loading ? (
-                        <div className="flex flex-col gap-2">
+                        <div className="mt-4 flex flex-col gap-2">
                             {Array.from({length: 5}).map((_, i) => (
                                 <SkeletonCard key={i}/>
                             ))}
                         </div>
+                    ) : (!workshopCodes || workshopCodes.length === 0) ? (
+                        <div className="mt-4 flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+                            <i className="bi bi-123 text-3xl text-gray-400"></i>
+                            <p>{showExpired ? "Geen verlopen workshopcodes gevonden." : "Geen actieve workshopcodes gevonden."}</p>
+                        </div>
                     ) : (
-                        <div className="flex flex-col gap-2">
+                        <div className="mt-4 flex flex-col gap-2">
                             {workshopCodes && workshopCodes.map(workshopCode => (
                                 <div key={workshopCode.id}
                                      className={`rounded-xl border p-4 ${showExpired ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>

@@ -5,7 +5,7 @@ import ReactDatePicker from "react-datepicker";
 import {spectralColors, roundToOneDecimal} from "../../utils/map-utils.jsx";
 import {backendApi} from "../../utils/backend-api.jsx";
 import PropTypes from "prop-types";
-import LoadingComponent from "../loading-component.jsx";
+import { Spinner } from "../ui/Preloader.jsx";
 
 export default function RegionLayer({data}) {
     //use states for what to show and what not to show
@@ -189,8 +189,10 @@ export default function RegionLayer({data}) {
                             </div>
                             <div className="relative">
                                 {loading && (
-                                    <LoadingComponent message="Data aan het ophalen..."
-                                                      isFullScreen={false}></LoadingComponent>
+                                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
+                                        <Spinner className="h-5 w-5 text-brand-500" />
+                                        Data aan het ophalen…
+                                    </div>
                                 )}
                             </div>
 

@@ -38,10 +38,10 @@ export default function DeleteUserModal({user, isShown, onClose, onUserDeleted})
             footer={
                 <>
                     <Button variant="secondary" onClick={onClose}>
-                        Annuleren
+                        <i className="bi bi-x-lg"></i> Annuleren
                     </Button>
                     <Button variant="danger" onClick={handleDelete} disabled={loading}>
-                        {loading && <Spinner className="h-4 w-4" />} Verwijderen
+                        {loading ? <Spinner className="h-4 w-4" /> : <i className="bi bi-trash"></i>} Verwijderen
                     </Button>
                 </>
             }

@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
+import Button from "../../../components/ui/Button.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
 
 export default function MyStationsOverview() {
@@ -31,16 +32,17 @@ export default function MyStationsOverview() {
         <>
             <div className="toolbar fixed-top flex items-center justify-between">
                 <span>Welkom {name}</span>
-                <Link
-                    to={"./claim"}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
-                >
-                    Nieuw station toevoegen
+                <Link to={"./claim"} aria-label="Nieuw station toevoegen">
+                    <Button variant="primary" size="sm">
+                        <i className="bi bi-plus-lg"></i> Nieuw station toevoegen
+                    </Button>
                 </Link>
             </div>
-            <div className="mx-auto max-w-6xl px-4">
+            <div className="mx-auto max-w-6xl px-4 py-6">
                 <div className="nav-size"></div>
-                <h1 className="text-2xl font-bold text-gray-800">Mijn stations</h1>
+                <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-800">
+                    <i className="bi bi-broadcast text-brand-500"></i> Mijn stations
+                </h1>
                 {errMsg && <div className="error-msg">{errMsg}</div>}
                 {loading ? (
                     <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">

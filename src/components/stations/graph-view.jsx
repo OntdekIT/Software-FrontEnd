@@ -68,7 +68,9 @@ export default function GraphView({graphData, dataType}) {
                 <div className="mx-auto max-w-3xl px-4">
                     <label className="mt-1 italic">Meting van: {new Date().toLocaleString('nl-NL')}</label>
                     <br></br>
-                    <label className="mt-2 font-bold">Historische {dataType} data</label>
+                    <label className="mt-2 flex items-center gap-2 font-bold">
+                        <i className="bi bi-graph-up text-brand-500"></i> Historische {dataType} data
+                    </label>
                     <ResponsiveContainer minWidth={250} minHeight={250}>
                         <LineChart data={graphData}>
                             <XAxis dataKey="timestamp"/>
@@ -90,7 +92,9 @@ export default function GraphView({graphData, dataType}) {
             </div>
             <div ref={secondColorDivRef} className="color hide-scrollbar flex-1 overflow-y-auto">
                 <div className="mx-auto max-w-3xl px-4" style={{ width: "calc(100%) - 20px" }}>
-                    <label className="mt-2 font-bold">Laatste 10 Metingen</label>
+                    <label className="mt-2 flex items-center gap-2 font-bold">
+                        <i className="bi bi-list-ol text-brand-500"></i> Laatste 10 Metingen
+                    </label>
                     <div>
                         {getLastTenMeasurements()}
                     </div>

@@ -62,8 +62,8 @@ export default function UserFilters({filters, onFiltersChange}) {
             </div>
 
             <div className="flex justify-between gap-2">
-                <Button variant="secondary" type="button" className="flex-1" onClick={clearFilters}>Reset</Button>
-                <Button variant="primary" type="submit" className="flex-1" onClick={handleSubmit(onSubmit)}>Pas toe</Button>
+                <Button variant="secondary" type="button" className="flex-1" onClick={clearFilters}><i className="bi bi-arrow-counterclockwise"></i> Reset</Button>
+                <Button variant="primary" type="submit" className="flex-1" onClick={handleSubmit(onSubmit)}><i className="bi bi-funnel"></i> Pas toe</Button>
             </div>
         </form>
     )

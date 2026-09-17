@@ -2,6 +2,7 @@ import {backendApi} from "../../../utils/backend-api.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Button from "../../../components/ui/Button.jsx";
+import Preloader, {Spinner} from "../../../components/ui/Preloader.jsx";
 import {useToast} from "../../../components/ui/toast.jsx";
 
 export default function ClaimStation() {
@@ -25,6 +26,7 @@ export default function ClaimStation() {
     const [station, setStation] = useState(inputvalues);
     const [step, setStep] = useState(stepvalues);
     const [workshopCode, setWorkshopCode] = useState(null);
+    const [verifying, setVerifying] = useState(false);
 
     const navigate = useNavigate();
     const toast = useToast();
@@ -84,6 +86,7 @@ export default function ClaimStation() {
             } else if (!workshopCode) {
                 toast.error("Vul een workshop code in.");
             } else {
+                setVerifying(true);
                 const response = await backendApi.get(`/Meetstation/Availibility/${station.stationid}/${workshopCode}`, {
                     headers: {'Content-Type': 'application/json'},
                     withCredentials: false
@@ -99,6 +102,8 @@ export default function ClaimStation() {
         } catch (err) {
             console.error(err);
             toast.error("Er is iets misgegaan");
+        } finally {
+            setVerifying(false);
         }
     }
 
@@ -161,11 +166,18 @@ export default function ClaimStation() {
             });
     };
 
+    if (!step.num) {
+        return <Preloader message="Meetstation claimen voorbereiden…" />;
+    }
+
     return (
         <div className="color">
             <div className="mx-auto max-w-6xl px-4 py-8">
                 <div className="mx-auto max-w-md">
-                    <h4 className="text-xl font-bold">({step.num}/4) {step.title}</h4>
+                    <h4 className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                        <i className="bi bi-broadcast" aria-hidden="true"></i>
+                        ({step.num}/4) {step.title}
+                    </h4>
                     <label className="mt-2 block">
                         <h5 className="text-lg font-semibold">{step.subTitle} </h5>
                         <div className="text-sm text-gray-500">{step.description}</div>
@@ -257,12 +269,16 @@ export default function ClaimStation() {
                 })()}
                 <div className="mx-auto mt-12 flex max-w-md gap-2">
                     {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
-                        <Button variant="primary" onClick={goBack}>
+                        <Button variant="secondary" onClick={goBack} disabled={verifying}>
+                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
                             Terug
                         </Button>
                     )}
-                    <Button data-testid='ClaimMeetstationNext' variant="primary" onClick={() => handleButtonClick(step.num)}>
-                        Volgende
+                    <Button data-testid='ClaimMeetstationNext' variant="primary" onClick={() => handleButtonClick(step.num)} disabled={verifying}>
+                        {verifying ? <Spinner className="h-4 w-4" /> : (
+                            <i className={`bi ${step.num === 4 ? 'bi-check-lg' : 'bi-arrow-right'}`} aria-hidden="true"></i>
+                        )}
+                        {step.num === 4 ? 'Claimen' : 'Volgende'}
                     </Button>
                 </div>
             </div>

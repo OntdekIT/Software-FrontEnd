@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { backendApi } from "../../utils/backend-api";
 import Button from "../ui/Button.jsx";
 import Modal from "../ui/Modal.jsx";
+import { Spinner } from "../ui/Preloader.jsx";
 import { useToast } from "../ui/toast.jsx";
 
 export default function EditUserProfileModal({ user, isShown, onClose, onProfileUpdated }) {
@@ -43,9 +44,23 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
     };
 
     return (
-        <Modal show={isShown} onClose={onClose} title="Gegevens bewerken">
+        <Modal
+            show={isShown}
+            onClose={onClose}
+            title="Gegevens bewerken"
+            footer={
+                <>
+                    <Button variant="secondary" onClick={onClose} disabled={loading}>
+                        <i className="bi bi-x-lg"></i> Annuleren
+                    </Button>
+                    <Button variant="primary" type="submit" form="edit-user-role-form" disabled={loading}>
+                        {loading ? <Spinner className="h-4 w-4" /> : <i className="bi bi-check-lg"></i>} Opslaan
+                    </Button>
+                </>
+            }
+        >
             {/* Form for profile edit */}
-            <form onSubmit={handleSubmit}>
+            <form id="edit-user-role-form" onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label htmlFor="firstName" className="mb-1 block text-sm font-medium text-gray-700">Voornaam</label>
                     <input
@@ -85,39 +100,31 @@ export default function EditUserProfileModal({ user, isShown, onClose, onProfile
                     />
                 </div>
 
-                <div className="relative mb-3">
+                <div className="mb-3">
                     <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">Wachtwoord</label>
-                    <div
-                        className="relative flex items-center"
-                        onMouseEnter={() => setShowPassword(true)}
-                        onMouseLeave={() => setShowPassword(false)}
-                    >
+                    <div className="relative flex items-center">
                         <input
                             placeholder="(Ongewijzigd)"
                             id="password"
                             name="password"
                             type={showPassword ? "text" : "password"}
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:bg-gray-100"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:bg-gray-100"
                             value={formData.password}
                             onChange={handleChange}
                             disabled={loading}
                         />
-                        <div
-                            className="ml-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-brand-500 font-bold text-white"
-                            title={showPassword ? "Hide Password" : "Show Password"}
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-1 !px-2 text-gray-500"
+                            onClick={() => setShowPassword((v) => !v)}
+                            disabled={loading}
+                            aria-label={showPassword ? "Wachtwoord verbergen" : "Wachtwoord tonen"}
+                            title={showPassword ? "Wachtwoord verbergen" : "Wachtwoord tonen"}
                         >
-                            🔍
-                        </div>
+                            <i className={showPassword ? "bi bi-eye-slash" : "bi bi-eye"}></i>
+                        </Button>
                     </div>
-                </div>
-
-                <div className="flex justify-end gap-2">
-                    <Button variant="secondary" onClick={onClose} disabled={loading}>
-                        Annuleren
-                    </Button>
-                    <Button variant="primary" type="submit" disabled={loading}>
-                        {loading ? "Saving..." : "Opslaan"}
-                    </Button>
                 </div>
             </form>
         </Modal>
