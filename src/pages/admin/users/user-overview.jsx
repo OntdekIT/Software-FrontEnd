@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {SkeletonTable} from "../../../components/ui/Skeleton.jsx";
+import {Spinner} from "../../../components/ui/Preloader.jsx";
 import UserFilters from "../../../components/users/user-filters.jsx";
 import FilterButton from "../../../components/filter-button.jsx";
 import {Link, useNavigate} from "react-router-dom";
@@ -10,6 +11,7 @@ export default function UserOverview() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [ready, setReady] = useState(false);
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
     const [filterOpen, setFilterOpen] = useState(false);
@@ -49,13 +51,12 @@ export default function UserOverview() {
             setUsers([]);
         } finally {
             setLoading(false);
+            setReady(true);
         }
     };
 
     const onFiltersChanged = (filters) => {
         setFilters(filters);
-        console.log(filters);
-
         getAllUsers(filters).then();
     }
 
@@ -71,6 +72,10 @@ export default function UserOverview() {
     useEffect(() => {
         getAllUsers().then();
     }, []);
+
+    // Only the very first load blanks the page with a skeleton; later refetches
+    // (filter changes) keep the list visible and show a small inline spinner.
+    const refetching = ready && loading;
 
     return (
         <>
@@ -95,44 +100,59 @@ export default function UserOverview() {
                     <UserFilters onFiltersChange={onFiltersChanged} filters={filters}/>
                 </div>
             </div>
-            <header className="toolbar fixed-top flex items-center justify-end 2xl:hidden">
-                <FilterButton areFiltersActive={Object.keys(filters).length > 0} onClick={() => setFilterOpen(true)}/>
-            </header>
-            <main className="w-full px-4">
-                <div className="flex flex-col 2xl:flex-row">
+            <div className="mx-auto max-w-7xl px-4 py-6">
+                <div className="flex flex-col gap-6 2xl:flex-row">
                     {/* Large screen filters */}
-                    <aside className="full-height-sidebar hidden shadow-sm 2xl:block 2xl:w-1/6 2xl:border-r 2xl:border-gray-200 2xl:pr-4">
-                        <h2>Filters</h2>
-                        <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
-                                     clearAllFilters={clearAllFilters}/>
+                    <aside className="hidden shrink-0 2xl:block 2xl:w-64">
+                        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                            <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                <i className="bi bi-funnel text-brand-500"></i>
+                                Filters
+                            </h2>
+                            <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
+                                         clearAllFilters={clearAllFilters}/>
+                        </div>
                     </aside>
-                    <section className="w-full 2xl:w-5/6 2xl:pl-4">
-                        <div className="nav-size block 2xl:hidden"></div>
-                        <h1 className="page-header-margin text-center">Gebruikers</h1>
-                        {errMsg && <div className="error-msg">{errMsg}</div>}
-                        {loading && (
+                    <section className="w-full min-w-0 2xl:flex-1">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                            <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+                                <i className="bi bi-people text-brand-500"></i>
+                                Gebruikers
+                            </h1>
+                            <div className="flex items-center gap-3">
+                                {refetching && (
+                                    <span className="flex items-center gap-2 text-sm text-gray-500">
+                                        <Spinner className="h-4 w-4" /> bijwerken…
+                                    </span>
+                                )}
+                                <div className="2xl:hidden">
+                                    <FilterButton areFiltersActive={Object.keys(filters).length > 0} onClick={() => setFilterOpen(true)}/>
+                                </div>
+                            </div>
+                        </div>
+
+                        {!ready ? (
                             <SkeletonTable rows={6} columns={4}/>
-                        )}
-                        {!loading && (users?.length > 0) && (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                    <tr className="border-b border-gray-200 text-sm text-gray-500">
-                                        <th scope="col" className="px-3 py-2 font-medium">Naam</th>
-                                        <th scope="col" className="px-3 py-2 font-medium">Email</th>
-                                        <th scope="col" className="px-3 py-2 font-medium">Rol</th>
-                                        <th scope="col" className="px-3 py-2 font-medium"></th>
+                        ) : users?.length > 0 ? (
+                            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-gray-50 text-gray-600">
+                                    <tr>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Naam</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Email</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Rol</th>
+                                        <th scope="col" className="px-4 py-3"></th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {users && users.map(user => (
-                                        <tr key={user.id} onClick={() => navigateToDetails(user)} className="cursor-pointer border-b border-gray-100 hover:bg-gray-50">
-                                            <td className="px-3 py-2">{`${user.firstName} ${user.lastName}`}</td>
-                                            <td className="px-3 py-2">{user.email}</td>
-                                            <td className="px-3 py-2">{UserUtils.translateRole(user.role)}</td>
-                                            <td className="px-3 py-2">
+                                    <tbody className="divide-y divide-gray-100">
+                                    {users.map(user => (
+                                        <tr key={user.id} onClick={() => navigateToDetails(user)} className="cursor-pointer transition-colors hover:bg-gray-50">
+                                            <td className="px-4 py-3">{`${user.firstName} ${user.lastName}`}</td>
+                                            <td className="px-4 py-3">{user.email}</td>
+                                            <td className="px-4 py-3">{UserUtils.translateRole(user.role)}</td>
+                                            <td className="px-4 py-3">
                                                 <Link to={`./${user.id}`}
-                                                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-2.5 py-1 text-sm text-gray-800 hover:bg-gray-50"><i
+                                                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-2.5 py-1.5 text-gray-800 transition-colors hover:bg-gray-50"><i
                                                     className="bi bi-arrow-right"></i></Link>
                                             </td>
                                         </tr>
@@ -140,10 +160,15 @@ export default function UserOverview() {
                                     </tbody>
                                 </table>
                             </div>
+                        ) : (
+                            <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+                                <i className="bi bi-people text-3xl text-gray-400"></i>
+                                <p>{errMsg || "Geen gebruikers gevonden."}</p>
+                            </div>
                         )}
                     </section>
                 </div>
-            </main>
+            </div>
         </>
     );
 }

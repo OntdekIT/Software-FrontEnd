@@ -121,40 +121,40 @@ export default function EditStation() {
     return (
         <Modal show={true} onClose={close} title={`Station ${station.stationid} bewerken`} size="md">
             <p className="mb-4 text-sm text-gray-500">Hier kunnen de meetstation gegevens aangepast worden.</p>
-            <form id="edit-station-form" onSubmit={handleSubmit}>
+            <form id="edit-station-form" onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="mb-1 block font-medium">Station naam</label>
+                    <label className="mb-1 block font-medium text-gray-700">Station naam</label>
                     <input
                         onChange={handleChange}
-                        className={`w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 ${errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                        className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 ${errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
                         value={station.name}
                         name="name"
                         type="text"
                     />
                     {errorMessage && <div className="mt-1 text-sm text-red-600">{errorMessage}</div>}
+                </div>
 
-                    <div className="mt-4">
-                        <label className="mb-1 block font-medium">Zichtbaarheid van meetstation</label>
-                        <select
-                            value={visibility}
-                            onChange={dropdownHandler}
-                            className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                            name="visibility"
-                        >
-                            <option value="0">Onzichtbaar</option>
-                            <option value="1">Zichtbaar</option>
-                        </select>
-                        {visibility === '0' && (
-                            <div className="mt-1 text-sm text-gray-500">
-                                Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
-                            </div>
-                        )}
-                        {visibility === '1' && (
-                            <div className="mt-1 text-sm text-gray-500">
-                                Het station is zichtbaar en kan door iedereen bekeken worden.
-                            </div>
-                        )}
-                    </div>
+                <div>
+                    <label className="mb-1 block font-medium text-gray-700">Zichtbaarheid van meetstation</label>
+                    <select
+                        value={visibility}
+                        onChange={dropdownHandler}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        name="visibility"
+                    >
+                        <option value="0">Onzichtbaar</option>
+                        <option value="1">Zichtbaar</option>
+                    </select>
+                    {visibility === '0' && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
+                        </p>
+                    )}
+                    {visibility === '1' && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Het station is zichtbaar en kan door iedereen bekeken worden.
+                        </p>
+                    )}
                 </div>
             </form>
             <div className="mt-6 flex justify-end gap-2">

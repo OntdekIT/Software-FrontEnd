@@ -50,32 +50,58 @@ export default function VerifyEmail({ email, message }) {
     };
 
     return (
-        <div className="mx-auto max-w-md px-4">
-            <h1 className="mt-8 mb-6 text-center text-2xl font-bold text-gray-900">{message ? message : "Email bevestigen"}</h1>
-            {errMsg && <div ref={errRef} className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{errMsg}</div>}
-            <p className="mb-4 text-center text-gray-600">Vul de per email ontvangen code in om je aanvraag te bevestigen.</p>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label htmlFor="code" className="mb-1 block text-sm font-medium text-gray-700">Code</label>
-                    <input
-                        className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${errMsg ? 'border-red-500' : 'border-gray-300'}`}
-                        type="code"
-                        id="code"
-                        ref={codeRef}
-                        autoComplete="off"
-                        onChange={(e) => setCode(e.target.value)}
-                        value={code}
-                        required
-                    />
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-10">
+            <div className="w-full max-w-md">
+                {/* Brand header */}
+                <div className="mb-6 flex flex-col items-center text-center">
+                    <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 text-dark shadow-sm">
+                        <i className="bi bi-broadcast text-2xl" aria-hidden="true"></i>
+                    </span>
+                    <span className="text-lg font-semibold tracking-tight text-gray-900">MB Ontdekt</span>
                 </div>
 
-                <div className="mb-2 flex flex-col">
-                    <Button data-testid="verifyCode" type="submit" size="lg" disabled={loading || !code}>
-                        {loading ? <Spinner className="h-4 w-4" /> : <i className="bi bi-envelope-check"></i>}
-                        Code verifiëren
-                    </Button>
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+                    <div className="mb-6 text-center">
+                        <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                            <i className="bi bi-envelope-check text-2xl" aria-hidden="true"></i>
+                        </span>
+                        <h1 className="text-2xl font-bold text-gray-900">{message ? message : "Email bevestigen"}</h1>
+                        <p className="mt-1 text-sm text-gray-500">Vul de per e-mail ontvangen code in om je aanvraag te bevestigen.</p>
+                    </div>
+
+                    {errMsg && (
+                        <div ref={errRef} className="mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                            <i className="bi bi-exclamation-circle" aria-hidden="true"></i>
+                            {errMsg}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div>
+                            <label htmlFor="code" className="mb-1 block text-sm font-medium text-gray-700">Code</label>
+                            <div className="relative">
+                                <i className="bi bi-key pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
+                                <input
+                                    className={`w-full rounded-lg border px-3 py-2 pl-10 text-sm tracking-widest focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${errMsg ? 'border-red-500' : 'border-gray-300'}`}
+                                    type="code"
+                                    id="code"
+                                    ref={codeRef}
+                                    autoComplete="off"
+                                    onChange={(e) => setCode(e.target.value)}
+                                    value={code}
+                                    placeholder="Voer je code in"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <Button data-testid="verifyCode" type="submit" size="lg" disabled={loading || !code} className="mt-2 w-full">
+                            {loading ? <Spinner className="h-4 w-4" /> : <i className="bi bi-envelope-check" aria-hidden="true"></i>}
+                            {loading ? 'Code verifiëren…' : 'Code verifiëren'}
+                        </Button>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     );
 }

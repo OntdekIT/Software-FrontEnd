@@ -191,22 +191,20 @@ export default function ClaimStation() {
                 </span>
             )}
         >
-            <div>
-                <div className="mx-auto max-w-md">
-                    <label className="block">
-                        <h5 className="text-lg font-semibold">{step.subTitle} </h5>
-                        <div className="text-sm text-gray-500">{step.description}</div>
-                    </label>
+            <div className="mx-auto max-w-md space-y-4">
+                <div>
+                    <h5 className="text-lg font-semibold text-gray-900">{step.subTitle}</h5>
+                    <p className="mt-1 text-sm text-gray-500">{step.description}</p>
                 </div>
 
                 {(() => {
                     switch (step.num) {
                         case 1:
                             return (
-                                <div className="mx-auto mt-1 flex max-w-md gap-2">
+                                <div className="flex flex-col gap-3 sm:flex-row">
                                     <input
                                         type="number"
-                                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
                                         name="workshopCode"
                                         placeholder="Workshop Code..."
                                         onChange={handleWorkshopCodeChange}
@@ -215,7 +213,7 @@ export default function ClaimStation() {
                                     />
                                     <input
                                         type="number"
-                                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
                                         name="stationid"
                                         placeholder="Station nummer..."
                                         onChange={handleChange}
@@ -226,35 +224,33 @@ export default function ClaimStation() {
                             );
                         case 2:
                             return (
-                                <div className="mx-auto mt-1 max-w-md">
-                                    <div>
-                                        <select data-testid='Visibility'
-                                            value={station.visibility}
-                                            onChange={handleChange}
-                                            className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                                            name="visibility"
-                                        >
-                                            <option value="0">Onzichtbaar</option>
-                                            <option value="1">Zichtbaar</option>
-                                        </select>
-                                        {station.visibility === '0' && (
-                                            <div className="mt-1 text-sm text-gray-500">Het station is onzichtbaar, maar de data
-                                                wordt gebruikt binnen de metingen van een wijk.</div>
-                                        )}
-                                        {station.visibility === '1' && (
-                                            <div className="mt-1 text-sm text-gray-500">Het station is zichtbaar en kan door
-                                                iedereen bekeken worden.</div>
-                                        )}
-                                    </div>
+                                <div>
+                                    <select data-testid='Visibility'
+                                        value={station.visibility}
+                                        onChange={handleChange}
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                        name="visibility"
+                                    >
+                                        <option value="0">Onzichtbaar</option>
+                                        <option value="1">Zichtbaar</option>
+                                    </select>
+                                    {station.visibility === '0' && (
+                                        <p className="mt-2 text-sm text-gray-500">Het station is onzichtbaar, maar de data
+                                            wordt gebruikt binnen de metingen van een wijk.</p>
+                                    )}
+                                    {station.visibility === '1' && (
+                                        <p className="mt-2 text-sm text-gray-500">Het station is zichtbaar en kan door
+                                            iedereen bekeken worden.</p>
+                                    )}
                                 </div>
                             );
                         case 3:
                             return (
-                                <div className="mx-auto mt-1 max-w-md">
+                                <div>
                                     <input
                                         data-testid='StationName'
                                         onChange={handleChange}
-                                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
                                         value={station.name}
                                         name="name"
                                         type="text"
@@ -263,17 +259,23 @@ export default function ClaimStation() {
                             );
                         case 4:
                             return (
-                                <div className="mx-auto mt-1 max-w-md">
-                                    <div>Station nummer: {station.stationid}</div>
-                                    <div>Station naam: {station.name}</div>
+                                <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm">
+                                    <div className="flex justify-between gap-4">
+                                        <span className="text-gray-500">Station nummer</span>
+                                        <span className="font-medium text-gray-900">{station.stationid}</span>
+                                    </div>
+                                    <div className="flex justify-between gap-4">
+                                        <span className="text-gray-500">Station naam</span>
+                                        <span className="font-medium text-gray-900">{station.name}</span>
+                                    </div>
                                     <div>
-                                        Station visibility:
+                                        <span className="text-gray-500">Zichtbaarheid</span>
                                         {station.visibility === '0' ? (
-                                            <div className="mt-1 text-sm text-gray-500">Het station is onzichtbaar, maar de data
-                                                wordt gebruikt binnen de metingen van een wijk.</div>
+                                            <p className="mt-1 text-gray-500">Het station is onzichtbaar, maar de data
+                                                wordt gebruikt binnen de metingen van een wijk.</p>
                                         ) : station.visibility === '1' ? (
-                                            <div className="mt-1 text-sm text-gray-500">Het station is zichtbaar en kan door
-                                                iedereen bekeken worden.</div>
+                                            <p className="mt-1 text-gray-500">Het station is zichtbaar en kan door
+                                                iedereen bekeken worden.</p>
                                         ) : null}
                                     </div>
                                 </div>
@@ -282,7 +284,7 @@ export default function ClaimStation() {
                             return null; // Default case if step.num doesn't match any specific case
                     }
                 })()}
-                <div className="mx-auto mt-12 flex max-w-md gap-2">
+                <div className="mt-8 flex gap-2">
                     {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
                         <Button variant="secondary" onClick={goBack} disabled={verifying}>
                             <i className="bi bi-arrow-left" aria-hidden="true"></i>

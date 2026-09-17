@@ -1,20 +1,22 @@
 .neighbourhood-page {
     display: flex;
     align-items: flex-start;
-    width: 98vw;
-    min-height: 88vh;
-    margin: 2vh 0 0 1vw;
-    gap: 2vw;
+    width: 100%;
+    min-height: 70vh;
+    gap: 24px;
 }
 
 /* Sidebar */
 .neighbourhood-sidebar {
     line-height: 1.2;
-    width: 32vw;
-    height: 86vh;
-    background: #f5f6f8;
+    width: 34%;
+    max-width: 420px;
+    height: 78vh;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
     padding: 16px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
 }
@@ -22,8 +24,7 @@
 .neighbourhood-sidebar h2 {
     line-height: 1.2;
     margin: 0 0 16px;
-    padding: 24px;
-
+    padding: 16px 20px;
 
     background: linear-gradient(
         135deg,
@@ -32,13 +33,12 @@
     );
 
     color: white;
-    font-size: 2.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
 
-    border-radius: 16px;
+    border-radius: 12px;
 
-    box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .neighbourhood-search,
@@ -48,9 +48,18 @@
 
 .neighbourhood-search input,
 .neighbourhood-sort select {
-    padding: 6px 8px;
+    width: 100%;
+    padding: 8px 12px;
     border-radius: 8px;
-    border: 1px solid #d1a700;
+    border: 1px solid #d1d5db;
+    outline: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.neighbourhood-search input:focus,
+.neighbourhood-sort select:focus {
+    border-color: #fecb3d;
+    box-shadow: 0 0 0 2px rgba(254, 203, 61, 0.5);
 }
 
 .neighbourhood-list {
@@ -99,12 +108,15 @@
 
 /* Detail dashboard */
 .neighbourhood-detail {
-    width: 62vw;
-    min-height: 86vh;
+    flex: 1;
+    min-width: 0;
+    min-height: 78vh;
     max-height: none;
     padding: 24px;
-    background: #f5f6f8;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -117,9 +129,10 @@
 
 .neighbourhood-detail article {
     background: white;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .neighbourhood-detail article h2 {
@@ -143,14 +156,13 @@
     );
 
     color: white;
-    border-radius: 16px;
-    padding: 24px;
+    border-radius: 12px;
+    padding: 16px 20px;
 
-    font-size: 2.4rem;
+    font-size: 1.5rem;
     font-weight: 700;
 
-    box-shadow:
-        0 10px 25px rgba(0,0,0,.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Graphs */

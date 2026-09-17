@@ -161,59 +161,43 @@ export default function StationCard({station}) {
                     <Button variant="outline" size="sm"><i className="bi bi-pencil"></i></Button>
                 </Link>
             </div>
-            <div className="p-4">
-                <div className="p-0">
-                <div key={station.stationid} style={{ padding: "5%" }}>
-                {station.locError === true ? (
-                station.isActive === true ? (
-                    <div className="flex justify-center">
-                        <span className="warning-text">
-                            ⚠️ LET OP: De locatie wordt niet meer gemeten!
-                        </span>
-                    </div>
-                ) : null
-                ) : (
-                <>
-                    {!station.is_public && (
-                    <div className="text-sm text-gray-500">
-                        Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
-                    </div>
+            <div className="space-y-4 p-4">
+                <div key={station.stationid}>
+                    {station.locError === true ? (
+                        station.isActive === true ? (
+                            <div className="flex justify-center">
+                                <span className="warning-text">
+                                    ⚠️ LET OP: De locatie wordt niet meer gemeten!
+                                </span>
+                            </div>
+                        ) : null
+                    ) : (
+                        <div className="text-sm text-gray-500">
+                            {station.is_public
+                                ? "Het station is zichtbaar en kan door iedereen bekeken worden."
+                                : "Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk."}
+                        </div>
                     )}
-                    {station.is_public && (
-                    <div className="text-sm text-gray-500">
-                        Het station is zichtbaar en kan door iedereen bekeken worden.
-                    </div>
-                    )}
-                </>
-                )}
-
                 </div>
 
-
-
-                    {station.isActive === true ? (
-                        <div className="flex cursor-pointer justify-center" onClick={toggleGraphVisibility}>
-                            {/* Toggle button */}
-                            {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
-                        </div>
-                    ) : (
-                        <div className="flex justify-center">
-                            <span className="warning-text">
-                                ⚠️ LET OP: Dit station is inactief!
-                            </span>
-                        </div>
-
-                    )}
-
-                    
-                    
+                {station.isActive === true ? (
+                    <div className="flex cursor-pointer justify-center text-gray-500 hover:text-brand-500" onClick={toggleGraphVisibility}>
+                        {/* Toggle button */}
+                        {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                    </div>
+                ) : (
+                    <div className="flex justify-center">
+                        <span className="warning-text">
+                            ⚠️ LET OP: Dit station is inactief!
+                        </span>
+                    </div>
+                )}
 
                     {graphVisible && (
-                        <div>
-                            <hr style={{margin: "0"}}></hr>
-                            <label className="mt-1 block italic">Meting
+                        <div className="space-y-3 border-t border-gray-200 pt-4">
+                            <label className="block text-sm italic text-gray-500">Meting
                                 van: {dateTime.toLocaleString('nl-NL')}</label>
-                            <label className="mt-2 block font-bold">Historische data</label>
+                            <label className="block font-semibold text-gray-800">Historische data</label>
 
                             {/* Dropdown for graph selection */}
                             <div className="mb-3">
@@ -303,10 +287,10 @@ export default function StationCard({station}) {
                                 </ResponsiveContainer>
                             )}
 
-                            <div className="mt-3 text-center">
-                                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                            <div className="mt-3">
+                                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                                     <div>
-                                        <label className="block">Startdatum</label>
+                                        <label className="mb-1 block text-sm font-medium text-gray-700">Startdatum</label>
                                         <ReactDatePicker
                                             className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                             dateFormat="dd-MM-yyyy"
@@ -316,7 +300,7 @@ export default function StationCard({station}) {
                                             showMonthYearDropdown={true}/>
                                     </div>
                                     <div>
-                                        <label className="block">Einddatum</label>
+                                        <label className="mb-1 block text-sm font-medium text-gray-700">Einddatum</label>
                                         <ReactDatePicker
                                             className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                             dateFormat="dd-MM-yyyy"
@@ -330,7 +314,6 @@ export default function StationCard({station}) {
                             </div>
                         </div>
                     )}
-                </div>
             </div>
         </div>
     );
