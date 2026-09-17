@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* Project theme tokens (Tailwind v4 @theme). The green matches the previous
+   spinner/brand colour so the migration keeps the app's identity. */
+@theme {
+  --color-brand-50: #ecfdf3;
+  --color-brand-100: #d1fadf;
+  --color-brand-200: #a6f4c5;
+  --color-brand-300: #6ce9a6;
+  --color-brand-400: #32d583;
+  --color-brand-500: #4fa94d;
+  --color-brand-600: #2f8f3e;
+  --color-brand-700: #256d31;
+  --color-brand-800: #1f5528;
+  --color-brand-900: #1a4523;
+}
+
+/* Skeleton shimmer animation used by the Skeleton component. */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer utilities {
+  .animate-skeleton {
+    background-image: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.06) 25%,
+      rgb(0 0 0 / 0.12) 37%,
+      rgb(0 0 0 / 0.06) 63%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+}

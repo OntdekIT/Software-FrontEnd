@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^18.3.25",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",
@@ -52,6 +53,7 @@
     "mailslurp-client": "^15.24.2",
     "prop-types": "^15.8.1",
     "sass": "^1.93.2",
+    "tailwindcss": "^4.3.3",
     "vite": "^7.1.11"
   }
 }

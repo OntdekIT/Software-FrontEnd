@@ -1,13 +1,14 @@
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
-import './styles.scss'
-import 'bootstrap'
+import './index.css'
 import Root from "./pages/root.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthProvider from "./providers/auth-provider.jsx";
 import ProtectedRoute from "./components/protected-route.jsx";
 import UserRole from "./domain/user-role.jsx";
 import { getUserByIdLoader } from "./loaders/user-loader.jsx";
+import Preloader from "./components/ui/Preloader.jsx";
+import { ToastProvider } from "./components/ui/toast.jsx";
 
 // Lazy load everything
 const NewHome = lazy(() => import('./pages/new-home.jsx'));
@@ -41,48 +42,48 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Suspense fallback={<div>Loading...</div>}><NewHome /></Suspense>
+                element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
             },
             {
                 path: "/newhome",
-                element: <Suspense fallback={<div>Loading...</div>}><NewHome /></Suspense>
+                element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
             },
             {
                 path: "/newheatmap",
-                element: <Suspense fallback={<div>Loading...</div>}><NewHeatMap /></Suspense>
+                element: <Suspense fallback={<Preloader />}><NewHeatMap /></Suspense>
             },
             {
                 path: "/wijken",
-                element: <Suspense fallback={<div>Loading...</div>}><NeighbourhoodPage /></Suspense>
+                element: <Suspense fallback={<Preloader />}><NeighbourhoodPage /></Suspense>
             },
             {
                 path: "/wijken/:id",
-                element: <Suspense fallback={<div>Loading...</div>}><NeighbourhoodPage /></Suspense>
+                element: <Suspense fallback={<Preloader />}><NeighbourhoodPage /></Suspense>
             },
             {
                 path: "/about",
-                element: <Suspense fallback={<div>Loading...</div>}><About /></Suspense>
+                element: <Suspense fallback={<Preloader />}><About /></Suspense>
             },
             {
                 path: "/auth",
                 children: [
-                    { path: "login", element: <Suspense fallback={<div>Loading...</div>}><Login /></Suspense> },
-                    { path: "register", element: <Suspense fallback={<div>Loading...</div>}><Register /></Suspense> },
-                    { path: "logout", element: <Suspense fallback={<div>Loading...</div>}><Logout /></Suspense> },
-                    { path: "forgot-password", element: <Suspense fallback={<div>Loading...</div>}><ForgotPassword /></Suspense> },
-                    { path: "reset-password", element: <Suspense fallback={<div>Loading...</div>}><ResetPassword /></Suspense> }
+                    { path: "login", element: <Suspense fallback={<Preloader />}><Login /></Suspense> },
+                    { path: "register", element: <Suspense fallback={<Preloader />}><Register /></Suspense> },
+                    { path: "logout", element: <Suspense fallback={<Preloader />}><Logout /></Suspense> },
+                    { path: "forgot-password", element: <Suspense fallback={<Preloader />}><ForgotPassword /></Suspense> },
+                    { path: "reset-password", element: <Suspense fallback={<Preloader />}><ResetPassword /></Suspense> }
                 ]
             },
             {
                 path: "/my",
                 element: <ProtectedRoute />,
                 children: [
-                    { path: "/my/account", element: <Suspense fallback={<div>Loading...</div>}><Profile /></Suspense> },
+                    { path: "/my/account", element: <Suspense fallback={<Preloader />}><Profile /></Suspense> },
                     {
                         path: "stations",
                         children: [
-                            { index: true, element: <Suspense fallback={<div>Loading...</div>}><MyStationsOverview /></Suspense> },
-                            { path: "claim", element: <Suspense fallback={<div>Loading...</div>}><ClaimStation /></Suspense> }
+                            { index: true, element: <Suspense fallback={<Preloader />}><MyStationsOverview /></Suspense> },
+                            { path: "claim", element: <Suspense fallback={<Preloader />}><ClaimStation /></Suspense> }
                         ]
                     }
                 ]
@@ -90,30 +91,30 @@ const router = createBrowserRouter([
             {
                 path: "/stations",
                 children: [
-                    { path: ":stationId", element: <Suspense fallback={<div>Loading...</div>}><StationDetails /></Suspense> },
-                    { path: ":stationId/edit", element: <Suspense fallback={<div>Loading...</div>}><EditStation /></Suspense> }
+                    { path: ":stationId", element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> },
+                    { path: ":stationId/edit", element: <Suspense fallback={<Preloader />}><EditStation /></Suspense> }
                 ]
             },
             {
                 path: "/admin",
                 element: <ProtectedRoute roles={[UserRole.SUPER_ADMIN, UserRole.ADMIN]} />,
                 children: [
-                    { index: true, element: <Suspense fallback={<div>Loading...</div>}><AdminDashboard /></Suspense> },
+                    { index: true, element: <Suspense fallback={<Preloader />}><AdminDashboard /></Suspense> },
                     {
                         path: "workshop-codes",
                         children: [
-                            { index: true, element: <Suspense fallback={<div>Loading...</div>}><WorkshopCodeOverview /></Suspense> },
-                            { path: "create", element: <Suspense fallback={<div>Loading...</div>}><CreateWorkshopCode /></Suspense> }
+                            { index: true, element: <Suspense fallback={<Preloader />}><WorkshopCodeOverview /></Suspense> },
+                            { path: "create", element: <Suspense fallback={<Preloader />}><CreateWorkshopCode /></Suspense> }
                         ]
                     },
                     {
                         path: "users",
                         children: [
-                            { index: true, element: <Suspense fallback={<div>Loading...</div>}><UserOverview /></Suspense> },
+                            { index: true, element: <Suspense fallback={<Preloader />}><UserOverview /></Suspense> },
                             {
                                 path: ":userId",
                                 children: [
-                                    { index: true, element: <Suspense fallback={<div>Loading...</div>}><UserDetails /></Suspense>, loader: getUserByIdLoader }
+                                    { index: true, element: <Suspense fallback={<Preloader />}><UserDetails /></Suspense>, loader: getUserByIdLoader }
                                 ]
                             }
                         ]
@@ -121,12 +122,12 @@ const router = createBrowserRouter([
                     {
                         path: "stations",
                         children: [
-                            { index: true, element: <Suspense fallback={<div>Loading...</div>}><StationOverview /></Suspense> },
-                            { path: "toevoegen", element: <Suspense fallback={<div>Loading...</div>}><MeetstationToevoegen /></Suspense> },
+                            { index: true, element: <Suspense fallback={<Preloader />}><StationOverview /></Suspense> },
+                            { path: "toevoegen", element: <Suspense fallback={<Preloader />}><MeetstationToevoegen /></Suspense> },
                             {
                                 path: ":stationId",
                                 children: [
-                                    { index: true, element: <Suspense fallback={<div>Loading...</div>}><StationDetails /></Suspense> }
+                                    { index: true, element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> }
                                 ]
                             }
                         ]
@@ -139,8 +140,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <AuthProvider>
-            <RouterProvider router={router} />
-        </AuthProvider>
+        <ToastProvider>
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>
+        </ToastProvider>
     </StrictMode>,
 )
