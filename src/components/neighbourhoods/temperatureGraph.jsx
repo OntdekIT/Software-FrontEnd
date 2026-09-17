@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import {
     ResponsiveContainer,
     LineChart,
@@ -54,3 +55,7 @@ export default function TemperatureGraph({ data }) {
         </div>
     );
 }
+
+TemperatureGraph.propTypes = {
+    data: PropTypes.array,
+};

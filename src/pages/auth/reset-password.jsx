@@ -6,9 +6,9 @@ import {backendApi} from "../../utils/backend-api.jsx";
 export default function ResetPassword() {
     const [errMsg, setErrMsg] = useState('');
     const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [email, setEmail] = useState(searchParams.get('email'));
-    const [token, setToken] = useState(searchParams.get('token'));
+    const [searchParams] = useSearchParams();
+    const [email] = useState(searchParams.get('email'));
+    const [token] = useState(searchParams.get('token'));
     const navigate = useNavigate();
     const {register, handleSubmit, formState: {errors}, watch} = useForm({
         mode: "onBlur"

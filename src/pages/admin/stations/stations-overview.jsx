@@ -11,10 +11,6 @@ export default function StationOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
 
-    const handleClick = () => {
-        navigate('/admin/stations/add');
-    };
-
     const getAllStations = async (filters = {}) => {
         setErrMsg(null);
         setLoading(true);

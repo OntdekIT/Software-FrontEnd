@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -169,3 +170,12 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
   return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
 }
+
+NewMap.propTypes = {
+  centerX: PropTypes.number,
+  centerY: PropTypes.number,
+  zoom: PropTypes.number,
+  regionData: PropTypes.array,
+  onRegionClick: PropTypes.func,
+  pmRegionIds: PropTypes.array,
+};

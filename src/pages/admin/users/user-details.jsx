@@ -1,4 +1,4 @@
-import {Link, useLoaderData, useNavigate} from "react-router-dom";
+import {useLoaderData, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import EditUserRoleModal from "../../../components/users/edit-user-role-modal.jsx";
@@ -96,7 +96,7 @@ export default function UserDetails() {
                             )}
                             {user.stations.length > 0 && user.stations
                                 .sort((a, b) => a.stationid - b.stationid)
-                                .map((station, index) => (
+                                .map((station) => (
                                     <div className="col-12 col-md-6 col-lg-4" key={station.stationid}>
                                         <StationCard station={station}></StationCard>
                                     </div>

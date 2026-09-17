@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import TemperatureGraph from "./temperatureGraph";
 import { backendApi } from "../../utils/backend-api.jsx";
 import DustGraph from "./dustGraph";
@@ -106,3 +107,12 @@ export default function NeighbourhoodDetail({ neighbourhood }) {
         </section>
     );
 }
+
+NeighbourhoodDetail.propTypes = {
+    neighbourhood: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        name: PropTypes.string,
+        avgTemp: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        avgPm25: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+};

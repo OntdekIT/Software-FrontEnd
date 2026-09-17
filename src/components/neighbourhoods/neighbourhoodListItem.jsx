@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export default function NeighbourhoodListItem({ neighbourhood, isSelected }) {
     const avgTemp = Number(neighbourhood.avgTemp);
@@ -26,3 +27,13 @@ export default function NeighbourhoodListItem({ neighbourhood, isSelected }) {
         </Link>
     );
 }
+
+NeighbourhoodListItem.propTypes = {
+    neighbourhood: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        name: PropTypes.string,
+        avgTemp: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        avgPm25: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+    isSelected: PropTypes.bool,
+};

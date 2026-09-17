@@ -141,7 +141,7 @@ export default function ClaimStation() {
             headers: {'Content-Type': 'application/json'},
             withCredentials: true
         })
-            .then((response) => {
+            .then(() => {
                 localStorage.removeItem("stationId");
                 navigate('/my/stations');
             })

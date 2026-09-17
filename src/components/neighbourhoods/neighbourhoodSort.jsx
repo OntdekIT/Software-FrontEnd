@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function NeighbourhoodSort({ sortOption, setSortOption }) {
     return (
         <div className="neighbourhood-sort">
@@ -18,3 +20,8 @@ export default function NeighbourhoodSort({ sortOption, setSortOption }) {
         </div>
     );
 }
+
+NeighbourhoodSort.propTypes = {
+    sortOption: PropTypes.string,
+    setSortOption: PropTypes.func.isRequired,
+};
