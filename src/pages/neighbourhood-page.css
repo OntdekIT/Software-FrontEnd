@@ -191,3 +191,23 @@
     background: #808080;
     border-radius: 8px;
 }
+
+/* Mobiel/tablet: zijbalk en detail onder elkaar i.p.v. naast elkaar. */
+@media (max-width: 768px) {
+    .neighbourhood-page {
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .neighbourhood-sidebar {
+        width: 100%;
+        max-width: none;
+        height: auto;
+        max-height: 50vh;
+    }
+
+    .neighbourhood-detail {
+        width: 100%;
+        min-height: 0;
+    }
+}

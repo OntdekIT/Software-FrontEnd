@@ -8,6 +8,42 @@
     overflow: hidden; /* Prevents scrollbars */
 }
 
+/* Mobiel/tablet: kaart en zijbalk onder elkaar i.p.v. naast elkaar, en
+   vaste viewport-breedtes vervangen door volledige breedte. */
+@media (max-width: 768px) {
+    .home-section {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .mini-map {
+        width: 100%;
+        height: 55vh;
+        margin-left: 0;
+        margin-top: 0;
+    }
+
+    .sidebar-container {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .wijken-view {
+        height: auto;
+        max-height: none;
+    }
+
+    .wijken-view .wijken-list {
+        max-height: 45vh;
+    }
+
+    .wijken-view .weer-view {
+        height: auto;
+    }
+}
+
 .mini-map {
     position: relative;
     width: 48vw; /* Reduced from 50vw */
