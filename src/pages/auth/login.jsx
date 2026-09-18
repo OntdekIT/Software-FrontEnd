@@ -1,11 +1,12 @@
 import {useState} from "react";
 import {backendApi} from "../../utils/backend-api.jsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import VerifyEmail from "../../components/auth/verify-email.jsx";
 import {useForm} from "react-hook-form";
 import Button from "../../components/ui/Button.jsx";
 import {Spinner} from "../../components/ui/Preloader.jsx";
 import {useToast} from "../../components/ui/toast.jsx";
+import {useAuth} from "../../providers/auth-provider.jsx";
 
 export default function Login() {
     const {register, handleSubmit, formState: {errors}} = useForm({
@@ -13,6 +14,8 @@ export default function Login() {
     });
 
     const toast = useToast();
+    const navigate = useNavigate();
+    const {updateToken} = useAuth();
     const [formData, setFormData] = useState({});
     const [verify, setVerify] = useState(false);
     const [loading, setLoading] = useState(false); // State to manage form submission status
@@ -31,7 +34,14 @@ export default function Login() {
             });
 
             if (response?.status === 200) {
-                setVerify(true);
+                // Vertrouwd IP: de backend geeft direct een token terug en de
+                // mailverificatie wordt overgeslagen. Anders naar het verify-scherm.
+                if (response.data?.verificationRequired === false && response.data?.token) {
+                    updateToken(response.data.token);
+                    navigate("/my/stations");
+                } else {
+                    setVerify(true);
+                }
             }
         } catch (err) {
             console.error(err);
