@@ -1,0 +1,132 @@
+name: E2E tests
+
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  cypress-e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:11.2
+        env:
+          MARIADB_ROOT_PASSWORD: ontdekstation013
+          MARIADB_DATABASE: ontdekstation013
+          MARIADB_MYSQL_LOCALHOST_USER: "1"
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+      mailhog:
+        image: mailhog/mailhog:v1.0.1
+        ports:
+          - 1025:1025
+          - 8025:8025
+
+    steps:
+      - name: Checkout frontend
+        uses: actions/checkout@v4
+        with:
+          path: frontend
+
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: OntdekIT/Software-BackEnd
+          ref: s3nj26
+          path: backend
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
+
+      - name: Build backend
+        run: mvn -B package -DskipTests
+        working-directory: backend/ClimateChecker
+
+      - name: Start backend
+        working-directory: backend/ClimateChecker
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mariadb://localhost:3306/ontdekstation013
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: ontdekstation013
+          JWT_SECRET: ZGV2LW9ubHktc2VjcmV0LWRvLW5vdC11c2UtaW4tcHJvZHVjdGlvbi1jaGFuZ2VtZQ==
+          TRUSTED_IP_PEPPER: ci-e2e-pepper
+          MAILSERVER_RELAY_HOST: localhost
+          MAILSERVER_RELAY_PORT: "1025"
+          MAILSERVER_RELAY_USER: test
+          MAILSERVER_RELAY_PASSWORD: test
+          MAIL_USERNAME: noreply@ontdekstation.local
+          MAIL_PASSWORD: test
+          SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "false"
+          SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "false"
+          ROOT_USER_FIRSTNAME: Admin
+          ROOT_USER_LASTNAME: Beheerder
+          ROOT_USER_EMAIL: admin@example.com
+          ROOT_USER_PASSWORD: Admin123!
+        run: |
+          java -jar target/ClimateChecker-*.jar > backend.log 2>&1 &
+          echo "Wachten tot de backend gezond is..."
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8082/actuator/health > /dev/null; then
+              echo "Backend is gezond."; exit 0
+            fi
+            sleep 3
+          done
+          echo "Backend startte niet op tijd:"; cat backend.log; exit 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build & serve frontend
+        working-directory: frontend
+        env:
+          VITE_BACKEND_API_URL: http://localhost:8082/api
+        run: |
+          npm run build
+          npx vite preview --port 5173 --host > preview.log 2>&1 &
+          echo "Wachten tot de frontend beschikbaar is..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5173/ > /dev/null; then
+              echo "Frontend draait."; exit 0
+            fi
+            sleep 2
+          done
+          echo "Frontend startte niet op tijd:"; cat preview.log; exit 1
+
+      - name: Run Cypress e2e
+        working-directory: frontend
+        run: >-
+          npx cypress run
+          --env baseUrl=http://localhost:5173,mailhogUrl=http://localhost:8025,adminEmail=admin@example.com,adminPassword=Admin123!
+
+      - name: Upload Cypress artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            frontend/cypress/screenshots
+            frontend/cypress/videos
+          if-no-files-found: ignore
