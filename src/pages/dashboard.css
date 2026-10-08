@@ -1,0 +1,108 @@
+.dashboard-page {
+    width: 100%;
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 2rem;
+    box-sizing: border-box;
+}
+
+.dashboard-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.dashboard-header-links {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dashboard-error {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: #fdecea;
+    color: #b42318;
+}
+
+/* KPI strip: four tiles on desktop, wrapping down to 2 then 1 on narrow screens. */
+.dashboard-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* Main body: map on the left, stacked summary cards on the right. */
+.dashboard-body {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 1rem;
+    align-items: stretch;
+}
+
+.dashboard-map-card {
+    position: relative;
+    min-height: 60vh;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    background: #e9ecef;
+}
+
+.dashboard-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.dashboard-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #204b99;
+}
+
+/* Tablet: KPI tiles to two columns, map and side stack vertically. */
+@media (max-width: 1024px) {
+    .dashboard-kpis {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-body {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-map-card {
+        min-height: 50vh;
+    }
+}
+
+/* Mobile: single column KPI stack. */
+@media (max-width: 560px) {
+    .dashboard-kpis {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+    }
+}
