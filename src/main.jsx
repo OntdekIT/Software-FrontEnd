@@ -11,6 +11,7 @@ import Preloader from "./components/ui/Preloader.jsx";
 import { ToastProvider } from "./components/ui/toast.jsx";
 
 // Lazy load everything
+const Dashboard = lazy(() => import('./pages/dashboard.jsx'));
 const NewHome = lazy(() => import('./pages/new-home.jsx'));
 const NewHeatMap = lazy(() => import('./pages/new-heatmap.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
@@ -43,6 +44,17 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
+                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
+            },
+            {
+                path: "/dashboard",
+                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
+            },
+            {
+                // The interactive map+regions view that used to be the landing
+                // page. Kept at /kaart (with the old /newhome alias) now that
+                // the dashboard is the index route.
+                path: "/kaart",
                 element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
             },
             {
