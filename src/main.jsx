@@ -32,6 +32,7 @@ const UserOverview = lazy(() => import('./pages/admin/users/user-overview.jsx'))
 const UserDetails = lazy(() => import('./pages/admin/users/user-details.jsx'));
 const StationOverview = lazy(() => import('./pages/admin/stations/stations-overview.jsx'));
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
+const DataCoverage = lazy(() => import('./pages/admin/data-coverage/data-coverage.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
 const NeighbourhoodPage = lazy(() => import('./pages/neighbourhoodPage.jsx'));
 
@@ -128,6 +129,7 @@ const router = createBrowserRouter([
                             }
                         ]
                     },
+                    { path: "data-coverage", element: <Suspense fallback={<Preloader />}><DataCoverage /></Suspense> },
                     {
                         path: "stations",
                         children: [
