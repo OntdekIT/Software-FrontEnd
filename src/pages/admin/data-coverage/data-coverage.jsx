@@ -35,6 +35,18 @@ const GRANULARITIES = [
     {value: "day", label: "Per dag"},
 ];
 
+// Hour buckets over longer periods mean hundreds of cells per station row;
+// a single day per day says nothing. Limit each period to what reads well.
+const MAX_HOURLY_DAYS = 7;
+const MIN_DAILY_DAYS = 7;
+
+// Covers several MeetJeStad calls in the backend (fetched per week).
+const COVERAGE_TIMEOUT_MS = 120000;
+
+function isGranularityAllowed(granularity, days) {
+    return granularity === "hour" ? days <= MAX_HOURLY_DAYS : days >= MIN_DAILY_DAYS;
+}
+
 function SummaryTile({label, value, hint}) {
     return (
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
@@ -61,6 +73,7 @@ export default function DataCoverage() {
 
     useEffect(() => {
         let cancelled = false;
+        const controller = new AbortController();
         const load = async () => {
             setLoading(true);
             setErrMsg(null);
@@ -76,7 +89,10 @@ export default function DataCoverage() {
                 });
                 // Weeks of raw data from MeetJeStad can take a while; allow more
                 // than the default 15s timeout.
-                const response = await backendApi.get(`/measurement/coverage?${params.toString()}`, {timeout: 60000});
+                const response = await backendApi.get(`/measurement/coverage?${params.toString()}`, {
+                    timeout: COVERAGE_TIMEOUT_MS,
+                    signal: controller.signal,
+                });
                 if (!cancelled) setCoverage(response.data);
             } catch (err) {
                 if (!cancelled) {
@@ -89,6 +105,8 @@ export default function DataCoverage() {
         load();
         return () => {
             cancelled = true;
+            // Stop the request too, so the backend is not kept busy for a result nobody reads.
+            controller.abort();
         };
     }, [days, granularity]);
 
@@ -117,6 +135,14 @@ export default function DataCoverage() {
 
     const firstLoad = loading && !coverage;
 
+    // Set both in one event so the effect only fetches once.
+    const changeDays = newDays => {
+        setDays(newDays);
+        if (!isGranularityAllowed(granularity, newDays)) {
+            setGranularity(granularity === "hour" ? "day" : "hour");
+        }
+    };
+
     return (
         <div className="mx-auto max-w-7xl px-4 py-6">
             <header className="mb-6">
@@ -136,7 +162,7 @@ export default function DataCoverage() {
                     <select
                         className="mt-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                         value={days}
-                        onChange={e => setDays(Number(e.target.value))}
+                        onChange={e => changeDays(Number(e.target.value))}
                     >
                         {PERIODS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
                     </select>
@@ -148,7 +174,11 @@ export default function DataCoverage() {
                         value={granularity}
                         onChange={e => setGranularity(e.target.value)}
                     >
-                        {GRANULARITIES.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                        {GRANULARITIES.map(g => (
+                            <option key={g.value} value={g.value} disabled={!isGranularityAllowed(g.value, days)}>
+                                {g.label}
+                            </option>
+                        ))}
                     </select>
                 </label>
                 <label className="flex items-center gap-2 pb-2 text-sm text-gray-700">
@@ -285,7 +315,9 @@ export default function DataCoverage() {
                             {stations.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
-                                        Geen stations met fijnstofdata in deze periode.
+                                        {showWithoutPm
+                                            ? "Geen stations gevonden in deze periode."
+                                            : "Geen stations met fijnstofdata in deze periode."}
                                     </td>
                                 </tr>
                             )}
