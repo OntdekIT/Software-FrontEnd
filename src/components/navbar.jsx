@@ -41,6 +41,20 @@ export default function Navbar() {
                 >
                     <ul className="flex flex-col gap-1 lg:ml-6 lg:flex-row lg:items-center lg:gap-1">
                         <li>
+                            <Link className={navLinkClass} to="/" onClick={handleNavLinkClick}>
+                                <i className="bi bi-speedometer2" aria-hidden="true"></i>
+                                <span>Dashboard</span>
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link className={navLinkClass} to="/kaart" onClick={handleNavLinkClick}>
+                                <i className="bi bi-geo" aria-hidden="true"></i>
+                                <span>Kaart</span>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link className={navLinkClass} to="/newheatmap" onClick={handleNavLinkClick}>
                                 <i className="bi bi-map" aria-hidden="true"></i>
                                 <span>Heatmap</span>
