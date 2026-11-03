@@ -1,18 +1,22 @@
-import {useEffect, useRef, useState} from "react";
-import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
+import {useEffect, useRef} from "react";
 import PropTypes from "prop-types";
+import ZoomableChart from "../charts/ZoomableChart";
+import {useChartZoom} from "../charts/UseChartZoom";
 
-export default function GraphView({graphData, dataType}) {
-    const [showMin, setShowMin] = useState(false);
-    const [showMax, setShowMax] = useState(false);
-    const [showGem, setShowGem] = useState(false);
-    const [filteredMeasurements, setFilteredMeasurements] = useState([]);
+const LINES = [
+    {key: "min", name: "Min", color: "#0000ff"},
+    {key: "max", name: "Max", color: "#ff0000"},
+    {key: "avg", name: "Gemiddeld", color: "#00ee00"},
+];
+
+export default function GraphView({graphData, dataType, zoom: zoomFromParent}) {
+    // Komt er een zoom van de bovenliggende pagina? Dan die gebruiken.
+    // Zo niet, dan gebruikt de grafiek een eigen zoom.
+    const localZoom = useChartZoom();
+    const zoom = zoomFromParent ?? localZoom;
+
     const colorContainerRef = useRef(null);
     const secondColorDivRef = useRef(null);
-
-    useEffect(() => {
-        setFilteredMeasurements(graphData);
-    }, [graphData]);
 
     useEffect(() => {
         const syncDivHeights = () => {
@@ -28,20 +32,16 @@ export default function GraphView({graphData, dataType}) {
         };
     }, [graphData]);
 
-
     const getLastTenMeasurements = () => {
-        // Filter out measurements without min, max, and avg
-        const validMeasurements = filteredMeasurements.filter(measurement =>
+        const validMeasurements = graphData.filter(measurement =>
             measurement.min != null && measurement.max != null && measurement.avg != null
         );
 
-        // If there are no valid measurements, display the message
         if (validMeasurements.length === 0) {
             return <div>Er zijn geen metingen voor deze datum</div>;
         }
 
         const round = (v) => (v == null || isNaN(v) ? '—' : Number(v).toFixed(1));
-        // Return the last 10 valid measurements, most recent first, as tidy cards.
         return validMeasurements.slice(-10).reverse().map((measurement, index) => (
             <div key={index} className="rounded-lg border border-gray-200 bg-white p-3">
                 <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
@@ -66,46 +66,26 @@ export default function GraphView({graphData, dataType}) {
         ));
     };
 
-    const handleLegendChange = (e) => {
-        if (e.dataKey === "min")
-            setShowMin(!showMin);
-        if (e.dataKey === "max")
-            setShowMax(!showMax);
-        if (e.dataKey === "avg")
-            setShowGem(!showGem);
-    };
-
     return (
         <div className="flex flex-col md:flex-row">
-            <div ref={colorContainerRef} key={"colorContainer"} className="color mr-px w-full md:h-[30%] md:flex-[5]">
+            <div ref={colorContainerRef} className="color mr-px w-full md:h-[30%] md:flex-[5]">
                 <br />
                 <div className="mx-auto max-w-3xl px-4">
                     <label className="mt-1 italic">Meting van: {new Date().toLocaleString('nl-NL')}</label>
-                    <br></br>
+                    <br />
                     <label className="mt-2 flex items-center gap-2 font-bold">
                         <i className="bi bi-graph-up text-brand-500"></i> Historische {dataType} data
                     </label>
-                    <ResponsiveContainer minWidth={250} minHeight={250}>
-                        <LineChart data={graphData}>
-                            <XAxis dataKey="timestamp"/>
-                            <YAxis width={30}/>
-                            <CartesianGrid stroke="#ccc"/>
-                            <Legend onClick={handleLegendChange}/>
-                            <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
-                                  hide={showMin}
-                                  dot={false}/>
-                            <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
-                                  hide={showMax}
-                                  dot={false}/>
-                            <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
-                                  hide={showGem}
-                                  dot={false}/>
-                        </LineChart>
-                    </ResponsiveContainer>
+                    <ZoomableChart
+                        data={graphData}
+                        lines={LINES}
+                        xKey="timestamp"
+                        zoom={zoom}
+                    />
                 </div>
             </div>
             <div ref={secondColorDivRef} className="color hide-scrollbar w-full overflow-y-auto md:flex-1">
-                <div className="mx-auto max-w-3xl px-4" style={{ width: "calc(100%) - 20px" }}>
+                <div className="mx-auto max-w-3xl px-4">
                     <label className="mb-2 mt-2 flex items-center gap-2 font-bold">
                         <i className="bi bi-list-ol text-brand-500"></i> Laatste 10 Metingen
                     </label>
@@ -115,10 +95,11 @@ export default function GraphView({graphData, dataType}) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 GraphView.propTypes = {
     graphData: PropTypes.array.isRequired,
-    dataType: PropTypes.string.isRequired
-}
+    dataType: PropTypes.string.isRequired,
+    zoom: PropTypes.object,
+};
