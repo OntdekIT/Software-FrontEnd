@@ -45,7 +45,7 @@ export default function Home() {
     const fetchRegionData = (regionId) => {
         setRegionLoading(true);
         setRegionHistoryData([]);
-        backendApi.get(`/measurement/history/average/region/${regionId}`)
+        backendApi.get(`/measurement/history/average/region/${regionId}?granularity=half-hour`)
             .then(response => {
                 setRegionHistoryData(response.data);
                 setRegionLoading(false);

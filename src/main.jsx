@@ -11,6 +11,7 @@ import Preloader from "./components/ui/Preloader.jsx";
 import { ToastProvider } from "./components/ui/toast.jsx";
 
 // Lazy load everything
+const Dashboard = lazy(() => import('./pages/dashboard.jsx'));
 const NewHome = lazy(() => import('./pages/new-home.jsx'));
 const NewHeatMap = lazy(() => import('./pages/new-heatmap.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
@@ -32,6 +33,7 @@ const UserOverview = lazy(() => import('./pages/admin/users/user-overview.jsx'))
 const UserDetails = lazy(() => import('./pages/admin/users/user-details.jsx'));
 const StationOverview = lazy(() => import('./pages/admin/stations/stations-overview.jsx'));
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
+const DataCoverage = lazy(() => import('./pages/admin/data-coverage/data-coverage.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
 const NeighbourhoodPage = lazy(() => import('./pages/neighbourhoodPage.jsx'));
 
@@ -43,6 +45,17 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
+                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
+            },
+            {
+                path: "/dashboard",
+                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
+            },
+            {
+                // The interactive map+regions view that used to be the landing
+                // page. Kept at /kaart (with the old /newhome alias) now that
+                // the dashboard is the index route.
+                path: "/kaart",
                 element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
             },
             {
@@ -128,6 +141,7 @@ const router = createBrowserRouter([
                             }
                         ]
                     },
+                    { path: "data-coverage", element: <Suspense fallback={<Preloader />}><DataCoverage /></Suspense> },
                     {
                         path: "stations",
                         children: [

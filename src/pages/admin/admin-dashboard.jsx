@@ -19,6 +19,12 @@ const ACTIONS = [
         description: "Beheer meetstations en hun instellingen.",
         icon: "bi bi-broadcast",
     },
+    {
+        link: "/admin/data-coverage",
+        title: "Datadekking",
+        description: "Zie waar en wanneer fijnstofdata ontbreekt.",
+        icon: "bi bi-reception-2",
+    },
 ];
 
 export default function AdminDashboard() {

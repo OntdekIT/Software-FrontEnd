@@ -30,6 +30,7 @@ export default function RegionChart({ regionHistoryData, dataView, setDataView, 
                     />
                     <YAxis
                         yAxisId="temp"
+                        domain={['auto', 'auto']}
                         width={dataView === 'pm' ? 0 : 28}
                         tick={{ fontSize: 9 }}
                         tickLine={dataView !== 'pm'}

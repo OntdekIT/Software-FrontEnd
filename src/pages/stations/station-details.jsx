@@ -5,6 +5,24 @@ import {backendApi} from "../../utils/backend-api.jsx";
 import Preloader, { Spinner } from "../../components/ui/Preloader.jsx";
 import Button from "../../components/ui/Button.jsx";
 import GraphView from "../../components/stations/graph-view.jsx";
+import FourPanelStats from "../../components/stations/four-panel-stats.jsx";
+
+/**
+ * Datumformaat dat de backend verwacht (dd-MM-yyyy HH:mm). Staat buiten de
+ * component omdat zowel de stationsgrafieken als de netwerkpanelen hem nodig
+ * hebben, en beide precies hetzelfde formaat moeten sturen om dezelfde periode
+ * op te vragen.
+ */
+function formatDate(date) {
+    const padZero = (num) => num.toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const month = padZero(date.getMonth() + 1); // Months are zero-indexed
+    const day = padZero(date.getDate());
+    const hours = padZero(date.getHours());
+    const minutes = padZero(date.getMinutes());
+
+    return `${day}-${month}-${year} ${hours}:${minutes}`;
+}
 
 export default function StationDetails() {
     const {stationId} = useParams(); // Extract stationId from URL
@@ -18,6 +36,10 @@ export default function StationDetails() {
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
     const [stofGraphData, setStofGraphData] = useState([]);
+    // Netwerkbrede statistiek (min/max/mediaan over alle stations) voor de vier panelen.
+    const [networkData, setNetworkData] = useState([]);
+    const [networkLoading, setNetworkLoading] = useState(false);
+    const [networkError, setNetworkError] = useState(null);
 
 
     useEffect(() => {
@@ -43,17 +65,6 @@ export default function StationDetails() {
     }, [stationId]);
 
     useEffect(() => {
-        function formatDate(date) {
-            const padZero = (num) => num.toString().padStart(2, '0');
-            const year = date.getFullYear();
-            const month = padZero(date.getMonth() + 1); // Months are zero-indexed
-            const day = padZero(date.getDate());
-            const hours = padZero(date.getHours());
-            const minutes = padZero(date.getMinutes());
-
-            return `${day}-${month}-${year} ${hours}:${minutes}`;
-        }
-
         if (startDate.getTime() === endDate.getTime()) {
             let date = startDate;
             date.setMonth(date.getMonth() - 6);
@@ -109,6 +120,53 @@ export default function StationDetails() {
         // dep would re-trigger the fetch/normalisation loop. Intentionally scoped
         // to the graph date range.
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [meetstation, startDate, endDate]);
+
+    // Netwerkbrede statistiek voor de vier panelen. Draait in een eigen effect
+    // met een eigen laadstatus, zodat een trage of mislukte netwerkquery de rest
+    // van de pagina niet blokkeert.
+    useEffect(() => {
+        // meetstation staat bewust in de guard en in de deps: het effect
+        // hierboven normaliseert de periode pas zodra het station geladen is, en
+        // daarvoor zijn start- en einddatum nog aan elkaar gelijk.
+        if (!meetstation.stationid) return;
+        if (startDate.getTime() >= endDate.getTime()) return;
+
+        // Voorkomt dat een traag antwoord van een eerdere periode een nieuwer
+        // antwoord overschrijft wanneer je snel tussen periodes wisselt.
+        let cancelled = false;
+
+        const fetchNetworkData = async () => {
+            setNetworkLoading(true);
+            setNetworkError(null);
+            try {
+                const response = await backendApi.get("/measurement/history/network", {
+                    params: {
+                        startDate: formatDate(startDate),
+                        endDate: formatDate(endDate)
+                    },
+                    // Deze aggregatie gaat over álle stations en duurt daardoor
+                    // langer dan een gewone call; de standaardtimeout van 15s is
+                    // hiervoor te krap.
+                    timeout: 60000
+                });
+                if (cancelled) return;
+                setNetworkData(Array.isArray(response.data) ? response.data : []);
+            } catch (err) {
+                if (cancelled) return;
+                console.error("error: ", err);
+                setNetworkData([]);
+                setNetworkError(err);
+            } finally {
+                if (!cancelled) setNetworkLoading(false);
+            }
+        };
+
+        fetchNetworkData();
+
+        return () => {
+            cancelled = true;
+        };
     }, [meetstation, startDate, endDate]);
 
     const handleStartDateChange = (date) => {
@@ -306,6 +364,17 @@ export default function StationDetails() {
                     </div>
                 </div>
             </div>
+
+            {/* Four-panel comparison: network min / max / median vs this station,
+                all over the period selected above. */}
+            <FourPanelStats
+                networkData={networkData}
+                stationData={tempGraphData}
+                stationName={meetstation.name || `Station ${meetstation.stationid}`}
+                unit="°C"
+                loading={networkLoading}
+                error={networkError}
+            />
 
             {/* Graphs, each in its own card */}
             <div className="space-y-6">

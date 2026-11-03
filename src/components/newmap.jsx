@@ -12,17 +12,28 @@ function computeColor(value, min, dif) {
   return spectralColors[colorIndex] ?? 'rgba(136,136,136,0.5)';
 }
 
-function createRegionGeoJSON(data, metric = 'temperature') {
+function createRegionGeoJSON(data, metric = 'temperature', colorRange = null) {
   const key = metric === 'pm25' ? 'avgPm25' : 'avgTemp';
 
-  let min = 1000, max = -1000;
-  data.forEach(d => {
-    const v = parseFloat(d[key]);
-    if (!isNaN(v)) {
-      if (v < min) min = v;
-      if (v > max) max = v;
-    }
-  });
+  // Normaal wordt de kleurschaal per dataset bepaald. Bij een time-lapse mag dat
+  // niet: als elk frame zich op zijn eigen min/max schaalt, ziet een koude nacht
+  // er net zo bont uit als een warme middag en zie je juist geen verandering.
+  // De pagina geeft dan via colorRange één schaal mee voor de hele reeks.
+  let min, max;
+  if (colorRange && isFinite(colorRange.min) && isFinite(colorRange.max)) {
+    min = colorRange.min;
+    max = colorRange.max;
+  } else {
+    min = 1000;
+    max = -1000;
+    data.forEach(d => {
+      const v = parseFloat(d[key]);
+      if (!isNaN(v)) {
+        if (v < min) min = v;
+        if (v > max) max = v;
+      }
+    });
+  }
   const dif = max - min !== 0 ? max - min : 1;
 
   return {
@@ -83,7 +94,7 @@ function buildStationPopupHtml(station) {
     + `</div>`;
 }
 
-export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [], stations = [] }) {
+export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [], stations = [], colorRange = null, overlay = null }) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const popupRef = useRef(null);
@@ -243,7 +254,7 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
     const updateMapData = () => {
       const source = mapInstance.current.getSource('regions');
       if (source) {
-        source.setData(createRegionGeoJSON(regionData, metric));
+        source.setData(createRegionGeoJSON(regionData, metric, colorRange));
       }
     };
 
@@ -252,7 +263,7 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
     } else {
       mapInstance.current.once('load', updateMapData);
     }
-  }, [regionData, metric]);
+  }, [regionData, metric, colorRange]);
 
   useEffect(() => {
     if (!mapInstance.current) return;
@@ -367,10 +378,21 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
           ))}
         </div>
         <div className="mt-1 flex justify-between text-[10px] text-gray-500">
-          <span>Laag</span>
-          <span>Hoog</span>
+          {/* Met een vaste schaal (time-lapse) zijn de echte grenswaarden
+              bekend en informatiever dan "Laag"/"Hoog". */}
+          <span>{colorRange && isFinite(colorRange.min) ? colorRange.min.toFixed(1) : 'Laag'}</span>
+          <span>{colorRange && isFinite(colorRange.max) ? colorRange.max.toFixed(1) : 'Hoog'}</span>
         </div>
       </div>
+
+      {/* Ruimte voor bediening van de pagina, bijvoorbeeld de tijdslider.
+          pointer-events-none op de wrapper zodat de kaart eromheen sleepbaar
+          blijft; de inhoud zet hem zelf weer aan. */}
+      {overlay && (
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 w-[min(42rem,calc(100%-1.5rem))] -translate-x-1/2">
+          {overlay}
+        </div>
+      )}
     </div>
   );
 }
@@ -383,4 +405,11 @@ NewMap.propTypes = {
   onRegionClick: PropTypes.func,
   pmRegionIds: PropTypes.array,
   stations: PropTypes.array,
+  /** Vaste kleurschaal {min, max}; zonder deze wordt per dataset geschaald. */
+  colorRange: PropTypes.shape({
+    min: PropTypes.number,
+    max: PropTypes.number,
+  }),
+  /** Bediening die over de kaart heen getoond wordt, onderaan gecentreerd. */
+  overlay: PropTypes.node,
 };
