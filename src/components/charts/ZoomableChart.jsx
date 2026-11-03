@@ -10,6 +10,12 @@ const DEFAULT_COLORS = ["#16a34a", "#2563eb", "#dc2626", "#8884d8", "#f59e0b"];
 const BrushHandle = ({ x, y, width, height }) => (
   <rect x={x} y={y + 3} width={width} height={height - 6} rx={3} fill="#94a3b8" />
 );
+BrushHandle.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
 export default function ZoomableChart({
   data, lines, xKey = "timestamp", zoom: zoomFromParent, yAxes, height = 350, yUnit = "",
 }) {
