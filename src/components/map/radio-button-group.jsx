@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from "prop-types";
 
 const RadioButtonGroup = (props) => {
     const [selectedOption, setSelectedOption] = useState("wijk");
@@ -20,5 +21,10 @@ const RadioButtonGroup = (props) => {
         </div>
     );
 }
+
+RadioButtonGroup.propTypes = {
+    handleToggleShowRegions: PropTypes.func.isRequired,
+    handleToggleTemp: PropTypes.func.isRequired,
+};
 
 export default RadioButtonGroup;

@@ -1,40 +1,28 @@
-import {
-    ResponsiveContainer,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Legend,
-} from "recharts";
+import PropTypes from "prop-types";
+import ZoomableChart from "../charts/ZoomableChart";
 
-export default function DustGraph({ data }) {
+export default function DustGraph({ data, zoom }) {
     if (!data || data.length === 0) {
         return <p>Geen historische fijnstofdata beschikbaar.</p>;
     }
 
     return (
         <div className="dust-graph">
-            <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="timestamp" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend
-                        verticalAlign="top"
-                        align="right"
-                        height={36}
-                    />
-
-                    <Line
-                        type="monotone"
-                        dataKey="avgStof"
-                        name="Gemiddelde fijnstof"
-                    />
-                </LineChart>
-            </ResponsiveContainer>
+            <ZoomableChart
+                data={data}
+                xKey="timestamp"
+                height={300}
+                yUnit=" µg/m³"
+                zoom={zoom}
+                lines={[
+                    { key: "avgStof", name: "Gemiddelde fijnstof", color: "#8884d8" },
+                ]}
+            />
         </div>
     );
 }
+
+DustGraph.propTypes = {
+    data: PropTypes.array,
+    zoom: PropTypes.object,
+};

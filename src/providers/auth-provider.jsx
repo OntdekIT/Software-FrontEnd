@@ -4,9 +4,24 @@ import {backendApi} from "../utils/backend-api.jsx";
 
 const AuthContext = createContext(null);
 
+// Safely read a JSON value from localStorage. A corrupt/non-JSON entry must
+// not crash the whole app on mount, so fall back to null and clear it.
+function readStoredUser() {
+    const raw = localStorage.getItem("loggedInUser");
+    if (!raw) {
+        return null;
+    }
+    try {
+        return JSON.parse(raw);
+    } catch {
+        localStorage.removeItem("loggedInUser");
+        return null;
+    }
+}
+
 export default function AuthProvider({children}) {
     const [token, setToken] = useState(localStorage.getItem("token"));
-    const [loggedInUser, setLoggedInUser] = useState(JSON.parse(localStorage.getItem("loggedInUser")));
+    const [loggedInUser, setLoggedInUser] = useState(readStoredUser);
 
     const updateToken = (newToken) => {
         setToken(newToken);
@@ -37,6 +52,9 @@ export default function AuthProvider({children}) {
             setLoggedInUser(null);
             localStorage.removeItem("loggedInUser");
         }
+        // Only react to token changes; refreshUserInfo is stable and including
+        // it would re-run this auth side-effect unnecessarily.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
     const contextValue = useMemo(() => ({
@@ -44,6 +62,9 @@ export default function AuthProvider({children}) {
         updateToken,
         loggedInUser,
         refreshUserInfo
+        // refreshUserInfo is a stable reference; memo only needs to change on
+        // token/loggedInUser.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }), [token, loggedInUser]);
 
     return (

@@ -30,11 +30,15 @@ ENV VITE_BACKEND_API_URL=$VITE_BACKEND_API_URL
 RUN npm run build:docker
 
 # ---- Release with NGINX ----
-FROM nginx:alpine AS release
+FROM nginx:1.27-alpine AS release
 WORKDIR /usr/share/nginx/html
 
 # Copy the built React app to NGINX's public folder
 COPY --from=build /app/dist ./
+
+# Custom server config: correct .mjs MIME type (for the maplibre worker)
+# and SPA fallback so client-side routes don't 404 on direct load.
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80

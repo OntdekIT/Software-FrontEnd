@@ -1,10 +1,9 @@
 import {useAuth} from "../providers/auth-provider.jsx";
-import {Navigate, Outlet, useNavigate} from "react-router-dom";
+import {Navigate, Outlet} from "react-router-dom";
 import PropTypes from "prop-types";
 
 export default function ProtectedRoute({roles = []}) {
     const {token, loggedInUser} = useAuth();
-    const navigate = useNavigate();
 
     if (!token) {
         console.log("User is not authenticated. Redirecting to /login.");

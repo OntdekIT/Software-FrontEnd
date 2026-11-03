@@ -1,6 +1,10 @@
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import Button from "../../../components/ui/Button.jsx";
+import Modal from "../../../components/ui/Modal.jsx";
+import Preloader, {Spinner} from "../../../components/ui/Preloader.jsx";
+import {useToast} from "../../../components/ui/toast.jsx";
 
 export default function ClaimStation() {
     const inputvalues = {
@@ -21,11 +25,12 @@ export default function ClaimStation() {
     }
 
     const [station, setStation] = useState(inputvalues);
-    const [errorMessage, setErrorMessage] = useState(null);
     const [step, setStep] = useState(stepvalues);
     const [workshopCode, setWorkshopCode] = useState(null);
+    const [verifying, setVerifying] = useState(false);
 
     const navigate = useNavigate();
+    const toast = useToast();
 
     useEffect(() => {
         station.visibility = '0';
@@ -34,6 +39,8 @@ export default function ClaimStation() {
         } else {
             SetStepValues(1);
         }
+        // Initialise step once on mount; adding station would re-run on every edit.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const SetStepValues = (num) => {
@@ -74,13 +81,13 @@ export default function ClaimStation() {
     }
 
     const verifyStationNumber = async () => {
-        setErrorMessage(null);
         try {
             if (!station.stationid) {
-                setErrorMessage("Vul een station nummer in.");
+                toast.error("Vul een station nummer in.");
             } else if (!workshopCode) {
-                setErrorMessage("Vul een workshop code in.");
+                toast.error("Vul een workshop code in.");
             } else {
+                setVerifying(true);
                 const response = await backendApi.get(`/Meetstation/Availibility/${station.stationid}/${workshopCode}`, {
                     headers: {'Content-Type': 'application/json'},
                     withCredentials: false
@@ -88,14 +95,16 @@ export default function ClaimStation() {
                 if (response.data === 200) {
                     SetStepValues(step.num + 1);
                 } else if (response.data === 402) {
-                    setErrorMessage("Meetstation is niet beschikbaar");
+                    toast.error("Meetstation is niet beschikbaar");
                 } else if (response.data === 403) {
-                    setErrorMessage("Workshop code is onjuist")
+                    toast.error("Workshop code is onjuist");
                 }
             }
         } catch (err) {
-
             console.error(err);
+            toast.error("Er is iets misgegaan");
+        } finally {
+            setVerifying(false);
         }
     }
 
@@ -141,8 +150,9 @@ export default function ClaimStation() {
             headers: {'Content-Type': 'application/json'},
             withCredentials: true
         })
-            .then((response) => {
+            .then(() => {
                 localStorage.removeItem("stationId");
+                toast.success("Meetstation succesvol geclaimd");
                 navigate('/my/stations');
             })
             .catch((error) => {
@@ -153,149 +163,142 @@ export default function ClaimStation() {
                 } else {
                     console.error("Error", error.message);
                 }
+                toast.error("Meetstation claimen is mislukt");
             });
     };
 
+    // Route-driven modal wizard: reached via /my/stations/claim, rendered as an
+    // overlay; closing (backdrop/Escape/X) returns to the stations overview.
+    const closeWizard = () => navigate('/my/stations');
+
+    if (!step.num) {
+        return (
+            <Modal show={true} onClose={closeWizard} title="Meetstation claimen" size="md">
+                <Preloader message="Meetstation claimen voorbereiden…" />
+            </Modal>
+        );
+    }
+
     return (
-        <div className="color">
-            <br/>
-            <div className="container gy-5">
-                <div className="row">
-                    <div className="col-4"></div>
-                    <div className="col-4">
-                        <h4><b>({step.num}/4) {step.title}</b></h4>
-                        <label className="labelMargin">
-                            <h5>{step.subTitle} </h5>
-                            <div className="form-text">{step.description}</div>
-                        </label>
-                    </div>
+        <Modal
+            show={true}
+            onClose={closeWizard}
+            size="md"
+            title={(
+                <span className="flex items-center gap-2">
+                    <i className="bi bi-broadcast" aria-hidden="true"></i>
+                    ({step.num}/4) {step.title}
+                </span>
+            )}
+        >
+            <div className="mx-auto max-w-md space-y-4">
+                <div>
+                    <h5 className="text-lg font-semibold text-gray-900">{step.subTitle}</h5>
+                    <p className="mt-1 text-sm text-gray-500">{step.description}</p>
                 </div>
 
                 {(() => {
                     switch (step.num) {
                         case 1:
                             return (
-                                <>
-                                    <div className="row mt-1">
-                                        <div className="col-4"></div>
-                                        <div className="col-2">
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                name="workshopCode"
-                                                placeholder="Workshop Code..."
-                                                onChange={handleWorkshopCodeChange}
-                                                value={workshopCode}
-                                                required
-                                            />
-                                        </div>
-                                        <div className="col-2">
-                                            <input
-                                                type="number"
-                                                className="form-control"
-                                                name="stationid"
-                                                placeholder="Station nummer..."
-                                                onChange={handleChange}
-                                                value={station.stationid}
-                                                required
-                                            />
-                                        </div>
-                                    </div>
-                                </>
+                                <div className="flex flex-col gap-3 sm:flex-row">
+                                    <input
+                                        type="number"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                        name="workshopCode"
+                                        placeholder="Workshop Code..."
+                                        onChange={handleWorkshopCodeChange}
+                                        value={workshopCode}
+                                        required
+                                    />
+                                    <input
+                                        type="number"
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                        name="stationid"
+                                        placeholder="Station nummer..."
+                                        onChange={handleChange}
+                                        value={station.stationid}
+                                        required
+                                    />
+                                </div>
                             );
                         case 2:
                             return (
-                                <>
-                                    <div className="row mt-1">
-                                        <div className="col-4"></div>
-                                        <div className="col-4">
-                                            <div className="form-group">
-                                                <select data-testid='Visibility'
-                                                    value={station.visibility}
-                                                    onChange={handleChange}
-                                                    className="form-select"
-                                                    name="visibility"
-                                                >
-                                                    <option value="0">Onzichtbaar</option>
-                                                    <option value="1">Zichtbaar</option>
-                                                </select>
-                                                {station.visibility === '0' && (
-                                                    <div className="form-text">Het station is onzichtbaar, maar de data
-                                                        wordt gebruikt binnen de metingen van een wijk.</div>
-                                                )}
-                                                {station.visibility === '1' && (
-                                                    <div className="form-text">Het station is zichtbaar en kan door
-                                                        iedereen bekeken worden.</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
+                                <div>
+                                    <select data-testid='Visibility'
+                                        value={station.visibility}
+                                        onChange={handleChange}
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                        name="visibility"
+                                    >
+                                        <option value="0">Onzichtbaar</option>
+                                        <option value="1">Zichtbaar</option>
+                                    </select>
+                                    {station.visibility === '0' && (
+                                        <p className="mt-2 text-sm text-gray-500">Het station is onzichtbaar, maar de data
+                                            wordt gebruikt binnen de metingen van een wijk.</p>
+                                    )}
+                                    {station.visibility === '1' && (
+                                        <p className="mt-2 text-sm text-gray-500">Het station is zichtbaar en kan door
+                                            iedereen bekeken worden.</p>
+                                    )}
+                                </div>
                             );
                         case 3:
                             return (
-                                <>
-                                    <div className="row mt-1">
-                                        <div className="col-4"></div>
-                                        <div className="col-4">
-                                            <input
-                                                data-testid='StationName'
-                                                onChange={handleChange}
-                                                className={"form-control"}
-                                                value={station.name}
-                                                name="name"
-                                                type="text"
-                                            />
-                                        </div>
-                                    </div>
-                                </>
+                                <div>
+                                    <input
+                                        data-testid='StationName'
+                                        onChange={handleChange}
+                                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                                        value={station.name}
+                                        name="name"
+                                        type="text"
+                                    />
+                                </div>
                             );
                         case 4:
                             return (
-                                <>
-                                    <div className="row mt-1">
-                                        <div className="col-4"></div>
-                                        <div className="col-4">
-                                            <div>Station nummer: {station.stationid}</div>
-                                            <div>Station naam: {station.name}</div>
-                                            <div>
-                                                Station visibility:
-                                                {station.visibility === '0' ? (
-                                                    <div className="form-text">Het station is onzichtbaar, maar de data
-                                                        wordt gebruikt binnen de metingen van een wijk.</div>
-                                                ) : station.visibility === '1' ? (
-                                                    <div className="form-text">Het station is zichtbaar en kan door
-                                                        iedereen bekeken worden.</div>
-                                                ) : null}
-                                            </div>
-                                        </div>
+                                <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm">
+                                    <div className="flex justify-between gap-4">
+                                        <span className="text-gray-500">Station nummer</span>
+                                        <span className="font-medium text-gray-900">{station.stationid}</span>
                                     </div>
-                                </>
+                                    <div className="flex justify-between gap-4">
+                                        <span className="text-gray-500">Station naam</span>
+                                        <span className="font-medium text-gray-900">{station.name}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Zichtbaarheid</span>
+                                        {station.visibility === '0' ? (
+                                            <p className="mt-1 text-gray-500">Het station is onzichtbaar, maar de data
+                                                wordt gebruikt binnen de metingen van een wijk.</p>
+                                        ) : station.visibility === '1' ? (
+                                            <p className="mt-1 text-gray-500">Het station is zichtbaar en kan door
+                                                iedereen bekeken worden.</p>
+                                        ) : null}
+                                    </div>
+                                </div>
                             )
                         default:
                             return null; // Default case if step.num doesn't match any specific case
                     }
                 })()}
-                <div className="row">
-                    <div className="col-4"></div>
-                    <div className="col-4">
-                        <br/>
-                        {errorMessage && <label className="error-msg">{errorMessage}</label>}
-                    </div>
-                </div>
-                <div className="row mt-5">
-                    <div className="col-4"></div>
-                    <div className="col-5">
-                        {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
-                            <button className="btn btn-primary" onClick={goBack}>
-                                Terug
-                            </button>
+                <div className="mt-8 flex gap-2">
+                    {!(step.num === 2 && localStorage.getItem("stationId") != null) && (
+                        <Button variant="secondary" onClick={goBack} disabled={verifying}>
+                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
+                            Terug
+                        </Button>
+                    )}
+                    <Button data-testid='ClaimMeetstationNext' variant="primary" onClick={() => handleButtonClick(step.num)} disabled={verifying}>
+                        {verifying ? <Spinner className="h-4 w-4" /> : (
+                            <i className={`bi ${step.num === 4 ? 'bi-check-lg' : 'bi-arrow-right'}`} aria-hidden="true"></i>
                         )}
-                        <button data-testid='ClaimMeetstationNext' className={"btn btn-primary"} onClick={() => handleButtonClick(step.num)}>Volgende
-                        </button>
-                    </div>
+                        {step.num === 4 ? 'Claimen' : 'Volgende'}
+                    </Button>
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }

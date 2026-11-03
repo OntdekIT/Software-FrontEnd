@@ -1,29 +1,45 @@
-import {useEffect, useRef, useState} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useEffect, useState} from "react";
+import {Link} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
-import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
-import LoadingComponent from "../loading-component.jsx";
+import {Spinner} from "../ui/Preloader.jsx";
+import Button from "../ui/Button.jsx";
 import ReactDatePicker from "react-datepicker";
 import PropTypes from "prop-types";
+import ZoomableChart from "../charts/ZoomableChart";
+import {useChartZoom} from "../charts/UseChartZoom";
+
+const DAY = 24 * 60 * 60 * 1000;
+
+const SINGLE_LINES = [
+    {key: "min", name: "Min", color: "#0000ff"},
+    {key: "max", name: "Max", color: "#ff0000"},
+    {key: "avg", name: "Gemiddeld", color: "#00ee00"},
+];
+
+const COMBINED_LINES = [
+    {key: "temp", name: "Temperatuur", color: "#ff0000", yAxisId: "left"},
+    {key: "stof", name: "Fijnstof", color: "#8884d8", yAxisId: "right"},
+];
+
+const COMBINED_AXES = [
+    {id: "left", orientation: "left", stroke: "#ff0000"},
+    {id: "right", orientation: "right", stroke: "#8884d8"},
+];
 
 export default function StationCard({station}) {
-//use states for what to show and what not to show
     const [endDate, setEndDate] = useState(new Date());
     const [startDate, setStartDate] = useState(new Date());
-    const [selectedStation, setSelectedStation] = useState(station.stationid);
-    const [showMinTemp, setShowMinTemp] = useState(false);
-    const [showMaxTemp, setShowMaxTemp] = useState(false);
-    const [showGemTemp, setShowGemTemp] = useState(false);
-    const errRef = useRef();
-    const [errorMessage, setErrorMessage] = useState('');
+    // Geen useState meer: zo volgt hij het station als je van station wisselt.
+    const selectedStation = station.stationid;
+    const [, setErrorMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    //data to be shown
     const [tempGraphData, setTempGraphData] = useState([]);
     const [humGraphData, setHumGraphData] = useState([]);
     const [stofGraphData, setStofGraphData] = useState([]);
-    const [combinedGraphData, setCombinedGraphData] = useState([]); // New state for combined
+    const [combinedGraphData, setCombinedGraphData] = useState([]);
     const [graphVisible, setGraphVisible] = useState(true);
-    const [selectedGraph, setSelectedGraph] = useState('combinedGraph'); // Default to combined
+    const [selectedGraph, setSelectedGraph] = useState('combinedGraph');
+    const zoom = useChartZoom();
     const dateTime = new Date();
 
     useEffect(() => {
@@ -53,36 +69,32 @@ export default function StationCard({station}) {
                     endDate: formatDate(currentEndDate)
                 }
             }).then((response) => {
-                const combinedData = response.data.map((meting) => ({
+                setCombinedGraphData(response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     temp: meting.avgTemp,
                     stof: meting.avgStof
-                }));
-                setCombinedGraphData(combinedData);
+                })));
 
-                const tempData = response.data.map((meting) => ({
+                setTempGraphData(response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     avg: meting.avgTemp,
                     min: meting.minTemp,
                     max: meting.maxTemp
-                }));
-                setTempGraphData(tempData);
+                })));
 
-                const humData = response.data.map((meting) => ({
+                setHumGraphData(response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     avg: meting.avgHum,
                     min: meting.minHum,
                     max: meting.maxHum
-                }));
-                setHumGraphData(humData);
+                })));
 
-                const stofData = response.data.map((meting) => ({
+                setStofGraphData(response.data.map((meting) => ({
                     timestamp: meting.timestamp,
                     avg: meting.avgStof,
                     min: meting.minStof,
                     max: meting.maxStof
-                }));
-                setStofGraphData(stofData);
+                })));
 
                 setLoading(false);
             }).catch(handleError);
@@ -97,7 +109,7 @@ export default function StationCard({station}) {
             endDate.getFullYear() === today.getFullYear()) {
             interval = setInterval(() => {
                 fetchHistoryData();
-            }, 1000 * 60 * 60); // every hour
+            }, 1000 * 60 * 60);
         }
 
         if (station.isActive === false) {
@@ -111,37 +123,31 @@ export default function StationCard({station}) {
 
     function handleError() {
         setErrorMessage('Het ophalen van de gegevens is mislukt');
+        setLoading(false);
     }
 
-    const handleClick = (e) => {
-        if (startDate.getTime() === endDate.getTime()) {
-            let date = startDate;
-            date.setMonth(date.getMonth() - 1);
-            setStartDate(date);
-        }
-        setSelectedStation(e.target.options.id);
-    }
-
-    const handleLegendChange = (e) => {
-        if (e.dataKey === "minTemp")
-            setShowMinTemp(!showMinTemp);
-        if (e.dataKey === "maxTemp")
-            setShowMaxTemp(!showMaxTemp);
-        if (e.dataKey === "avgTemp")
-            setShowGemTemp(!showGemTemp);
-    }
+    // Vaste periode: dag / week / maand
+    const setPeriod = (days) => {
+        const end = new Date();
+        const start = new Date(end.getTime() - days * DAY);
+        setStartDate(start);
+        setEndDate(end);
+        zoom.clearRange();
+    };
 
     const handleStartDateChange = (date) => {
         if (date.getDate() === endDate.getDate()) {
             date.setDate(date.getDate() - 1)
         }
         setStartDate(date);
+        zoom.clearRange();
     }
     const handleEndDateChange = (date) => {
         if (date.getDate() === startDate.getDate()) {
             date.setDate(date.getDate() + 1)
         }
         setEndDate(date);
+        zoom.clearRange();
     }
 
     const toggleGraphVisibility = () => {
@@ -158,185 +164,161 @@ export default function StationCard({station}) {
         selectedGraph === 'stofGraph' ? stofGraphData : [];
 
     return (
-        <div className="card">
-            <div className="card-header d-flex align-items-center">
-                <h4 className="card-title flex-grow-1">{station.name}: {station.stationid}</h4>
-                <Link to={`/stations/${station.stationid}`} className="btn btn-outline-dark btn-sm ms-2"><i
-                    className="bi bi-info"></i></Link>
-                <Link to={`/stations/${station.stationid}/edit`} className="btn btn-outline-dark btn-sm ms-2"><i
-                    className="bi bi-pencil"></i></Link>
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="flex items-center border-b border-gray-200 px-4 py-3">
+                <h4 className="flex flex-grow items-center gap-2 text-lg font-semibold text-gray-800">
+                    <i className="bi bi-broadcast text-brand-500"></i>{station.name}: {station.stationid}
+                </h4>
+                <Link to={`/stations/${station.stationid}`} aria-label="Station details" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-info-circle"></i></Button>
+                </Link>
+                <Link to={`/stations/${station.stationid}/edit`} aria-label="Station bewerken" className="ml-2">
+                    <Button variant="outline" size="sm"><i className="bi bi-pencil"></i></Button>
+                </Link>
             </div>
-            <div className="card-body">
-                <div className="p-0">
-                <div key={station.stationid} style={{ padding: "5%" }}>
-                {station.locError === true ? (
-                station.isActive === true ? (
-                    <div className="d-flex justify-content-center">
-                        <span className="warning-text">
-                            ⚠️ LET OP: De locatie wordt niet meer gemeten!
-                        </span>
-                    </div>
-                ) : null
-                ) : (
-                <>
-                    {!station.is_public && (
-                    <div className="form-text">
-                        Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
-                    </div>
+            <div className="space-y-4 p-4">
+                <div>
+                    {station.locError === true ? (
+                        station.isActive === true ? (
+                            <div className="flex justify-center">
+                                <span className="warning-text">
+                                    ⚠️ LET OP: De locatie wordt niet meer gemeten!
+                                </span>
+                            </div>
+                        ) : null
+                    ) : (
+                        <div className="text-sm text-gray-500">
+                            {station.is_public
+                                ? "Het station is zichtbaar en kan door iedereen bekeken worden."
+                                : "Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk."}
+                        </div>
                     )}
-                    {station.is_public && (
-                    <div className="form-text">
-                        Het station is zichtbaar en kan door iedereen bekeken worden.
-                    </div>
-                    )}
-                </>
-                )}
-
                 </div>
 
-                    
-                    
-                    {station.isActive === true ? (
-                        <div className="d-flex justify-content-center" onClick={toggleGraphVisibility} style={{cursor: 'pointer'}}>
-                            {/* Toggle button */}
-                            {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                {station.isActive === true ? (
+                    <div className="flex cursor-pointer justify-center text-gray-500 hover:text-brand-500" onClick={toggleGraphVisibility}>
+                        {graphVisible ? <span>&#x25B2;</span> : <span>&#x25BC;</span>}
+                    </div>
+                ) : (
+                    <div className="flex justify-center">
+                        <span className="warning-text">
+                            ⚠️ LET OP: Dit station is inactief!
+                        </span>
+                    </div>
+                )}
+
+                {graphVisible && (
+                    <div className="space-y-3 border-t border-gray-200 pt-4">
+                        <label className="block text-sm italic text-gray-500">Meting
+                            van: {dateTime.toLocaleString('nl-NL')}</label>
+                        <label className="block font-semibold text-gray-800">Historische data</label>
+
+                        <div className="mb-3">
+                            <label htmlFor="graphType" className="mb-1 block text-sm font-medium text-gray-700">Kies het type grafiek</label>
+                            <select id="graphType" className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500" value={selectedGraph}
+                                    onChange={handleGraphChange}>
+                                <option value="combinedGraph">Gecombineerd (Temp & Fijnstof)</option>
+                                <option value="tempGraph">Temperatuur</option>
+                                <option value="humGraph">Vochtigheid</option>
+                                <option value="stofGraph">FijnStof</option>
+                            </select>
                         </div>
-                    ) : (
-                        <div className="d-flex justify-content-center">
-                            <span className="warning-text">
-                                ⚠️ LET OP: Dit station is inactief!
-                            </span>
+
+                        {/* Vaste periodes */}
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => setPeriod(1)}>Dag</Button>
+                            <Button variant="outline" size="sm" onClick={() => setPeriod(7)}>Week</Button>
+                            <Button variant="outline" size="sm" onClick={() => setPeriod(30)}>Maand</Button>
                         </div>
-                        
-                    )}
 
-                    
-                    
-
-                    {graphVisible && (
-                        <div>
-                            <hr style={{margin: "0"}}></hr>
-                            <label className="fst-italic mt-1">Meting
-                                van: {dateTime.toLocaleString('nl-NL')}</label>
-                            <br></br>
-                            <label className="bold mt-2">Historische data</label>
-
-                            {/* Dropdown for graph selection */}
-                            <div className="mb-3">
-                                <label htmlFor="graphType" className="form-label">Kies het type grafiek</label>
-                                <select id="graphType" className="form-select" value={selectedGraph}
-                                        onChange={handleGraphChange}>
-                                    <option value="combinedGraph">Gecombineerd (Temp & Fijnstof)</option>
-                                    <option value="tempGraph">Temperatuur</option>
-                                    <option value="humGraph">Vochtigheid</option>
-                                    <option value="stofGraph">FijnStof</option>
-                                </select>
+                        {loading && (
+                            <div className="flex items-center justify-center gap-2 py-2 text-sm text-gray-500">
+                                <Spinner className="h-5 w-5 text-brand-500" />
+                                Data aan het ophalen...
                             </div>
-                            <div className="position-relative">
-                                {loading && (
-                                    <LoadingComponent message="Data aan het ophalen..."
-                                                      isFullScreen={false}></LoadingComponent>
-                                )}
-                            </div>
-                            {(() => {
-                                switch (selectedGraph) {
-                                    case "tempGraph":
-                                        return station.tempError ? (
-                                            <div className="d-flex justify-content-center">
-                                                <span className="warning-text">
-                                                    ⚠️ LET OP: De temperatuur wordt niet meer gemeten!
-                                                </span>
-                                            </div>
-                                        ) : null;
-                                    case "humGraph":
-                                        return station.humError ? (
-                                            <div className="d-flex justify-content-center">
-                                                <span className="warning-text">
-                                                    ⚠️ LET OP: De luchtvochtigheid wordt niet meer gemeten!
-                                                </span>
-                                            </div>
-                                        ) : null;
-                                    case "stofGraph":
-                                        return station.stofError ? (
-                                            <div className="d-flex justify-content-center">
-                                                <span className="warning-text">
-                                                    ⚠️ LET OP: De Fijnstof wordt niet meer gemeten!
-                                                </span>
-                                            </div>
-                                        ) : null;
-                                    case "combinedGraph":
-                                        return (station.tempError || station.stofError) ? (
-                                            <div className="d-flex justify-content-center">
-                                                <span className="warning-text">
-                                                    ⚠️ LET OP: Niet alle data is beschikbaar!
-                                                </span>
-                                            </div>
-                                        ) : null;
-                                    default:
-                                        return null;
-                                }
-                            })()}
+                        )}
+                        {(() => {
+                            switch (selectedGraph) {
+                                case "tempGraph":
+                                    return station.tempError ? (
+                                        <div className="flex justify-center">
+                                            <span className="warning-text">
+                                                ⚠️ LET OP: De temperatuur wordt niet meer gemeten!
+                                            </span>
+                                        </div>
+                                    ) : null;
+                                case "humGraph":
+                                    return station.humError ? (
+                                        <div className="flex justify-center">
+                                            <span className="warning-text">
+                                                ⚠️ LET OP: De luchtvochtigheid wordt niet meer gemeten!
+                                            </span>
+                                        </div>
+                                    ) : null;
+                                case "stofGraph":
+                                    return station.stofError ? (
+                                        <div className="flex justify-center">
+                                            <span className="warning-text">
+                                                ⚠️ LET OP: De Fijnstof wordt niet meer gemeten!
+                                            </span>
+                                        </div>
+                                    ) : null;
+                                case "combinedGraph":
+                                    return (station.tempError || station.stofError) ? (
+                                        <div className="flex justify-center">
+                                            <span className="warning-text">
+                                                ⚠️ LET OP: Niet alle data is beschikbaar!
+                                            </span>
+                                        </div>
+                                    ) : null;
+                                default:
+                                    return null;
+                            }
+                        })()}
 
-                            {selectedGraph === 'combinedGraph' ? (
-                                <ResponsiveContainer minWidth={250} minHeight={250}>
-                                    <LineChart key={station.stationid} data={combinedGraphData}>
-                                        <XAxis dataKey="timestamp" />
-                                        <YAxis yAxisId="left" orientation="left" stroke="#ff0000" />
-                                        <YAxis yAxisId="right" orientation="right" stroke="#8884d8" />
-                                        <CartesianGrid stroke="#ccc" />
-                                        <Legend />
-                                        <Line yAxisId="left" type="monotone" dataKey="temp" name="Temperatuur" stroke="#ff0000" dot={false} />
-                                        <Line yAxisId="right" type="monotone" dataKey="stof" name="Fijnstof" stroke="#8884d8" dot={false} />
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            ) : (
-                                <ResponsiveContainer minWidth={250} minHeight={250}>
-                                    <LineChart key={station.stationid + selectedGraph} data={graphData}>
-                                        <XAxis dataKey="timestamp"/>
-                                        <YAxis width={30}/>
-                                        <CartesianGrid stroke="#ccc"/>
-                                        <Legend onClick={handleLegendChange}/>
-                                        <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
-                                              hide={showMinTemp}
-                                              dot={false}/>
-                                        <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
-                                              hide={showMaxTemp}
-                                              dot={false}/>
-                                        <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
-                                              hide={showGemTemp}
-                                              dot={false}/>
-                                    </LineChart>
-                                </ResponsiveContainer>
-                            )}
+                        {selectedGraph === 'combinedGraph' ? (
+                            <ZoomableChart
+                                data={combinedGraphData}
+                                lines={COMBINED_LINES}
+                                yAxes={COMBINED_AXES}
+                                zoom={zoom}
+                            />
+                        ) : (
+                            <ZoomableChart
+                                data={graphData}
+                                lines={SINGLE_LINES}
+                                zoom={zoom}
+                            />
+                        )}
 
-                            <div className="container text-center mt-3">
-                                <div className="row gy-2">
-                                    <div className="col-12 col-md-6">
-                                        <label>Startdatum</label>
-                                        <ReactDatePicker
-                                            className="form-control"
-                                            dateFormat="dd-MM-yyyy"
-                                            selected={startDate}
-                                            onChange={handleStartDateChange}
-                                            maxDate={endDate}
-                                            showMonthYearDropdown={true}/>
-                                    </div>
-                                    <div className="col-12 col-md-6">
-                                        <label>Einddatum</label>
-                                        <ReactDatePicker
-                                            className="form-control"
-                                            dateFormat="dd-MM-yyyy"
-                                            selected={endDate}
-                                            onChange={handleEndDateChange}
-                                            minDate={startDate}
-                                            maxDate={new Date()}
-                                            showMonthYearDropdown={true}/>
-                                    </div>
+                        {/* Eigen bereik */}
+                        <div className="mt-3">
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                <div>
+                                    <label className="mb-1 block text-sm font-medium text-gray-700">Startdatum</label>
+                                    <ReactDatePicker
+                                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        dateFormat="dd-MM-yyyy"
+                                        selected={startDate}
+                                        onChange={handleStartDateChange}
+                                        maxDate={endDate}
+                                        showMonthYearDropdown={true}/>
+                                </div>
+                                <div>
+                                    <label className="mb-1 block text-sm font-medium text-gray-700">Einddatum</label>
+                                    <ReactDatePicker
+                                        className="w-full rounded border border-gray-300 px-3 py-2 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        dateFormat="dd-MM-yyyy"
+                                        selected={endDate}
+                                        onChange={handleEndDateChange}
+                                        minDate={startDate}
+                                        maxDate={new Date()}
+                                        showMonthYearDropdown={true}/>
                                 </div>
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </div>
     );

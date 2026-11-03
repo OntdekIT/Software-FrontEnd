@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import NeighbourhoodListItem from "./neighbourhoodListItem";
 
 export default function NeighbourhoodList({ neighbourhoods, selectedId }) {
@@ -17,3 +18,8 @@ export default function NeighbourhoodList({ neighbourhoods, selectedId }) {
         </nav>
     );
 }
+
+NeighbourhoodList.propTypes = {
+    neighbourhoods: PropTypes.array,
+    selectedId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};

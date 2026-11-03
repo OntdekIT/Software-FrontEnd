@@ -1,23 +1,32 @@
 import {useEffect, useState} from "react";
 import {backendApi} from "../../../utils/backend-api.jsx";
-import LoadingComponent from "../../../components/loading-component.jsx";
+import {SkeletonTable} from "../../../components/ui/Skeleton.jsx";
+import {Spinner} from "../../../components/ui/Preloader.jsx";
 import UserFilters from "../../../components/users/user-filters.jsx";
 import FilterButton from "../../../components/filter-button.jsx";
 import {Link, useNavigate} from "react-router-dom";
 import UserUtils from "../../../utils/user-utils.jsx";
 
+const PAGE_SIZE = 20;
+
 export default function UserOverview() {
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [ready, setReady] = useState(false);
     const [errMsg, setErrMsg] = useState(null);
     const [filters, setFilters] = useState({});
+    const [filterOpen, setFilterOpen] = useState(false);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const getAllUsers = async (filters = {}) => {
+    const getAllUsers = async (filters = {}, pageToLoad = 0) => {
         setErrMsg(null);
         setLoading(true);
         try {
             const queryParams = new URLSearchParams();
+            queryParams.append("page", pageToLoad);
+            queryParams.append("pageSize", PAGE_SIZE);
             Object.keys(filters).forEach(key => {
                 if (filters[key] !== "" && filters[key] !== null && filters[key] !== undefined) {
                     if (Array.isArray(filters[key])) {
@@ -31,9 +40,12 @@ export default function UserOverview() {
             });
 
             const response = await backendApi.get(`/users?${queryParams.toString()}`);
-            setUsers(response.data);
+            // Backend returns a Spring Data Page: { content, totalPages, number, ... }.
+            setUsers(response.data.content ?? []);
+            setPage(response.data.number ?? pageToLoad);
+            setTotalPages(response.data.totalPages ?? 0);
 
-            if (response.data.length === 0) {
+            if ((response.data.content ?? []).length === 0) {
                 setErrMsg("Geen gebruikers gevonden");
             }
 
@@ -46,21 +58,27 @@ export default function UserOverview() {
 
             setErrMsg(errorMessage);
             setUsers([]);
+            setTotalPages(0);
         } finally {
             setLoading(false);
+            setReady(true);
         }
     };
 
     const onFiltersChanged = (filters) => {
         setFilters(filters);
-        console.log(filters);
-
-        getAllUsers(filters).then();
+        // Filtering resets to the first page.
+        getAllUsers(filters, 0).then();
     }
 
     const clearAllFilters = () => {
         setFilters({});
-        getAllUsers().then();
+        getAllUsers({}, 0).then();
+    }
+
+    const goToPage = (nextPage) => {
+        if (nextPage < 0 || nextPage >= totalPages || nextPage === page) return;
+        getAllUsers(filters, nextPage).then();
     }
 
     const navigateToDetails = (user) => {
@@ -71,58 +89,87 @@ export default function UserOverview() {
         getAllUsers().then();
     }, []);
 
+    // Only the very first load blanks the page with a skeleton; later refetches
+    // (filter changes) keep the list visible and show a small inline spinner.
+    const refetching = ready && loading;
+
     return (
         <>
-            {/*Filter offcanvas*/}
-            <div className="offcanvas offcanvas-start" tabIndex="-1" id="userFilterOffcanvas"
-                 aria-labelledby="userFilterOffcanvasLabel">
-                <div className="offcanvas-header">
-                    <h5 className="offcanvas-title" id="userFilterOffcanvasLabel">Filters</h5>
-                    <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas"
-                            aria-label="Close"></button>
+            {/* Filter slide-out panel (Tailwind + state; replaces Bootstrap offcanvas) */}
+            {filterOpen && (
+                <div className="fixed inset-0 z-40 bg-black/40 2xl:hidden" onClick={() => setFilterOpen(false)} role="presentation" />
+            )}
+            <div
+                className={`fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] transform bg-white shadow-xl transition-transform duration-300 2xl:hidden ${filterOpen ? 'translate-x-0' : '-translate-x-full'}`}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Filters"
+            >
+                <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+                    <h5 className="mb-0 text-lg font-semibold">Filters</h5>
+                    <button type="button" onClick={() => setFilterOpen(false)}
+                            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600" aria-label="Sluiten">
+                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                    </button>
                 </div>
-                <div className="offcanvas-body">
+                <div className="p-4">
                     <UserFilters onFiltersChange={onFiltersChanged} filters={filters}/>
                 </div>
             </div>
-            <header className="toolbar fixed-top d-flex justify-content-end align-items-center d-xxl-none">
-                <FilterButton areFiltersActive={false} targetId={"userFilterOffcanvas"}/>
-            </header>
-            <main className="container-fluid">
-                <div className="row">
+            <div className="mx-auto max-w-7xl px-4 py-6">
+                <div className="flex flex-col gap-6 2xl:flex-row">
                     {/* Large screen filters */}
-                    <aside className="d-none d-xxl-block col-xxl-2 border-end full-height-sidebar shadow-sm">
-                        <h2>Filters</h2>
-                        <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
-                                     clearAllFilters={clearAllFilters}/>
+                    <aside className="hidden shrink-0 2xl:block 2xl:w-64">
+                        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                            <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-gray-900">
+                                <i className="bi bi-funnel text-brand-500"></i>
+                                Filters
+                            </h2>
+                            <UserFilters filters={filters} onFiltersChange={onFiltersChanged}
+                                         clearAllFilters={clearAllFilters}/>
+                        </div>
                     </aside>
-                    <section className="col-12 col-xxl-10 offset-xxl-2">
-                        <div className="nav-size d-block d-xxl-none"></div>
-                        <h1 className="page-header-margin text-center">Gebruikers</h1>
-                        {errMsg && <div className="error-msg">{errMsg}</div>}
-                        {loading && (
-                            <LoadingComponent message="Gebruikers aan het ophalen..."
-                                              isFullScreen={true}></LoadingComponent>
-                        )}
-                        {!loading && (users?.length > 0) && (
-                            <div className="table-responsive">
-                                <table className="table table-hover">
-                                    <thead>
+                    <section className="w-full min-w-0 2xl:flex-1">
+                        <div className="mb-4 flex items-center justify-between gap-3">
+                            <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+                                <i className="bi bi-people text-brand-500"></i>
+                                Gebruikers
+                            </h1>
+                            <div className="flex items-center gap-3">
+                                {refetching && (
+                                    <span className="flex items-center gap-2 text-sm text-gray-500">
+                                        <Spinner className="h-4 w-4" /> bijwerken…
+                                    </span>
+                                )}
+                                <div className="2xl:hidden">
+                                    <FilterButton areFiltersActive={Object.keys(filters).length > 0} onClick={() => setFilterOpen(true)}/>
+                                </div>
+                            </div>
+                        </div>
+
+                        {!ready ? (
+                            <SkeletonTable rows={6} columns={4}/>
+                        ) : users?.length > 0 ? (
+                            <>
+                            <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-gray-50 text-gray-600">
                                     <tr>
-                                        <th scope="col">Naam</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Rol</th>
-                                        <th scope="col"></th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Naam</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Email</th>
+                                        <th scope="col" className="px-4 py-3 font-semibold">Rol</th>
+                                        <th scope="col" className="px-4 py-3"></th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {users && users.map(user => (
-                                        <tr key={user.id} onClick={() => navigateToDetails(user)} className="cursor-pointer">
-                                            <td>{`${user.firstName} ${user.lastName}`}</td>
-                                            <td>{user.email}</td>
-                                            <td>{UserUtils.translateRole(user.role)}</td>
-                                            <td>
-                                                <Link to={`./${user.id}`} className="btn btn-sm btn-outline-dark"><i
+                                    <tbody className="divide-y divide-gray-100">
+                                    {users.map(user => (
+                                        <tr key={user.id} onClick={() => navigateToDetails(user)} className="cursor-pointer transition-colors hover:bg-gray-50">
+                                            <td className="px-4 py-3">{`${user.firstName} ${user.lastName}`}</td>
+                                            <td className="px-4 py-3">{user.email}</td>
+                                            <td className="px-4 py-3">{UserUtils.translateRole(user.role)}</td>
+                                            <td className="px-4 py-3">
+                                                <Link to={`./${user.id}`}
+                                                      className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-2.5 py-1.5 text-gray-800 transition-colors hover:bg-gray-50"><i
                                                     className="bi bi-arrow-right"></i></Link>
                                             </td>
                                         </tr>
@@ -130,10 +177,41 @@ export default function UserOverview() {
                                     </tbody>
                                 </table>
                             </div>
+                            {totalPages > 1 && (
+                                <nav className="mt-4 flex items-center justify-between gap-3" aria-label="Paginering">
+                                    <button
+                                        type="button"
+                                        onClick={() => goToPage(page - 1)}
+                                        disabled={page <= 0 || loading}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        <i className="bi bi-chevron-left"></i>
+                                        Vorige
+                                    </button>
+                                    <span className="text-sm text-gray-600">
+                                        Pagina {page + 1} van {totalPages}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => goToPage(page + 1)}
+                                        disabled={page >= totalPages - 1 || loading}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm text-gray-800 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        Volgende
+                                        <i className="bi bi-chevron-right"></i>
+                                    </button>
+                                </nav>
+                            )}
+                            </>
+                        ) : (
+                            <div className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-10 text-center text-gray-500 shadow-sm">
+                                <i className="bi bi-people text-3xl text-gray-400"></i>
+                                <p>{errMsg || "Geen gebruikers gevonden."}</p>
+                            </div>
                         )}
                     </section>
                 </div>
-            </main>
+            </div>
         </>
     );
 }

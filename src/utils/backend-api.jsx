@@ -1,7 +1,9 @@
 import axios from "axios";
 
 export const backendApi = axios.create({
-    baseURL: import.meta.env.VITE_BACKEND_API_URL
+    baseURL: import.meta.env.VITE_BACKEND_API_URL,
+    // Fail fast instead of hanging indefinitely on a slow/unreachable backend.
+    timeout: 15000
 });
 
 backendApi.interceptors.request.use(

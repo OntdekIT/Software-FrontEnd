@@ -3,6 +3,7 @@ import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import cypress from 'eslint-plugin-cypress'
 
 export default [
   { ignores: ['dist'] },
@@ -33,6 +34,30 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    // Cypress e2e specs use Cypress + Mocha globals (cy, Cypress, describe, it,
+    // expect). Register them so they aren't flagged as no-undef, and load the
+    // cypress plugin so its rules (e.g. cypress/no-unnecessary-waiting, which
+    // is referenced by inline eslint-disable comments in the specs) resolve.
+    files: ['cypress/**/*.{js,jsx}', 'cypress.config.js'],
+    plugins: {
+      cypress,
+    },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.mocha,
+        cy: 'readonly',
+        Cypress: 'readonly',
+        expect: 'readonly',
+        assert: 'readonly',
+      },
+    },
+    rules: {
+      ...cypress.configs.recommended.rules,
     },
   },
 ]

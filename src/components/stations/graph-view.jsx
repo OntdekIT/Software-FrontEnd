@@ -1,18 +1,22 @@
-import {useEffect, useRef, useState} from "react";
-import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis} from "recharts";
+import {useEffect, useRef} from "react";
 import PropTypes from "prop-types";
+import ZoomableChart from "../charts/ZoomableChart";
+import {useChartZoom} from "../charts/UseChartZoom";
 
-export default function GraphView({graphData, dataType}) {
-    const [showMin, setShowMin] = useState(false);
-    const [showMax, setShowMax] = useState(false);
-    const [showGem, setShowGem] = useState(false);
-    const [filteredMeasurements, setFilteredMeasurements] = useState([]);
+const LINES = [
+    {key: "min", name: "Min", color: "#0000ff"},
+    {key: "max", name: "Max", color: "#ff0000"},
+    {key: "avg", name: "Gemiddeld", color: "#00ee00"},
+];
+
+export default function GraphView({graphData, dataType, zoom: zoomFromParent}) {
+    // Komt er een zoom van de bovenliggende pagina? Dan die gebruiken.
+    // Zo niet, dan gebruikt de grafiek een eigen zoom.
+    const localZoom = useChartZoom();
+    const zoom = zoomFromParent ?? localZoom;
+
     const colorContainerRef = useRef(null);
     const secondColorDivRef = useRef(null);
-
-    useEffect(() => {
-        setFilteredMeasurements(graphData);
-    }, [graphData]);
 
     useEffect(() => {
         const syncDivHeights = () => {
@@ -28,79 +32,74 @@ export default function GraphView({graphData, dataType}) {
         };
     }, [graphData]);
 
-
     const getLastTenMeasurements = () => {
-        // Filter out measurements without min, max, and avg
-        const validMeasurements = filteredMeasurements.filter(measurement =>
+        const validMeasurements = graphData.filter(measurement =>
             measurement.min != null && measurement.max != null && measurement.avg != null
         );
 
-        // If there are no valid measurements, display the message
         if (validMeasurements.length === 0) {
             return <div>Er zijn geen metingen voor deze datum</div>;
         }
 
-        // Return the last 10 valid measurements
-        return validMeasurements.slice(-10).map((measurement, index) => (
-            <div key={index}>
-                <b>Meting {validMeasurements.length - 10 + index + 1}: {measurement.timestamp}</b>
-                <p>Min: {measurement.min}<br/>
-                    Max: {measurement.max}<br/>
-                    Avg: {measurement.avg}</p>
-                <hr style={{ margin: "2px" }} />
+        const round = (v) => (v == null || isNaN(v) ? '—' : Number(v).toFixed(1));
+        return validMeasurements.slice(-10).reverse().map((measurement, index) => (
+            <div key={index} className="rounded-lg border border-gray-200 bg-white p-3">
+                <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <i className="bi bi-calendar3 text-brand-500" aria-hidden="true"></i>
+                    {measurement.timestamp}
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-md bg-blue-50 py-1">
+                        <div className="text-xs text-gray-500">Min</div>
+                        <div className="font-semibold text-blue-600">{round(measurement.min)}</div>
+                    </div>
+                    <div className="rounded-md bg-red-50 py-1">
+                        <div className="text-xs text-gray-500">Max</div>
+                        <div className="font-semibold text-red-600">{round(measurement.max)}</div>
+                    </div>
+                    <div className="rounded-md bg-brand-50 py-1">
+                        <div className="text-xs text-gray-500">Gem.</div>
+                        <div className="font-semibold text-brand-700">{round(measurement.avg)}</div>
+                    </div>
+                </div>
             </div>
         ));
     };
 
-    const handleLegendChange = (e) => {
-        if (e.dataKey === "min")
-            setShowMin(!showMin);
-        if (e.dataKey === "max")
-            setShowMax(!showMax);
-        if (e.dataKey === "avg")
-            setShowGem(!showGem);
-    };
-
     return (
-        <div style={{ display: "flex" }}>
-            <div ref={colorContainerRef} key={"colorContainer"} className={"color"} style={{ marginRight: "1px", flex: "5", height: "30%" }}>
+        <div className="flex flex-col md:flex-row">
+            <div ref={colorContainerRef} className="color mr-px w-full md:h-[30%] md:flex-[5]">
                 <br />
-                <div className={"container gy-5"}>
-                    <label className="fst-italic mt-1">Meting van: {new Date().toLocaleString('nl-NL')}</label>
-                    <br></br>
-                    <label className="bold mt-2">Historische {dataType} data</label>
-                    <ResponsiveContainer minWidth={250} minHeight={250}>
-                        <LineChart data={graphData}>
-                            <XAxis dataKey="timestamp"/>
-                            <YAxis width={30}/>
-                            <CartesianGrid stroke="#ccc"/>
-                            <Legend onClick={handleLegendChange}/>
-                            <Line type="monotone" dataKey="min" name="Min" stroke="#0000ff"
-                                  hide={showMin}
-                                  dot={false}/>
-                            <Line type="monotone" dataKey="max" name="Max" stroke="#ff0000"
-                                  hide={showMax}
-                                  dot={false}/>
-                            <Line type="monotone" dataKey="avg" name="Gemiddeld" stroke="#00ee00"
-                                  hide={showGem}
-                                  dot={false}/>
-                        </LineChart>
-                    </ResponsiveContainer>
+                <div className="mx-auto max-w-3xl px-4">
+                    <label className="mt-1 italic">Meting van: {new Date().toLocaleString('nl-NL')}</label>
+                    <br />
+                    <label className="mt-2 flex items-center gap-2 font-bold">
+                        <i className="bi bi-graph-up text-brand-500"></i> Historische {dataType} data
+                    </label>
+                    <ZoomableChart
+                        data={graphData}
+                        lines={LINES}
+                        xKey="timestamp"
+                        zoom={zoom}
+                    />
                 </div>
             </div>
-            <div ref={secondColorDivRef} className={"color hide-scrollbar"} style={{ flex: "1", overflowY: "auto" }}>
-                <div className={"container gy-5"} style={{ width: "calc(100%) - 20px" }}>
-                    <label className="bold mt-2">Laatste 10 Metingen</label>
-                    <div>
+            <div ref={secondColorDivRef} className="color hide-scrollbar w-full overflow-y-auto md:flex-1">
+                <div className="mx-auto max-w-3xl px-4">
+                    <label className="mb-2 mt-2 flex items-center gap-2 font-bold">
+                        <i className="bi bi-list-ol text-brand-500"></i> Laatste 10 Metingen
+                    </label>
+                    <div className="space-y-2 pb-4">
                         {getLastTenMeasurements()}
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 GraphView.propTypes = {
     graphData: PropTypes.array.isRequired,
-    dataType: PropTypes.string.isRequired
-}
+    dataType: PropTypes.string.isRequired,
+    zoom: PropTypes.object,
+};

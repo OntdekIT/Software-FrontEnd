@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { backendApi } from "../../utils/backend-api.jsx";
+import Button from "../../components/ui/Button.jsx";
+import Modal from "../../components/ui/Modal.jsx";
+import { Skeleton, SkeletonText } from "../../components/ui/Skeleton.jsx";
 
 export default function EditStation() {
     const inputValues = {
@@ -15,17 +18,18 @@ export default function EditStation() {
 
     const [station, setStation] = useState(inputValues);
     const [visibility, setVisibility] = useState('0');
-    const [errorMessage, setErrorMessage] = useState(""); 
+    const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { stationId } = useParams(); 
+    const { stationId } = useParams();
 
     useEffect(() => {
         const fetchStation = async () => {
             try {
                 const response = await backendApi.get(`/Meetstation/${stationId}`, {
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` 
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     withCredentials: true
                 });
@@ -37,11 +41,15 @@ export default function EditStation() {
                 if (err.response?.status === 401) {
                     window.location.href = "/login";
                 }
+            } finally {
+                setLoading(false);
             }
         };
 
         if (stationId) {
             fetchStation();
+        } else {
+            setLoading(false);
         }
     }, [stationId]);
 
@@ -87,72 +95,78 @@ export default function EditStation() {
         }
     };
 
-    return (
-        <div className="color">
-            <br />
-            <div className="container gy-5">
-                <div>
-                    <div className="row">
-                        <div className="col-4"></div>
-                        <div className="col-4">
-                            <h4><b>Aanpassen station nummer {station.stationid}</b></h4>
-                            <label className="labelMargin">
-                                <div className="form-text">Hier kunnen de meetstation gegevens aangepast worden</div>
-                            </label>
-                        </div>
+    // Route-driven modal: this page is reached via /stations/:id/edit and renders
+    // as an overlay over the previous view; closing navigates back so the URL and
+    // browser back-button drive the modal (react-router).
+    const close = () => navigate(-1);
+
+    if (loading) {
+        return (
+            <Modal show={true} onClose={close} title="Station bewerken" size="md">
+                <div className="space-y-4">
+                    <div>
+                        <Skeleton className="mb-2 h-4 w-32" />
+                        <Skeleton className="h-10 w-full" />
                     </div>
-
-                    <form onSubmit={handleSubmit}>
-                        <div className="row mt-1">
-                            <div className="col-4"></div>
-                            <div className="col-4">
-                                <label className="label">Station naam</label>
-                                <input
-                                    onChange={handleChange}
-                                    className={`form-control ${errorMessage ? 'is-invalid' : ''}`} 
-                                    value={station.name}
-                                    name="name"
-                                    type="text"
-                                />
-                                {errorMessage && <div className="invalid-feedback">{errorMessage}</div>}
-
-                                <div className="form-group">
-                                    <label className="form-label">Zichtbaarheid van meetstation</label>
-                                    <select
-                                        value={visibility}
-                                        onChange={dropdownHandler}
-                                        className="form-select"
-                                        name="visibility"
-                                    >
-                                        <option value="0">Onzichtbaar</option>
-                                        <option value="1">Zichtbaar</option>
-                                    </select>
-                                    {visibility === '0' && (
-                                        <div className="form-text">
-                                            Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
-                                        </div>
-                                    )}
-                                    {visibility === '1' && (
-                                        <div className="form-text">
-                                            Het station is zichtbaar en kan door iedereen bekeken worden.
-                                        </div>
-                                    )}
-                                </div>
-                            </div>n
-                        </div>
-
-                        <div className="row mt-5">
-                            <div className="col-4"></div>
-                            <div className="col-5">
-                                <button type="button" className="btn btn-primary" onClick={() => navigate(-1)}>
-                                    Terug
-                                </button>
-                                <button className="btn btn-primary" type="submit">Opslaan</button>
-                            </div>
-                        </div>
-                    </form>
+                    <div>
+                        <Skeleton className="mb-2 h-4 w-48" />
+                        <Skeleton className="h-10 w-full" />
+                        <SkeletonText lines={2} className="mt-2" />
+                    </div>
                 </div>
+            </Modal>
+        );
+    }
+
+    return (
+        <Modal show={true} onClose={close} title={`Station ${station.stationid} bewerken`} size="md">
+            <p className="mb-4 text-sm text-gray-500">Hier kunnen de meetstation gegevens aangepast worden.</p>
+            <form id="edit-station-form" onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                    <label className="mb-1 block font-medium text-gray-700">Station naam</label>
+                    <input
+                        onChange={handleChange}
+                        className={`w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 ${errorMessage ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                        value={station.name}
+                        name="name"
+                        type="text"
+                    />
+                    {errorMessage && <div className="mt-1 text-sm text-red-600">{errorMessage}</div>}
+                </div>
+
+                <div>
+                    <label className="mb-1 block font-medium text-gray-700">Zichtbaarheid van meetstation</label>
+                    <select
+                        value={visibility}
+                        onChange={dropdownHandler}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        name="visibility"
+                    >
+                        <option value="0">Onzichtbaar</option>
+                        <option value="1">Zichtbaar</option>
+                    </select>
+                    {visibility === '0' && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Het station is onzichtbaar, maar de data wordt gebruikt binnen de metingen van een wijk.
+                        </p>
+                    )}
+                    {visibility === '1' && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Het station is zichtbaar en kan door iedereen bekeken worden.
+                        </p>
+                    )}
+                </div>
+            </form>
+            <div className="mt-6 flex justify-end gap-2">
+                <Button type="button" variant="secondary" onClick={close}>
+                    <i className="bi bi-arrow-left" aria-hidden="true"></i>
+                    Terug
+                </Button>
+                <Button variant="primary" type="submit" form="edit-station-form">
+                    <i className="bi bi-check-lg" aria-hidden="true"></i>
+                    Opslaan
+                </Button>
             </div>
-        </div>
+        </Modal>
     );
 }
