@@ -1,5 +1,5 @@
 @import "tailwindcss";
-/* react-datepicker's own stylesheet — without it the calendar popup renders
+/* react-datepicker's own stylesheet: without it the calendar popup renders
    unstyled/broken (it used to come in via Bootstrap's global CSS). */
 @import "react-datepicker/dist/react-datepicker.css";
 
@@ -11,7 +11,10 @@
      light     #e9ecef           dark      #424043
    `brand-*` is the primary ramp (amber) so existing brand-500/600 usages
    resolve to the real primary. Semantic colours are exposed by name too. */
-@theme {
+/* House theme: amber (brand) and ink. Blue (--color-secondary) is reserved for
+   buttons and real action links. `static` keeps every token available as a CSS
+   variable for plain CSS files and maplibre-free styling. */
+@theme static {
   --color-brand-50:  #fff9e6;
   --color-brand-100: #fff0bf;
   --color-brand-200: #ffe488;
@@ -31,6 +34,27 @@
   --color-danger:    #dc3545;
   --color-light:     #e9ecef;
   --color-dark:      #424043;
+
+  /* Ink and neutral ramp used for text, outlines and focus rings. */
+  --color-ink:       #111827;
+  --color-ink-soft:  #374151;
+  --color-muted:     #4b5563;
+  --color-line:      #e5e7eb;
+  --color-surface:   #ffffff;
+  --color-sunken:    #f3f4f6;
+
+  /* Selected rows and chips: amber instead of blue. */
+  --color-select-bg:     #fff9e6;
+  --color-select-border: #e6ad12;
+
+  /* Data meaning (kept): the "min" series is blue in every chart. */
+  --color-data-min:    #2563eb;
+  --color-data-min-bg: #e8eeff;
+  --color-data-min-fg: #1a3ab8;
+  --color-data-avg-bg: #e6fae6;
+  --color-data-avg-fg: #1a7a1a;
+  --color-data-max-bg: #ffeaea;
+  --color-data-max-fg: #c42020;
 
   --navbar-height: 3.5rem;
 }

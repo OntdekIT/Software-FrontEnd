@@ -1,5 +1,6 @@
 import {Outlet} from "react-router-dom";
 import Navbar from "../components/navbar.jsx";
+import BottomBar from "../components/bottom-bar.jsx";
 import useTokenExpirationCheck from "../hooks/use-token-expiration-check.jsx";
 
 export default function Root() {
@@ -13,6 +14,9 @@ export default function Root() {
             <main className="w-full">
                 <Outlet/>
             </main>
+            {/* Reserves the height of the fixed bottom bar (4rem plus the safe area) so it never covers content */}
+            <div className="h-[calc(4rem+env(safe-area-inset-bottom))] lg:hidden" aria-hidden="true"></div>
+            <BottomBar/>
         </div>
     )
 }

@@ -1,0 +1,50 @@
+// Oude routes die doorsturen naar hun huidige pagina, zodat bestaande links en
+// bladwijzers blijven werken. /heatmap, /wijken en /dashboard zijn eigen
+// pagina's en staan hier dus niet in. Puur, zodat de
+// tabel met `node --test` te controleren is.
+
+export const KAART_PATH = '/';
+export const HEATMAP_PATH = '/heatmap';
+
+// Statische doorverwijzingen: oud pad -> nieuw pad.
+export const LEGACY_REDIRECTS = {
+    '/newheatmap': HEATMAP_PATH,
+    '/kaart': KAART_PATH,
+    '/newhome': KAART_PATH,
+    '/stations': KAART_PATH,
+};
+
+// Doorverwijzingen met een parameter. `:id` wordt in het doelpad ingevuld.
+export const LEGACY_PARAM_REDIRECTS = {
+    '/wijken/:id': '/wijk/:id',
+};
+
+/** Vult `:param`-plekken in een pad in. */
+export function fillPath(pattern, params) {
+    return pattern.replace(/:(\w+)/g, (_, name) => encodeURIComponent(params[name] ?? ''));
+}
+
+/**
+ * Nieuw pad voor een oud pad, of null als het pad niet verouderd is.
+ * Een afsluitende slash en hoofdletters in het oude pad maken niet uit.
+ */
+export function resolveLegacyPath(pathname) {
+    const clean = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+    const lower = clean.toLowerCase();
+
+    if (Object.hasOwn(LEGACY_REDIRECTS, lower)) return LEGACY_REDIRECTS[lower];
+
+    for (const [pattern, target] of Object.entries(LEGACY_PARAM_REDIRECTS)) {
+        const names = [];
+        const regex = new RegExp(`^${pattern.replace(/:(\w+)/g, (_, name) => {
+            names.push(name);
+            return '([^/]+)';
+        })}$`, 'i');
+        const match = clean.match(regex);
+        if (match) {
+            const params = Object.fromEntries(names.map((name, i) => [name, decodeURIComponent(match[i + 1])]));
+            return fillPath(target, params);
+        }
+    }
+    return null;
+}

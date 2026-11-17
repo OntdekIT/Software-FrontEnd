@@ -19,9 +19,32 @@ function formatMoment(time) {
 // whole network. Everything is derived client side from the two lists the page
 // already loads (stations with their latest measurement, and wijken with their
 // average temperature), so it costs no extra request.
-export default function SummaryStrip({ stations, regions, loading = false, failed = false }) {
+export default function SummaryStrip({ stations, regions, loading = false, failed = false, compact = false }) {
     const summary = useMemo(() => summarizeNetwork(stations, regions), [stations, regions]);
     const noData = !loading && summary.avgTemp == null && summary.totalCount === 0;
+
+    // Compacte variant voor op de kaart: dezelfde cijfers, als een rij chips.
+    if (compact) {
+        if (loading || noData) return null;
+        const chips = [
+            { icon: 'bi-thermometer-half', text: `${formatTemp(summary.avgTemp)} \u00b0C gem.` },
+            { icon: 'bi-cloud-haze2', text: `PM2.5 ${formatTemp(summary.avgPm25)}` },
+            { icon: 'bi-broadcast', text: `${summary.activeCount} van ${summary.totalCount} stations` },
+        ];
+        return (
+            <section
+                aria-label="Kerncijfers meetnet"
+                className="flex flex-wrap gap-1.5 rounded-lg border border-gray-300 bg-white/95 px-2 py-1.5 text-xs font-medium text-gray-900 shadow-md"
+            >
+                {chips.map(chip => (
+                    <span key={chip.icon} className="inline-flex items-center gap-1 whitespace-nowrap">
+                        <i className={`bi ${chip.icon}`} aria-hidden="true"></i>
+                        {chip.text}
+                    </span>
+                ))}
+            </section>
+        );
+    }
 
     if (failed && noData) {
         return (
@@ -64,7 +87,7 @@ export default function SummaryStrip({ stations, regions, loading = false, faile
                 />
                 <StatCard
                     icon="bi-thermometer-snow"
-                    accent="secondary"
+                    accent="ink"
                     value={summary.coldest?.name ?? NO_VALUE}
                     label="Koudste wijk"
                     detail={summary.coldest ? `${formatTemp(summary.coldest.temp)} °C` : undefined}
@@ -87,7 +110,7 @@ export default function SummaryStrip({ stations, regions, loading = false, faile
                 />
                 <StatCard
                     icon="bi-cloud-haze2"
-                    accent="secondary"
+                    accent="ink"
                     value={formatTemp(summary.avgPm25)}
                     unit="µg/m³"
                     label="Gem. fijnstof (PM2.5)"
@@ -110,4 +133,5 @@ SummaryStrip.propTypes = {
     regions: PropTypes.array.isRequired,
     loading: PropTypes.bool,
     failed: PropTypes.bool,
+    compact: PropTypes.bool,
 };

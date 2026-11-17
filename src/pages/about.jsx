@@ -51,7 +51,7 @@ export default function About() {
             <div className="grid gap-4 md:grid-cols-3">
                 <section className={`${card} md:col-span-2`}>
                     <h2 className={cardTitle}>
-                        <i className="bi bi-globe-europe-africa text-secondary" aria-hidden="true"></i>
+                        <i className="bi bi-globe-europe-africa text-brand-700" aria-hidden="true"></i>
                         Wat is MB Ontdekt?
                     </h2>
                     <p className="text-gray-600">
@@ -70,19 +70,19 @@ export default function About() {
                     </h2>
                     <ul className="space-y-2 text-gray-600">
                         <li className="flex items-center gap-2">
-                            <i className="bi bi-map text-secondary" aria-hidden="true"></i>
+                            <i className="bi bi-map text-brand-700" aria-hidden="true"></i>
                             <span>Interactieve kaart en heatmap</span>
                         </li>
                         <li className="flex items-center gap-2">
-                            <i className="bi bi-geo-alt text-secondary" aria-hidden="true"></i>
+                            <i className="bi bi-geo-alt text-brand-700" aria-hidden="true"></i>
                             <span>Meetgegevens per wijk</span>
                         </li>
                         <li className="flex items-center gap-2">
-                            <i className="bi bi-graph-up text-secondary" aria-hidden="true"></i>
+                            <i className="bi bi-graph-up text-brand-700" aria-hidden="true"></i>
                             <span>Grafieken per station</span>
                         </li>
                         <li className="flex items-center gap-2">
-                            <i className="bi bi-broadcast text-secondary" aria-hidden="true"></i>
+                            <i className="bi bi-broadcast text-brand-700" aria-hidden="true"></i>
                             <span>Eigen meetstations beheren</span>
                         </li>
                     </ul>
@@ -90,7 +90,7 @@ export default function About() {
 
                 <section className={`${card} md:col-span-3`}>
                     <h2 className={`${cardTitle} mb-4`}>
-                        <i className="bi bi-diagram-3 text-secondary" aria-hidden="true"></i>
+                        <i className="bi bi-diagram-3 text-brand-700" aria-hidden="true"></i>
                         Hoe werkt het?
                     </h2>
                     <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -110,7 +110,7 @@ export default function About() {
 
                 <section className={`${card} md:col-span-3`}>
                     <h2 className={`${cardTitle} mb-4`}>
-                        <i className="bi bi-compass text-secondary" aria-hidden="true"></i>
+                        <i className="bi bi-compass text-brand-700" aria-hidden="true"></i>
                         Wat kun je hier doen?
                     </h2>
                     <ul className="grid gap-3 sm:grid-cols-2">
@@ -120,7 +120,7 @@ export default function About() {
                                     to={f.to}
                                     className="flex h-full gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-brand-500 hover:bg-brand-50"
                                 >
-                                    <i className={`bi ${f.icon} text-xl text-secondary`} aria-hidden="true"></i>
+                                    <i className={`bi ${f.icon} text-xl text-brand-700`} aria-hidden="true"></i>
                                     <span>
                                         <span className="block font-semibold text-gray-900">{f.label}</span>
                                         <span className="block text-sm text-gray-600">{f.text}</span>
@@ -138,7 +138,7 @@ export default function About() {
 
                 <section className={`${card} md:col-span-2`}>
                     <h2 className={cardTitle}>
-                        <i className="bi bi-mortarboard text-secondary" aria-hidden="true"></i>
+                        <i className="bi bi-mortarboard text-brand-700" aria-hidden="true"></i>
                         Over het project
                     </h2>
                     <p className="text-gray-600">
@@ -169,7 +169,7 @@ export default function About() {
 
                 <section className={card}>
                     <h2 className={cardTitle}>
-                        <i className="bi bi-people text-secondary" aria-hidden="true"></i>
+                        <i className="bi bi-people text-brand-700" aria-hidden="true"></i>
                         Team en contact
                     </h2>
                     <p className="text-gray-600">

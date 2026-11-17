@@ -6,7 +6,7 @@ const ToastContext = createContext(null);
 const STYLES = {
     success: 'border-brand-500 bg-brand-50 text-brand-800',
     error: 'border-red-500 bg-red-50 text-red-800',
-    info: 'border-blue-500 bg-blue-50 text-blue-800',
+    info: 'border-ink bg-gray-50 text-ink',
     warning: 'border-amber-500 bg-amber-50 text-amber-800',
 };
 

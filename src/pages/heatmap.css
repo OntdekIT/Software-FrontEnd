@@ -1,0 +1,44 @@
+/* Heatmap: labels op de kaart en de markering van de gekozen plek.
+   Alleen ink en amber; blauw is voor knoppen. */
+.heatmap-spot {
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--color-surface);
+    border-left: 4px solid var(--color-select-border);
+    background: var(--color-ink);
+    color: var(--color-surface);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(17, 24, 39, 0.4);
+    pointer-events: none;
+}
+
+.heatmap-spot[data-kind='cold'] {
+    border-left-color: var(--color-surface);
+}
+
+.heatmap-pick {
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+    border: 3px solid var(--color-surface);
+    background: transparent;
+    box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 5px rgba(254, 203, 61, 0.7);
+}
+
+.heatmap-layer-switch button:focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: -3px;
+}
+
+/* Op mobiel staat de vaste onderbalk onder de pagina: de kaart ruimt die in. */
+.kaart.heatmap-page {
+    --bottom-nav-height: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+    .kaart.heatmap-page {
+        --bottom-nav-height: 0px;
+    }
+}
