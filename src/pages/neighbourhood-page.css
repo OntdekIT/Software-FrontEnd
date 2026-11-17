@@ -28,8 +28,8 @@
 
     background: linear-gradient(
         135deg,
-        #009ee3,
-        #0cb6ff
+        #111827,
+        #374151
     );
 
     color: white;
@@ -84,8 +84,8 @@
 
 .neighbourhood-list-item:hover,
 .neighbourhood-list-item.selected {
-    background: #f7fbff;
-    border-left-color: #009ee3;
+    background: var(--color-select-bg);
+    border-left-color: var(--color-select-border);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
@@ -151,8 +151,8 @@
     line-height: 1.2;
     background: linear-gradient(
         135deg,
-        #009ee3,
-        #0cb6ff
+        #111827,
+        #374151
     );
 
     color: white;

@@ -1,3 +1,5 @@
+import { INK } from '../utils/theme-colors.js';
+
 // This is your "Paint Brush" for regions
 export const regionFillLayer = {
   id: 'regions-fill-layer',
@@ -15,7 +17,7 @@ export const regionHoverLayer = {
   id: 'regions-hover-layer',
   type: 'line',
   paint: {
-    'line-color': '#009ee3',
+    'line-color': INK,
     'line-width': 3
   }
 };

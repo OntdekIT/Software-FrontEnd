@@ -5,6 +5,7 @@ import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { NO_DATA_COLOR, colorFor, computeValueRange, legendSteps } from '../utils/color-scale.js';
 import { METRICS, METRIC_IDS, formatMetricValue } from '../utils/map-metrics.js';
+import { INK, WHITE } from '../utils/theme-colors.js';
 import { NO_RECENT_DATA_LABEL } from '../utils/region-status.js';
 
 // Effectieve kleurschaal voor een metriek: de vaste schaal van de pagina
@@ -107,7 +108,7 @@ function isInsideBounds([lng, lat]) {
 // "Mijn locatie" als stip op de kaart.
 function createLocationElement() {
   const el = document.createElement('div');
-  el.className = 'h-4 w-4 rounded-full border-2 border-white bg-blue-600 shadow-md ring-4 ring-blue-600/30';
+  el.className = 'h-4 w-4 rounded-full border-2 border-white bg-ink shadow-md ring-4 ring-brand-500/60';
   el.setAttribute('role', 'img');
   el.setAttribute('aria-label', 'Mijn locatie');
   return el;
@@ -230,7 +231,7 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
                 source: 'regions',
                 layout: { 'line-join': 'round' },
                 paint: {
-                  'line-color': i === 0 ? '#ffffff' : '#111827',
+                  'line-color': i === 0 ? WHITE : INK,
                   'line-width': i === 0 ? 6 : 3
                 },
                 filter: ['==', ['get', 'id'], -1]

@@ -87,7 +87,7 @@
     margin-bottom: 0.75rem;
     font-size: 1rem;
     font-weight: 700;
-    color: #204b99;
+    color: var(--color-ink);
 }
 
 /* Tablet: KPI tiles to two columns, map and side stack vertically. */
