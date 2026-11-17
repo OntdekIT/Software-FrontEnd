@@ -8,6 +8,13 @@
     z-index: 0;
 }
 
+/* Below the desktop breakpoint the fixed bottom bar (4rem plus safe area) takes the bottom of the screen. */
+@media (max-width: 1023px) {
+    .heatmap-container {
+        height: calc(100vh - 8rem - env(safe-area-inset-bottom));
+    }
+}
+
 .heatmap-container .leaflet-container {
     width: 100%;
     height: 100%;

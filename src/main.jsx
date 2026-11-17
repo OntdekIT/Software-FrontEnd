@@ -14,6 +14,7 @@ import { ToastProvider } from "./components/ui/toast.jsx";
 const Dashboard = lazy(() => import('./pages/dashboard.jsx'));
 const NewHome = lazy(() => import('./pages/new-home.jsx'));
 const NewHeatMap = lazy(() => import('./pages/new-heatmap.jsx'));
+const Notifications = lazy(() => import('./pages/notifications.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
 const Login = lazy(() => import('./pages/auth/login.jsx'));
 const Register = lazy(() => import('./pages/auth/register.jsx'));
@@ -86,6 +87,13 @@ const router = createBrowserRouter([
                     { path: "logout", element: <Suspense fallback={<Preloader />}><Logout /></Suspense> },
                     { path: "forgot-password", element: <Suspense fallback={<Preloader />}><ForgotPassword /></Suspense> },
                     { path: "reset-password", element: <Suspense fallback={<Preloader />}><ResetPassword /></Suspense> }
+                ]
+            },
+            {
+                path: "/meldingen",
+                element: <ProtectedRoute />,
+                children: [
+                    { index: true, element: <Suspense fallback={<Preloader />}><Notifications /></Suspense> }
                 ]
             },
             {
