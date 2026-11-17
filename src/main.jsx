@@ -26,6 +26,7 @@ const Profile = lazy(() => import('./pages/my/account/profile.jsx'));
 const StationsList = lazy(() => import('./pages/stations/stations-list.jsx'));
 const StationDetails = lazy(() => import('./pages/stations/station-details.jsx'));
 const EditStation = lazy(() => import('./pages/stations/edit-station.jsx'));
+const AdminLayout = lazy(() => import('./pages/admin/admin-layout.jsx'));
 const AdminDashboard = lazy(() => import('./pages/admin/admin-dashboard.jsx'));
 const WorkshopCodeOverview = lazy(() => import('./pages/admin/workshop-codes/workshop-code-overview.jsx'));
 const CreateWorkshopCode = lazy(() => import('./pages/admin/workshop-codes/create-workshop-code.jsx'));
@@ -120,42 +121,47 @@ const router = createBrowserRouter([
             {
                 path: "/admin",
                 element: <ProtectedRoute roles={[UserRole.SUPER_ADMIN, UserRole.ADMIN]} />,
-                children: [
-                    { index: true, element: <Suspense fallback={<Preloader />}><AdminDashboard /></Suspense> },
-                    {
-                        path: "workshop-codes",
-                        children: [
-                            { index: true, element: <Suspense fallback={<Preloader />}><WorkshopCodeOverview /></Suspense> },
-                            { path: "create", element: <Suspense fallback={<Preloader />}><CreateWorkshopCode /></Suspense> }
-                        ]
-                    },
-                    {
-                        path: "users",
-                        children: [
-                            { index: true, element: <Suspense fallback={<Preloader />}><UserOverview /></Suspense> },
-                            {
-                                path: ":userId",
-                                children: [
-                                    { index: true, element: <Suspense fallback={<Preloader />}><UserDetails /></Suspense>, loader: getUserByIdLoader }
-                                ]
-                            }
-                        ]
-                    },
-                    { path: "data-coverage", element: <Suspense fallback={<Preloader />}><DataCoverage /></Suspense> },
-                    {
-                        path: "stations",
-                        children: [
-                            { index: true, element: <Suspense fallback={<Preloader />}><StationOverview /></Suspense> },
-                            { path: "toevoegen", element: <Suspense fallback={<Preloader />}><MeetstationToevoegen /></Suspense> },
-                            {
-                                path: ":stationId",
-                                children: [
-                                    { index: true, element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> }
-                                ]
-                            }
-                        ]
-                    }
-                ]
+                children: [{
+                    // Beheer as one screen with tabs: the layout shows the tab
+                    // bar, the old routes below keep working and open their tab.
+                    element: <Suspense fallback={<Preloader />}><AdminLayout /></Suspense>,
+                    children: [
+                        { index: true, element: <Suspense fallback={<Preloader />}><AdminDashboard /></Suspense> },
+                        {
+                            path: "workshop-codes",
+                            children: [
+                                { index: true, element: <Suspense fallback={<Preloader />}><WorkshopCodeOverview /></Suspense> },
+                                { path: "create", element: <Suspense fallback={<Preloader />}><CreateWorkshopCode /></Suspense> }
+                            ]
+                        },
+                        {
+                            path: "users",
+                            children: [
+                                { index: true, element: <Suspense fallback={<Preloader />}><UserOverview /></Suspense> },
+                                {
+                                    path: ":userId",
+                                    children: [
+                                        { index: true, element: <Suspense fallback={<Preloader />}><UserDetails /></Suspense>, loader: getUserByIdLoader }
+                                    ]
+                                }
+                            ]
+                        },
+                        { path: "data-coverage", element: <Suspense fallback={<Preloader />}><DataCoverage /></Suspense> },
+                        {
+                            path: "stations",
+                            children: [
+                                { index: true, element: <Suspense fallback={<Preloader />}><StationOverview /></Suspense> },
+                                { path: "toevoegen", element: <Suspense fallback={<Preloader />}><MeetstationToevoegen /></Suspense> },
+                                {
+                                    path: ":stationId",
+                                    children: [
+                                        { index: true, element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense> }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }]
             }
         ]
     }
