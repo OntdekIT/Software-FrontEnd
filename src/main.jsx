@@ -36,6 +36,7 @@ const UserDetails = lazy(() => import('./pages/admin/users/user-details.jsx'));
 const StationOverview = lazy(() => import('./pages/admin/stations/stations-overview.jsx'));
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
 const DataCoverage = lazy(() => import('./pages/admin/data-coverage/data-coverage.jsx'));
+const ComingSoon = lazy(() => import('./pages/coming-soon.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
 
 // Oude routes sturen door naar de kaart (zie utils/legacy-routes.js).
@@ -72,6 +73,11 @@ const router = createBrowserRouter([
                 element: <Suspense fallback={<Preloader />}><Heatmap /></Suspense>
             },
             ...legacyRoutes,
+            // Tijdelijk: de pagina-PR's (#184 tot #186) vervangen deze drie routes.
+            ...['heatmap', 'wijken', 'dashboard'].map((path) => ({
+                path,
+                element: <Suspense fallback={<Preloader />}><ComingSoon /></Suspense>
+            })),
             {
                 path: "/about",
                 element: <Suspense fallback={<Preloader />}><About /></Suspense>
