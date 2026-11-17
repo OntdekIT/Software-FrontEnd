@@ -17,7 +17,7 @@ const STEPS = [
     {
         icon: "bi-cloud-download",
         title: "MB Ontdekt haalt de data op",
-        text: "Deze applicatie haalt de metingen op via de API van Meet je Stad en bewaart ze om overzichten en trends te kunnen tonen.",
+        text: "Deze applicatie haalt de metingen op via de API van Meet je Stad.",
     },
     {
         icon: "bi-graph-up",
