@@ -98,7 +98,7 @@
         justify-content: center; /* Center content horizontally */
         align-items: center;
         padding: 10px 16px;
-        background: #009ee3;
+        background: #0079b0;
         color: #fff;
         font-size: 1.2em;
         font-weight: bold;
@@ -136,11 +136,11 @@
 
             .wijken-list-name {
                 font-weight: bold;
-                color: #009ee3;
+                color: #00608a;
             }
 
             .wijken-list-temp {
-                color: #d84315;
+                color: #b23610;
                 font-size: 1.05em;
                 min-width: 48px;
                 text-align: right;
@@ -216,7 +216,7 @@
         margin: 0;
         font-size: 1rem;
         font-weight: 700;
-        color: #009ee3;
+        color: #00608a;
     }
 
     .region-current-temp {
@@ -251,7 +251,32 @@
     .rct-value {
         font-size: 1.1rem;
         font-weight: 700;
-        color: #d84315;
+        color: #b23610;
+    }
+
+    .region-mini-chart {
+        margin: 0;
+        background: #fff;
+        border-radius: 6px;
+        padding: 6px 4px 2px;
+    }
+
+    .region-mini-chart-caption {
+        font-size: 0.75rem;
+        color: #4b5563;
+        padding: 0 6px 2px;
+    }
+
+    .region-more > summary {
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1f2937;
+        padding: 4px 0;
+    }
+
+    .region-more[open] > summary {
+        margin-bottom: 6px;
     }
 
     .region-mini-chart {
@@ -522,131 +547,3 @@
         background-color: transparent !important;
     }
 }
-.switch {
-      position: relative;
-      display: inline-block;
-      width: 40px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 16px;
-      width: 16px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
-    }
-
-    input:checked + .slider {
-      background-color: #2196F3;
-    }
-
-    input:focus + .slider {
-      box-shadow: 0 0 1px #2196F3;
-    }
-
-    input:checked + .slider:before {
-      -webkit-transform: translateX(16px);
-      -ms-transform: translateX(16px);
-      transform: translateX(16px);
-    }
-
-    .slider.round {
-      border-radius: 34px;
-    }
-
-    .slider.round:before {
-      border-radius: 50%;
-    }
-    .pm-toggle {
-        position: absolute;
-        left: 12px;
-        bottom: 12px;
-        z-index: 2000;
-
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        background: rgba(255, 255, 255, 0.85);
-        padding: 8px 10px;
-        border-radius: 8px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .pm-toggle-text {
-        font-size: 14px;
-        font-weight: 600;
-        color: #333;
-        white-space: nowrap;
-    }
-
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 28px;
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background-color: #ccc;
-        transition: .4s;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 20px;
-        width: 20px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: .4s;
-    }
-
-    .switch input:checked + .slider {
-        background-color: #2196F3;
-    }
-
-    .switch input:checked + .slider:before {
-        transform: translateX(22px);
-    }
-
-    .slider.round {
-        border-radius: 28px;
-    }
-
-    .slider.round:before {
-        border-radius: 50%;
-    }

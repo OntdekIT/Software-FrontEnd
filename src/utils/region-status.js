@@ -17,14 +17,15 @@ export function hasMeasurement(value) {
 }
 
 /**
- * Tijdstip van de laatste bucket met een echte gemiddelde temperatuur, uit de
- * history van een wijk (/measurement/history/average/region/{id}).
+ * Tijdstip van de laatste bucket met een echte waarde, uit de history van een
+ * wijk (/measurement/history/average/region/{id}).
+ * @param key veld in een bucket: 'avg' (temperatuur) of 'pm25'
  * @returns {string|null} timestamp zoals de backend hem stuurt, of null
  */
-export function lastMeasurementTimestamp(history) {
+export function lastMeasurementTimestamp(history, key = 'avg') {
     if (!Array.isArray(history)) return null;
     for (let i = history.length - 1; i >= 0; i--) {
-        if (hasMeasurement(history[i]?.avg) && history[i]?.timestamp) {
+        if (hasMeasurement(history[i]?.[key]) && history[i]?.timestamp) {
             return history[i].timestamp;
         }
     }

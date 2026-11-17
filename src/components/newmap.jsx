@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { colorFor, computeValueRange, legendSteps } from '../utils/color-scale.js';
-import { NO_RECENT_DATA_LABEL, parseMeasurement } from '../utils/region-status.js';
+import { NO_DATA_COLOR, colorFor, computeValueRange, legendSteps } from '../utils/color-scale.js';
+import { METRICS, METRIC_IDS, formatMetricValue } from '../utils/map-metrics.js';
+import { NO_RECENT_DATA_LABEL } from '../utils/region-status.js';
 
 // Effectieve kleurschaal voor een metriek: de vaste schaal van de pagina
 // (time-lapse) of anders min/max van de huidige dataset. Kaart en legenda
@@ -20,15 +21,15 @@ function resolveColorRange(data, key, colorRange) {
   return computeValueRange(data, key);
 }
 
-function createRegionGeoJSON(data, metric = 'temperature', colorRange = null) {
-  const key = metric === 'pm25' ? 'avgPm25' : 'avgTemp';
+function createRegionGeoJSON(data, metricId = 'temperature', colorRange = null) {
+  const { key, palette } = METRICS[metricId];
   const range = resolveColorRange(data, key, colorRange);
 
   return {
     type: 'FeatureCollection',
     features: data.map(region => {
       const value = parseFloat(region[key]);
-      const color = colorFor(value, range);
+      const color = colorFor(value, range, palette);
 
       return {
         type: 'Feature',
@@ -95,13 +96,12 @@ function regionBounds(region) {
   ];
 }
 
-const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [], selectedRegionId = null, stations = [], colorRange = null, overlay = null }, ref) {
+const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, metric = 'temperature', onMetricChange, selectedRegionId = null, stations = [], colorRange = null, overlay = null }, ref) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const popupRef = useRef(null);
   const markersRef = useRef([]);
-  const metricRef = useRef('temperature');
-  const [metric, setMetric] = useState('temperature');
+  const metricRef = useRef(metric);
   // Pas true als de bronnen en lagen bestaan. Effecten die de kaart vullen wachten
   // hierop, zodat data die sneller binnenkomt dan de kaartstijl niet verloren gaat.
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -163,21 +163,11 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
               source: 'regions',
               paint: {
                 'fill-color': ['get', 'color'],
-                'fill-opacity': 0.6,
-                'fill-outline-color': '#ffffff'
+                'fill-opacity': 0.7,
+                // Donkere rand: de lichte kleurstappen (bijna wit) blijven zo
+                // afleesbaar tegen de kaartondergrond.
+                'fill-outline-color': '#4b5563'
               }
-            });
-
-            mapInstance.current.addLayer({
-              id: 'regions-pm-highlight',
-              type: 'line',
-              source: 'regions',
-              paint: {
-                'line-color': '#ff8800',
-                'line-width': 3,
-                'line-dasharray': [2, 1]
-              },
-              filter: ['==', 'id', -1]
             });
 
             // Geselecteerde wijk: witte rand met een donkere lijn erbovenop, zodat
@@ -248,15 +238,21 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
 
     function buildPopupHtml(regionProps) {
       const name = regionProps.name ?? 'Onbekend gebied';
-      const temp = parseMeasurement(regionProps.avgTemp);
-      const rows = [
-        `<div style="font-weight:600;margin-bottom:2px;">${name}</div>`,
-        temp !== null
-          ? `<div>Gem. temperatuur: <strong>${temp.toFixed(1)} °C</strong></div>`
-          : `<div style="color:#4b5563;">${NO_RECENT_DATA_LABEL}</div>`
-      ];
-      if (regionProps.avgPm25 != null && regionProps.avgPm25 !== '') {
-        rows.push(`<div>Gem. PM2.5: <strong>${regionProps.avgPm25} µg/m³</strong></div>`);
+      const temp = formatMetricValue('temperature', regionProps.avgTemp);
+      const pm25 = formatMetricValue('pm25', regionProps.avgPm25);
+      const rows = [`<div style="font-weight:600;margin-bottom:2px;">${name}</div>`];
+      const noData = `<div style="color:#4b5563;">${NO_RECENT_DATA_LABEL}</div>`;
+      if (temp === null && pm25 === null) {
+        rows.push(noData);
+      } else {
+        rows.push(temp !== null
+          ? `<div>Gem. temperatuur: <strong>${temp}</strong></div>`
+          : `<div style="color:#4b5563;">Temperatuur: ${NO_RECENT_DATA_LABEL}</div>`);
+        if (pm25 !== null) {
+          rows.push(`<div>Gem. PM2.5: <strong>${pm25}</strong></div>`);
+        } else if (metricRef.current === 'pm25') {
+          rows.push(`<div style="color:#4b5563;">PM2.5: ${NO_RECENT_DATA_LABEL}</div>`);
+        }
       }
       return `<div style="font-size:12px;line-height:1.4;color:#1f2937;">${rows.join('')}</div>`;
     }
@@ -290,18 +286,6 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
       source.setData(createRegionGeoJSON(regionData, metric, colorRange));
     }
   }, [mapLoaded, regionData, metric, colorRange]);
-
-  useEffect(() => {
-    if (!mapLoaded || !mapInstance.current.getLayer('regions-pm-highlight')) return;
-
-    if (pmRegionIds.length === 0) {
-      mapInstance.current.setFilter('regions-pm-highlight', ['==', 'id', -1]);
-    } else {
-      mapInstance.current.setFilter('regions-pm-highlight', [
-        'in', ['get', 'id'], ['literal', pmRegionIds]
-      ]);
-    }
-  }, [mapLoaded, pmRegionIds]);
 
   useEffect(() => {
     if (!mapLoaded) return;
@@ -346,65 +330,80 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
   const hasPm25 = Array.isArray(regionData)
     && regionData.some(r => r && r.avgPm25 != null && r.avgPm25 !== '');
 
+  const activeMetric = METRICS[metric] ?? METRICS.temperature;
   const legendRange = useMemo(
-    () => resolveColorRange(regionData ?? [], metric === 'pm25' ? 'avgPm25' : 'avgTemp', colorRange),
-    [regionData, metric, colorRange]
+    () => resolveColorRange(regionData ?? [], activeMetric.key, colorRange),
+    [regionData, activeMetric, colorRange]
   );
-  const legendUnit = metric === 'pm25' ? 'µg/m³' : '°C';
-  const scaleSteps = legendRange ? legendSteps(legendRange) : [];
-
-  const legendLabel = metric === 'pm25' ? 'PM2.5 (µg/m³)' : 'Temperatuur (°C)';
+  const scaleSteps = legendRange ? legendSteps(legendRange, activeMetric.palette) : [];
+  const legendMid = legendRange ? (legendRange.min + legendRange.max) / 2 : null;
 
   return (
     <div className="relative h-full w-full">
       <div ref={mapRef} className="h-full w-full" />
 
-      {/* layer toggle (top-left overlay) */}
-      <div className="absolute left-3 top-3 z-10 flex overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow-md backdrop-blur">
-        <button
-          type="button"
-          onClick={() => setMetric('temperature')}
-          aria-pressed={metric === 'temperature'}
-          className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-            metric === 'temperature'
-              ? 'bg-brand-500 text-white'
-              : 'bg-transparent text-gray-700 hover:bg-brand-50'
-          }`}
-        >
-          Temperatuur
-        </button>
-        <button
-          type="button"
-          onClick={() => hasPm25 && setMetric('pm25')}
-          aria-pressed={metric === 'pm25'}
-          disabled={!hasPm25}
-          title={hasPm25 ? 'Toon PM2.5' : 'Geen PM2.5-data beschikbaar'}
-          className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-            metric === 'pm25'
-              ? 'bg-brand-500 text-white'
-              : 'bg-transparent text-gray-700 hover:bg-brand-50'
-          } ${!hasPm25 ? 'cursor-not-allowed opacity-50 hover:bg-transparent' : ''}`}
-        >
-          PM2.5
-        </button>
+      {/* Laagkeuze: één plek voor temperatuur en fijnstof (linksboven) */}
+      <div
+        role="radiogroup"
+        aria-label="Kaartlaag"
+        className="absolute left-3 top-3 z-10 flex overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md"
+      >
+        {METRIC_IDS.map((id) => {
+          const option = METRICS[id];
+          const unavailable = id === 'pm25' && !hasPm25;
+          const active = metric === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              disabled={unavailable}
+              onClick={() => onMetricChange?.(id)}
+              title={unavailable ? 'Geen PM2.5-data beschikbaar' : `Toon ${option.label.toLowerCase()}`}
+              className={`px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-gray-900 ${
+                active
+                  ? 'bg-brand-500 font-semibold text-gray-900'
+                  : 'bg-white text-gray-800 hover:bg-brand-50'
+              } ${unavailable ? 'cursor-not-allowed text-gray-500 hover:bg-white' : ''}`}
+            >
+              {option.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* temperature/pm2.5 colour legend (bottom-left overlay) */}
-      <div className="absolute bottom-3 left-3 z-10 rounded-lg border border-gray-200 bg-white/95 p-3 shadow-md backdrop-blur">
-        <div className="mb-1.5 text-xs font-semibold text-gray-700">{legendLabel}</div>
-        <div className="flex h-3 w-40 overflow-hidden rounded">
+      {/* Legenda: eenheid, schaal en kleur voor wijken zonder meting */}
+      <div
+        className="absolute bottom-3 left-3 z-10 rounded-lg border border-gray-300 bg-white p-3 shadow-md"
+        role="group"
+        aria-label={`Legenda ${activeMetric.label}`}
+      >
+        <div className="mb-1.5 text-xs font-semibold text-gray-900">
+          {activeMetric.label} ({activeMetric.unit})
+        </div>
+        <div className="flex h-3 w-44 overflow-hidden rounded border border-gray-400">
           {scaleSteps.map((step) => (
             <div
               key={step.color}
               className="h-full flex-1"
               style={{ backgroundColor: step.color }}
-              title={`${step.from.toFixed(1)} tot ${step.to.toFixed(1)} ${legendUnit}`}
+              title={`${step.from.toFixed(1)} tot ${step.to.toFixed(1)} ${activeMetric.unit}`}
             />
           ))}
         </div>
-        <div className="mt-1 flex justify-between text-[10px] text-gray-500">
+        <div className="mt-1 flex w-44 justify-between text-xs text-gray-700">
           <span>{legendRange ? legendRange.min.toFixed(1) : '-'}</span>
+          <span>{legendMid !== null ? legendMid.toFixed(1) : ''}</span>
           <span>{legendRange ? legendRange.max.toFixed(1) : '-'}</span>
+        </div>
+        <div className="mt-2 flex items-center gap-2 text-xs text-gray-700">
+          <span
+            className="inline-block h-3 w-5 rounded border border-gray-400"
+            style={{ backgroundColor: NO_DATA_COLOR }}
+            aria-hidden="true"
+          />
+          {NO_RECENT_DATA_LABEL}
         </div>
       </div>
 
@@ -428,7 +427,9 @@ NewMap.propTypes = {
   zoom: PropTypes.number,
   regionData: PropTypes.array,
   onRegionClick: PropTypes.func,
-  pmRegionIds: PropTypes.array,
+  /** Actieve laag: 'temperature' of 'pm25'. */
+  metric: PropTypes.oneOf(METRIC_IDS),
+  onMetricChange: PropTypes.func,
   /** Id van de gemarkeerde wijk (omlijnd op de kaart). */
   selectedRegionId: PropTypes.number,
   stations: PropTypes.array,
