@@ -1,17 +1,16 @@
-// Oude routes die naar de kaart (het hoofdscherm) doorsturen, zodat bestaande
-// links, bladwijzers en de huidige navigatie blijven werken. Puur, zodat de
+// Oude routes die doorsturen naar hun huidige pagina, zodat bestaande links en
+// bladwijzers blijven werken. /heatmap, /wijken en /dashboard zijn eigen
+// pagina's en staan hier dus niet in. Puur, zodat de
 // tabel met `node --test` te controleren is.
 
 export const KAART_PATH = '/';
+export const HEATMAP_PATH = '/heatmap';
 
 // Statische doorverwijzingen: oud pad -> nieuw pad.
 export const LEGACY_REDIRECTS = {
-    '/heatmap': KAART_PATH,
-    '/newheatmap': KAART_PATH,
-    '/wijken': KAART_PATH,
+    '/newheatmap': HEATMAP_PATH,
     '/kaart': KAART_PATH,
     '/newhome': KAART_PATH,
-    '/dashboard': KAART_PATH,
     '/stations': KAART_PATH,
 };
 

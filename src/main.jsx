@@ -14,6 +14,8 @@ import { LEGACY_PARAM_REDIRECTS, LEGACY_REDIRECTS } from "./utils/legacy-routes.
 
 // Lazy load everything
 const Kaart = lazy(() => import('./pages/kaart.jsx'));
+const Heatmap = lazy(() => import('./pages/heatmap.jsx'));
+const Wijken = lazy(() => import('./pages/wijken.jsx'));
 const Notifications = lazy(() => import('./pages/notifications.jsx'));
 const NetworkDashboard = lazy(() => import('./pages/network-dashboard.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
@@ -66,6 +68,14 @@ const router = createBrowserRouter([
                     { index: true },
                     { path: "wijk/:id" }
                 ]
+            },
+            {
+                path: "/heatmap",
+                element: <Suspense fallback={<Preloader />}><Heatmap /></Suspense>
+            },
+            {
+                path: "/wijken",
+                element: <Suspense fallback={<Preloader />}><Wijken /></Suspense>
             },
             {
                 path: "/dashboard",

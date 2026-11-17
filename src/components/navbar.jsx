@@ -1,9 +1,9 @@
 import {Link, useLocation} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../providers/auth-provider.jsx";
-import {PROFILE_ITEM, getProfileMenuItems, getTopBarItems, isNavItemActive} from "../utils/nav-items.js";
+import {PROFILE_ITEM, getMenuItems, getProfileMenuItems, getTopBarItems, isNavItemActive} from "../utils/nav-items.js";
 
-// Top bar. On desktop it holds the brand, at most three items and the profile
+// Top bar. On desktop it holds the brand, at most four items and the profile
 // menu. Below the `lg` breakpoint only the brand stays, the bottom bar
 // (bottom-bar.jsx) takes over the navigation.
 //
@@ -45,6 +45,8 @@ export default function Navbar() {
 
     const topItems = getTopBarItems(loggedInUser);
     const menuItems = getProfileMenuItems(loggedInUser);
+    // Guests get no dropdown: Over ons is a plain link next to Login.
+    const guestLinks = loggedInUser ? [] : getMenuItems(null);
     const profileActive = isNavItemActive(PROFILE_ITEM, pathname) || menuItems.some((item) => isNavItemActive(item, pathname));
 
     return (
@@ -74,6 +76,21 @@ export default function Navbar() {
                 </ul>
 
                 <ul className="hidden items-center gap-2 lg:flex">
+                    {guestLinks.map((item) => {
+                        const active = isNavItemActive(item, pathname);
+                        return (
+                            <li key={item.to}>
+                                <Link
+                                    className={`${LINK_BASE} ${active ? LINK_ACTIVE : LINK_IDLE}`}
+                                    to={item.to}
+                                    aria-current={active ? "page" : undefined}
+                                >
+                                    <i className={`bi ${item.icon}`} aria-hidden="true"></i>
+                                    <span>{item.label}</span>
+                                </Link>
+                            </li>
+                        );
+                    })}
                     {!loggedInUser && (
                         <li>
                             <Link
@@ -87,7 +104,7 @@ export default function Navbar() {
                             </Link>
                         </li>
                     )}
-                    <li className="relative" ref={menuRef}>
+                    {loggedInUser && <li className="relative" ref={menuRef}>
                         <button
                             type="button"
                             id="userDropdown"
@@ -98,8 +115,8 @@ export default function Navbar() {
                             onClick={() => setDropdownOpen((open) => !open)}
                             className={`${LINK_BASE} ${profileActive ? LINK_ACTIVE : LINK_IDLE}`}
                         >
-                            <i className={`bi ${loggedInUser ? "bi-person-circle text-lg" : "bi-three-dots"}`} aria-hidden="true"></i>
-                            <span>{loggedInUser ? `${loggedInUser.firstName} ${loggedInUser.lastName}` : "Meer"}</span>
+                            <i className="bi bi-person-circle text-lg" aria-hidden="true"></i>
+                            <span>{`${loggedInUser.firstName} ${loggedInUser.lastName}`}</span>
                             <i className={`bi bi-caret-down-fill text-xs transition-transform ${dropdownOpen ? "rotate-180" : ""}`} aria-hidden="true"></i>
                         </button>
                         <ul
@@ -138,7 +155,7 @@ export default function Navbar() {
                                 </li>
                             )}
                         </ul>
-                    </li>
+                    </li>}
                 </ul>
             </div>
         </nav>
