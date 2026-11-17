@@ -1,5 +1,6 @@
 ﻿import PropTypes from 'prop-types';
 import { Skeleton } from '../ui/Skeleton.jsx';
+import { NO_RECENT_DATA_LABEL } from '../../utils/region-status.js';
 
 export default function RegionList({
     regionData,
@@ -36,11 +37,16 @@ export default function RegionList({
                     <span className="wijken-list-name">
                         {region.name}
                     </span>
-                    <span className="wijken-list-temp">
-                        {parseTemp(region.avgTemp) !== null
-                            ? `${parseTemp(region.avgTemp).toFixed(1)}°C`
-                            : '--'}
-                    </span>
+                    {parseTemp(region.avgTemp) !== null ? (
+                        <span className="wijken-list-temp">
+                            {`${parseTemp(region.avgTemp).toFixed(1)}°C`}
+                        </span>
+                    ) : (
+                        <span className="wijken-list-nodata">
+                            <i className="bi bi-clock-history" aria-hidden="true"></i>
+                            {NO_RECENT_DATA_LABEL}
+                        </span>
+                    )}
                 </div>
             ))}
         </div>
