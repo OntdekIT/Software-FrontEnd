@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import EditUserProfileModal from "../../../components/users/edit-user-modal.jsx";
 import UserUtils from "../../../utils/user-utils";
 import { useAuth } from "../../../providers/auth-provider.jsx";
 import Button from "../../../components/ui/Button.jsx";
 import { SkeletonText } from "../../../components/ui/Skeleton.jsx";
 import { useToast } from "../../../components/ui/toast.jsx";
+import { getProfileMenuItems } from "../../../utils/nav-items.js";
 
 export default function Profile() {
     const { loggedInUser, refreshUserInfo } = useAuth();
@@ -24,6 +26,10 @@ export default function Profile() {
         setShowEditModal(false);
         toast.success("Veranderingen succesvol bijgewerkt!");
     };
+
+    // On desktop these links live in the profile menu of the top bar; on mobile
+    // there is no such menu, so they are listed here (Beheer only for admins).
+    const moreItems = getProfileMenuItems(loggedInUser);
 
     const fields = [
         {
@@ -71,7 +77,7 @@ export default function Profile() {
                                         </span>
                                         <div>
                                             <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">{f.label}</dt>
-                                            <dd className="text-sm font-medium text-gray-800">{f.value || "—"}</dd>
+                                            <dd className="text-sm font-medium text-gray-800">{f.value || "-"}</dd>
                                         </div>
                                     </div>
                                 ))}
@@ -84,6 +90,29 @@ export default function Profile() {
                         </>
                     )}
                 </div>
+
+                {/* Secondary pages and logout, mobile only (desktop has the profile menu) */}
+                {ready && (
+                    <nav aria-label="Meer" className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm lg:hidden">
+                        <ul className="divide-y divide-gray-100">
+                            {moreItems.map((item) => (
+                                <li key={item.to}>
+                                    <Link to={item.to} className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50 focus:outline-none focus-visible:bg-gray-50">
+                                        <i className={`bi ${item.icon} text-gray-500`} aria-hidden="true"></i>
+                                        <span className="flex-1">{item.label}</span>
+                                        <i className="bi bi-chevron-right text-gray-400" aria-hidden="true"></i>
+                                    </Link>
+                                </li>
+                            ))}
+                            <li>
+                                <Link to="/auth/logout" className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-red-700 hover:bg-gray-50 focus:outline-none focus-visible:bg-gray-50">
+                                    <i className="bi bi-box-arrow-right" aria-hidden="true"></i>
+                                    <span>Uitloggen</span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </nav>
+                )}
             </div>
 
             {/* Edit Profile Modal */}
