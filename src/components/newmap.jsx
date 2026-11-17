@@ -1,46 +1,33 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { spectralColors } from '../utils/map-utils.jsx';
+import { colorFor, computeValueRange, legendSteps } from '../utils/color-scale.js';
 
-function computeColor(value, min, dif) {
-  if (isNaN(value)) return 'rgba(136,136,136,0.5)';
-  const contrastValue = (value - min) / dif;
-  const colorIndex = Math.round(contrastValue * (Object.keys(spectralColors).length - 1));
-  return spectralColors[colorIndex] ?? 'rgba(136,136,136,0.5)';
-}
-
-function createRegionGeoJSON(data, metric = 'temperature', colorRange = null) {
-  const key = metric === 'pm25' ? 'avgPm25' : 'avgTemp';
-
+// Effectieve kleurschaal voor een metriek: de vaste schaal van de pagina
+// (time-lapse) of anders min/max van de huidige dataset. Kaart en legenda
+// gebruiken dezelfde functie, zodat ze niet uit elkaar kunnen lopen.
+function resolveColorRange(data, key, colorRange) {
   // Normaal wordt de kleurschaal per dataset bepaald. Bij een time-lapse mag dat
   // niet: als elk frame zich op zijn eigen min/max schaalt, ziet een koude nacht
   // er net zo bont uit als een warme middag en zie je juist geen verandering.
   // De pagina geeft dan via colorRange één schaal mee voor de hele reeks.
-  let min, max;
   if (colorRange && isFinite(colorRange.min) && isFinite(colorRange.max)) {
-    min = colorRange.min;
-    max = colorRange.max;
-  } else {
-    min = 1000;
-    max = -1000;
-    data.forEach(d => {
-      const v = parseFloat(d[key]);
-      if (!isNaN(v)) {
-        if (v < min) min = v;
-        if (v > max) max = v;
-      }
-    });
+    return { min: colorRange.min, max: colorRange.max };
   }
-  const dif = max - min !== 0 ? max - min : 1;
+  return computeValueRange(data, key);
+}
+
+function createRegionGeoJSON(data, metric = 'temperature', colorRange = null) {
+  const key = metric === 'pm25' ? 'avgPm25' : 'avgTemp';
+  const range = resolveColorRange(data, key, colorRange);
 
   return {
     type: 'FeatureCollection',
     features: data.map(region => {
       const value = parseFloat(region[key]);
-      const color = computeColor(value, min, dif);
+      const color = colorFor(value, range);
 
       return {
         type: 'Feature',
@@ -325,9 +312,12 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
   const hasPm25 = Array.isArray(regionData)
     && regionData.some(r => r && r.avgPm25 != null && r.avgPm25 !== '');
 
-  const scaleStops = Object.keys(spectralColors)
-    .map(Number)
-    .sort((a, b) => a - b);
+  const legendRange = useMemo(
+    () => resolveColorRange(regionData ?? [], metric === 'pm25' ? 'avgPm25' : 'avgTemp', colorRange),
+    [regionData, metric, colorRange]
+  );
+  const legendUnit = metric === 'pm25' ? 'µg/m³' : '°C';
+  const scaleSteps = legendRange ? legendSteps(legendRange) : [];
 
   const legendLabel = metric === 'pm25' ? 'PM2.5 (µg/m³)' : 'Temperatuur (°C)';
 
@@ -369,19 +359,18 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
       <div className="absolute bottom-3 left-3 z-10 rounded-lg border border-gray-200 bg-white/95 p-3 shadow-md backdrop-blur">
         <div className="mb-1.5 text-xs font-semibold text-gray-700">{legendLabel}</div>
         <div className="flex h-3 w-40 overflow-hidden rounded">
-          {scaleStops.map((stop) => (
+          {scaleSteps.map((step) => (
             <div
-              key={stop}
+              key={step.color}
               className="h-full flex-1"
-              style={{ backgroundColor: spectralColors[stop] }}
+              style={{ backgroundColor: step.color }}
+              title={`${step.from.toFixed(1)} tot ${step.to.toFixed(1)} ${legendUnit}`}
             />
           ))}
         </div>
         <div className="mt-1 flex justify-between text-[10px] text-gray-500">
-          {/* Met een vaste schaal (time-lapse) zijn de echte grenswaarden
-              bekend en informatiever dan "Laag"/"Hoog". */}
-          <span>{colorRange && isFinite(colorRange.min) ? colorRange.min.toFixed(1) : 'Laag'}</span>
-          <span>{colorRange && isFinite(colorRange.max) ? colorRange.max.toFixed(1) : 'Hoog'}</span>
+          <span>{legendRange ? legendRange.min.toFixed(1) : '-'}</span>
+          <span>{legendRange ? legendRange.max.toFixed(1) : '-'}</span>
         </div>
       </div>
 
