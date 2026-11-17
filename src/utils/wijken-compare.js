@@ -1,5 +1,6 @@
 import { parseMeasurement } from './region-status.js';
 import { average } from './network-summary.js';
+import { pickExtremes } from './current-values.js';
 
 // Rekenwerk achter de Wijken-pagina: reeksen per wijk, trend, rangschikking,
 // stadsgemiddelde en vergelijking. Puur, zodat het met `node --test` te
@@ -73,7 +74,9 @@ export function latestValue(series) {
 
 /**
  * Rij per wijk voor de tabel: waarde nu, reeks, trend, stations en status.
- * De huidige waarde komt uit `current` (live), met de laatste frame-waarde als terugval.
+ * De waarde nu is alleen de live waarde uit /neighbourhood/history (zie
+ * current-values.js). Een wijk zonder die waarde heeft geen waarde: de reeks
+ * blijft voor het verloop, maar een oude frame-waarde is niet "nu".
  * @param regions       [{ id, name, avgTemp, avgPm25 }] huidige waarden
  * @param seriesById    uitkomst van buildSeriesByRegion
  * @param stationCounts Map van wijk-id naar aantal actieve stations
@@ -82,8 +85,7 @@ export function buildRows(regions, seriesById, stationCounts, key) {
     const threshold = TREND_THRESHOLDS[key] ?? DEFAULT_TREND_THRESHOLD;
     return (regions ?? []).map((region) => {
         const series = seriesById?.get(region.id) ?? [];
-        const live = parseMeasurement(region[key]);
-        const value = live !== null ? live : latestValue(series);
+        const value = parseMeasurement(region[key]);
         return {
             id: region.id,
             name: region.name,
@@ -91,7 +93,8 @@ export function buildRows(regions, seriesById, stationCounts, key) {
             value,
             hasData: value !== null,
             series,
-            trend: computeTrend(series, threshold),
+            // Zonder actuele waarde ook geen trend: de oude reeks zou een verouderd eindpunt als "nu" tonen.
+            trend: value === null ? null : computeTrend(series, threshold),
             stations: stationCounts?.get(region.id) ?? 0,
         };
     });
@@ -99,17 +102,16 @@ export function buildRows(regions, seriesById, stationCounts, key) {
 
 /**
  * Samenvatting van de rangschikking: warmst/koudst (of hoogst/laagst) en de
- * grootste verandering in 24 uur. Wijken zonder waarde of trend tellen niet mee.
+ * grootste verandering in 24 uur. Wijken zonder actuele waarde of zonder trend
+ * tellen niet mee. Gelijke waarden beslist de naam (pickExtremes).
  */
 export function summarizeRanking(rows) {
     const withValue = (rows ?? []).filter((r) => r.hasData);
-    const pick = (list, better) => list.reduce((best, r) => (best === null || better(r, best) ? r : best), null);
-    const withTrend = (rows ?? []).filter((r) => r.trend);
-    return {
-        highest: pick(withValue, (r, best) => r.value > best.value),
-        lowest: pick(withValue, (r, best) => r.value < best.value),
-        biggestChange: pick(withTrend, (r, best) => Math.abs(r.trend.delta) > Math.abs(best.trend.delta)),
-    };
+    const { highest, lowest } = pickExtremes(withValue, (r) => r.value);
+    const biggestChange = withValue
+        .filter((r) => r.trend)
+        .reduce((best, r) => (best === null || Math.abs(r.trend.delta) > Math.abs(best.trend.delta) ? r : best), null);
+    return { highest, lowest, biggestChange };
 }
 
 /** Voegt een wijk toe of haalt hem weg; maximaal MAX_COMPARE, de nieuwste valt eruit als het vol is. */

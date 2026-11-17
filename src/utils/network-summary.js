@@ -2,6 +2,7 @@
 // they can be unit tested with `node --test`.
 
 import {parseMeasurementTime} from "./measurement-time.js";
+import {cityAverage, pickRegionExtremes} from "./current-values.js";
 
 function toNumber(value) {
     const n = typeof value === "number" ? value : parseFloat(value);
@@ -15,17 +16,12 @@ export function average(values) {
     return nums.reduce((a, b) => a + b, 0) / nums.length;
 }
 
-// The wijk with the highest (or lowest) average temperature. Wijken without a
-// usable temperature are ignored. Returns {name, temp} or null.
+// The wijk with the highest (or lowest) average temperature, by the shared rule
+// in current-values.js. Returns {name, temp} or null.
 export function pickExtremeRegion(regions, mode) {
-    const withTemp = (regions ?? [])
-        .map((r) => ({name: r.name, temp: toNumber(r.avgTemp)}))
-        .filter((r) => r.temp !== null);
-    if (withTemp.length === 0) return null;
-    return withTemp.reduce((best, r) => {
-        const better = mode === "max" ? r.temp > best.temp : r.temp < best.temp;
-        return better ? r : best;
-    });
+    const {warmest, coldest} = pickRegionExtremes(regions, "avgTemp");
+    const found = mode === "max" ? warmest : coldest;
+    return found ? {name: found.name, temp: found.temp} : null;
 }
 
 // Newest measurement time (ms since epoch) over all stations, or null. The
@@ -45,8 +41,8 @@ export function latestMeasurementTime(stations) {
 export function summarizeNetwork(stations, regions) {
     const list = stations ?? [];
     return {
-        avgTemp: average((regions ?? []).map((r) => r.avgTemp)),
-        avgPm25: average((regions ?? []).map((r) => r.avgPm25)),
+        avgTemp: cityAverage(regions, "avgTemp"),
+        avgPm25: cityAverage(regions, "avgPm25"),
         warmest: pickExtremeRegion(regions, "max"),
         coldest: pickExtremeRegion(regions, "min"),
         activeCount: list.filter((s) => s.isActive !== false).length,

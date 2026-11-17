@@ -48,27 +48,42 @@ const regions = [
     { id: 4, name: 'D', avgTemp: 5 },
 ];
 
-test('rijen: live waarde, terugval op laatste frame, status en stations', () => {
+test('rijen: alleen de live waarde, geen terugval op een oude frame-waarde', () => {
     const rows = buildRows(regions, buildSeriesByRegion(frames, 'avgTemp'), new Map([[1, 2]]), 'avgTemp');
     assert.equal(rows[0].value, 11);
     assert.equal(rows[0].stations, 2);
-    assert.equal(rows[1].value, 6);
-    assert.equal(rows[1].hasData, true);
-    assert.equal(rows[2].value, 20.1);
+    // Wijk 2 en 3 hebben geen live waarde: de reeks blijft, maar "nu" is leeg.
+    assert.equal(rows[1].value, null);
+    assert.equal(rows[1].hasData, false);
+    assert.equal(rows[1].series.length, 3);
+    assert.equal(rows[1].trend, null);
+    assert.equal(rows[2].value, null);
+    assert.equal(rows[2].hasData, false);
     assert.equal(rows[3].hasData, true);
     assert.equal(rows[3].trend, null);
     assert.equal(rows[3].stations, 0);
 });
 
-test('rangschikking: hoogst, laagst en grootste verandering', () => {
+test('rangschikking: hoogst, laagst en grootste verandering, zonder wijken zonder actuele waarde', () => {
     const rows = buildRows(regions, buildSeriesByRegion(frames, 'avgTemp'), new Map(), 'avgTemp');
     const summary = summarizeRanking(rows);
-    assert.equal(summary.highest.id, 3);
+    assert.equal(summary.highest.id, 1);
     assert.equal(summary.lowest.id, 4);
-    assert.equal(summary.biggestChange.id, 2);
+    // Wijk 2 heeft de grootste verandering maar geen actuele waarde: telt niet mee.
+    assert.equal(summary.biggestChange.id, 1);
     const empty = summarizeRanking([]);
     assert.equal(empty.highest, null);
     assert.equal(empty.biggestChange, null);
+});
+
+test('rangschikking: gelijke waarden beslist de naam', () => {
+    const rows = buildRows(
+        [{ id: 9, name: 'Zuid', avgTemp: 8 }, { id: 8, name: 'Noord', avgTemp: 8 }],
+        new Map(), new Map(), 'avgTemp'
+    );
+    const summary = summarizeRanking(rows);
+    assert.equal(summary.lowest.name, 'Noord');
+    assert.equal(summary.highest.name, 'Noord');
 });
 
 test('selectie: toevoegen, weghalen en maximaal drie', () => {
