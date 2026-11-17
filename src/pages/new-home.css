@@ -279,6 +279,31 @@
         margin-bottom: 6px;
     }
 
+    .region-mini-chart {
+        margin: 0;
+        background: #fff;
+        border-radius: 6px;
+        padding: 6px 4px 2px;
+    }
+
+    .region-mini-chart-caption {
+        font-size: 0.75rem;
+        color: #4b5563;
+        padding: 0 6px 2px;
+    }
+
+    .region-more > summary {
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1f2937;
+        padding: 4px 0;
+    }
+
+    .region-more[open] > summary {
+        margin-bottom: 6px;
+    }
+
     .region-loading,
     .region-no-data {
         font-size: 0.85rem;
