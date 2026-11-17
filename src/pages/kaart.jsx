@@ -1,19 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useMatch, useNavigate } from 'react-router-dom';
 import { backendApi } from '../utils/backend-api.jsx';
 import { useToast } from '../components/ui/toast.jsx';
 import NewMap from '../components/newmap.jsx';
 import MapControls from '../components/kaart/MapControls.jsx';
 import MapPanel from '../components/kaart/MapPanel.jsx';
+import MapTimeline from '../components/kaart/MapTimeline.jsx';
 import RegionList from '../components/Home/RegionList.jsx';
 import RegionDetails from '../components/Home/RegionDetails.jsx';
 import SummaryStrip from '../components/dashboard/SummaryStrip.jsx';
 import Button from '../components/ui/Button.jsx';
+import { METRICS } from '../utils/map-metrics.js';
+import { computeColorRange } from '../utils/timelapse-utils.jsx';
 import { buildShareUrl, parseWijkId, wijkPath } from '../utils/wijk-link.js';
+import {
+    TIMELINE_HOURS, TIMELINE_STEPS, formatFrameTime, isLive, parseTimelapse, regionsForFrame, selectFrame,
+} from '../utils/timeline.js';
 import { KAART_PATH } from '../utils/legacy-routes.js';
 import './kaart.css';
 
 const MAP_CENTER = { x: 5.0913, y: 51.5555, zoom: 12 };
+const MS_PER_HOUR = 3600 * 1000;
+// De timelapse haalt het hele meetvenster in een keer op en duurt langer dan een gewone call.
+const TIMELAPSE_TIMEOUT_MS = 60000;
 
 // Ruimte die het paneel van de kaart inneemt, voor het inzoomen op een wijk.
 function focusPadding() {
@@ -48,6 +57,11 @@ export default function Kaart() {
     const [history, setHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
 
+    const [timeline, setTimeline] = useState(null);
+    const [frameIndex, setFrameIndex] = useState(0);
+    const [playing, setPlaying] = useState(false);
+    const [speedIndex, setSpeedIndex] = useState(0);
+
     useEffect(() => {
         document.title = 'Kaart';
     }, []);
@@ -69,8 +83,50 @@ export default function Kaart() {
         loadData();
     }, [loadData]);
 
+    // Tijdlijn: een call voor alle frames van de afgelopen 24 uur. Bij een fout
+    // of lege data blijft `timeline` null: de kaart werkt dan gewoon zonder.
+    useEffect(() => {
+        let active = true;
+        const to = new Date();
+        const from = new Date(to.getTime() - TIMELINE_HOURS * MS_PER_HOUR);
+
+        backendApi.get('/neighbourhood/history/timelapse', {
+            params: { from: from.toISOString(), to: to.toISOString(), steps: TIMELINE_STEPS },
+            timeout: TIMELAPSE_TIMEOUT_MS,
+        })
+            .then(resp => {
+                if (!active) return;
+                const parsed = parseTimelapse(resp.data);
+                setTimeline(parsed);
+                // Start op het meest recente frame: wat je verwacht te zien bij het openen.
+                if (parsed) setFrameIndex(parsed.frames.length - 1);
+            })
+            .catch(() => {
+                if (active) setTimeline(null);
+            });
+
+        return () => { active = false; };
+    }, []);
+
+    const frames = useMemo(() => timeline?.frames ?? [], [timeline]);
+    const frame = timeline ? selectFrame(frames, frameIndex) : null;
+    const live = !timeline || isLive(frameIndex, frames.length);
+
+    // De wijken zoals de kaart ze toont: de live gegevens, of de waarden van het gekozen frame.
+    const displayRegions = useMemo(
+        () => (timeline && frame ? regionsForFrame(timeline.neighbourhoods, frame) : regionData),
+        [timeline, frame, regionData]
+    );
+
+    // Een kleurschaal voor de hele reeks, zodat de kleuren per tijdstip dezelfde betekenis houden
+    // en de legenda erbij past.
+    const colorRange = useMemo(
+        () => (timeline ? computeColorRange(frames, METRICS[metric].key) : null),
+        [timeline, frames, metric]
+    );
+
     const regionExists = wijkId !== null && regionData.some(r => r.id === wijkId);
-    const selectedRegion = wijkId !== null ? regionData.find(r => r.id === wijkId) ?? null : null;
+    const selectedRegion = wijkId !== null ? displayRegions.find(r => r.id === wijkId) ?? null : null;
     const unknownRegion = idParam !== undefined && !regionsLoading && !dataFailed && !regionExists;
 
     // Geschiedenis van de gekozen wijk; de teller voorkomt dat een trage vorige
@@ -155,7 +211,7 @@ export default function Kaart() {
 
     const showDetail = selectedRegion !== null;
     const showNotFound = unknownRegion;
-    let panelTitle = `Wijken (${regionData.length})`;
+    let panelTitle = `Wijken (${displayRegions.length})`;
     if (showDetail) panelTitle = selectedRegion.name;
     else if (showNotFound) panelTitle = 'Wijk niet gevonden';
 
@@ -166,8 +222,9 @@ export default function Kaart() {
                 centerX={MAP_CENTER.x}
                 centerY={MAP_CENTER.y}
                 zoom={MAP_CENTER.zoom}
-                regionData={regionData}
+                regionData={displayRegions}
                 stations={stations}
+                colorRange={colorRange}
                 metric={metric}
                 onMetricChange={setMetric}
                 selectedRegionId={selectedId}
@@ -175,7 +232,7 @@ export default function Kaart() {
                 controls={
                     <div className="flex flex-col gap-2">
                         <MapControls
-                            regions={regionData}
+                            regions={displayRegions}
                             onSelectRegion={selectRegion}
                             onLocate={locate}
                             onZoomIn={() => mapRef.current?.zoomIn()}
@@ -186,6 +243,17 @@ export default function Kaart() {
                     </div>
                 }
                 bottomInsetClassName="inset-x-3 bottom-[calc(var(--sheet-peek)+0.75rem)] lg:bottom-3 lg:right-[25.5rem]"
+                overlay={timeline && (
+                    <MapTimeline
+                        timestamps={frames.map(f => f.timestamp)}
+                        index={frameIndex}
+                        onIndexChange={(next) => setFrameIndex(current => (typeof next === 'function' ? next(current) : next))}
+                        playing={playing}
+                        onPlayingChange={setPlaying}
+                        speedIndex={speedIndex}
+                        onSpeedChange={setSpeedIndex}
+                    />
+                )}
             />
 
             <MapPanel
@@ -202,6 +270,7 @@ export default function Kaart() {
                         loading={historyLoading}
                         history={history}
                         metric={metric}
+                        viewedTime={live ? null : formatFrameTime(frame.timestamp)}
                     />
                 )}
 
@@ -230,7 +299,7 @@ export default function Kaart() {
                             </div>
                         )}
                         <RegionList
-                            regionData={regionData}
+                            regionData={displayRegions}
                             loading={regionsLoading}
                             metric={metric}
                             selectedId={selectedId}
