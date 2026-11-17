@@ -74,7 +74,7 @@ const router = createBrowserRouter([
             },
             ...legacyRoutes,
             // Tijdelijk: de pagina-PR's (#184 tot #186) vervangen deze drie routes.
-            ...['heatmap', 'wijken', 'dashboard'].map((path) => ({
+            ...['wijken', 'dashboard'].map((path) => ({
                 path,
                 element: <Suspense fallback={<Preloader />}><ComingSoon /></Suspense>
             })),
