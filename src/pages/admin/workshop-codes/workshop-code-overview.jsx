@@ -1,4 +1,6 @@
 import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
+import {getWorkshopExpiry} from "../../../utils/admin-summary.js";
 import {backendApi} from "../../../utils/backend-api.jsx";
 import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
 import {Spinner} from "../../../components/ui/Preloader.jsx";
@@ -8,13 +10,16 @@ import Modal from "../../../components/ui/Modal.jsx";
 import WorkshopCodeForm from "../../../components/workshop/workshop-code-form.jsx";
 
 export default function WorkshopCodeOverview() {
+    // The admin dashboard links to /admin/workshop-codes?verlopen=1 for the expired codes.
+    const [searchParams] = useSearchParams();
+    const startExpired = searchParams.get("verlopen") === "1";
     const [workshopCodes, setWorkshopCodes] = useState([]); // Initialize with empty array
     const [loading, setLoading] = useState(true);
     const [ready, setReady] = useState(false);
     const [errMsg, setErrMsg] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedWorkshop, setSelectedWorkshop] = useState(null);
-    const [showExpired, setShowExpired] = useState(false);
+    const [showExpired, setShowExpired] = useState(startExpired);
     const [showCreateModal, setShowCreateModal] = useState(false);
 
     const parseDate = (dateString) => {
@@ -72,7 +77,9 @@ export default function WorkshopCodeOverview() {
     };
 
     useEffect(() => {
-        getData();
+        getData(startExpired);
+        // Only the initial load; later fetches go through toggleShowExpired.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const toggleShowExpired = () => {
@@ -127,6 +134,11 @@ export default function WorkshopCodeOverview() {
                                  className={`rounded-xl border p-4 shadow-sm ${showExpired ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'}`}>
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-lg font-semibold text-gray-900">{workshopCode.code}</h2>
+                                    {getWorkshopExpiry(workshopCode) === "bijna-verlopen" && (
+                                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-900">
+                                            Verloopt binnen 24 uur
+                                        </span>
+                                    )}
                                     {workshopCode?.expirationDate && (
                                         <p className="ml-auto flex items-center gap-1 text-sm text-gray-500"><i
                                             className="bi bi-clock-history"></i> {parseDate(workshopCode?.expirationDate)}
