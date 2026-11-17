@@ -44,14 +44,14 @@ export default function RegionChart({ regionHistoryData, dataView, setDataView, 
                         tickLine={dataView !== 'temperature'}
                         axisLine={dataView !== 'temperature'}
                     />
-                    <CartesianGrid stroke="#ccc" />
+                    <CartesianGrid stroke="#d1d5db" />
                     <Legend onClick={handleRegionLegendChange} wrapperStyle={{ fontSize: '11px' }} />
 
-                    <Line yAxisId="temp" type="monotone" dataKey="min" name="Min temp" stroke="#0000ff" hide={showMin || dataView === 'pm'} dot={false} />
-                    <Line yAxisId="temp" type="monotone" dataKey="max" name="Max temp" stroke="#ff0000" hide={showMax || dataView === 'pm'} dot={false} />
-                    <Line yAxisId="temp" type="monotone" dataKey="avg" name="Gem temp" stroke="#00cc00" hide={showGem || dataView === 'pm'} dot={false} />
-                    <Line yAxisId="pm" type="monotone" dataKey="pm25" name="PM2.5" stroke="#ff8800" hide={dataView === 'temperature'} dot={false} />
-                    <Line yAxisId="pm" type="monotone" dataKey="pm10" name="PM10" stroke="#aa00ff" hide={dataView === 'temperature'} dot={false} />
+                    <Line yAxisId="temp" type="monotone" dataKey="min" name="Min temp" stroke="#2166ac" hide={showMin || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="temp" type="monotone" dataKey="max" name="Max temp" stroke="#b2182b" strokeDasharray="5 3" hide={showMax || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="temp" type="monotone" dataKey="avg" name="Gem temp" stroke="#111827" hide={showGem || dataView === 'pm'} dot={false} />
+                    <Line yAxisId="pm" type="monotone" dataKey="pm25" name="PM2.5" stroke="#b45309" hide={dataView === 'temperature'} dot={false} />
+                    <Line yAxisId="pm" type="monotone" dataKey="pm10" name="PM10" stroke="#6d28d9" strokeDasharray="5 3" hide={dataView === 'temperature'} dot={false} />
                 </LineChart>
             </ResponsiveContainer>
         </div>

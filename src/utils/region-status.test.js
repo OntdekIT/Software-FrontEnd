@@ -29,3 +29,9 @@ test('laatste meting is de laatste bucket met een gemiddelde', () => {
     assert.equal(lastMeasurementTimestamp([]), null);
     assert.equal(lastMeasurementTimestamp(undefined), null);
 });
+
+test('laatste meting kan voor een andere waarde dan temperatuur', () => {
+    const history = [{ timestamp: 'a', avg: 10, pm25: 4 }, { timestamp: 'b', avg: 11, pm25: null }];
+    assert.equal(lastMeasurementTimestamp(history, 'pm25'), 'a');
+    assert.equal(lastMeasurementTimestamp(history), 'b');
+});

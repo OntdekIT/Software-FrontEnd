@@ -22,7 +22,7 @@ export default function Home() {
     const [showMax, setShowMax] = useState(false);
     const [showGem, setShowGem] = useState(false);
     const [dataView, setDataView] = useState('temperature');
-    const [showPmRegions, setShowPmRegions] = useState(false);
+    const [metric, setMetric] = useState('temperature');
 
     const mapRef = useRef();
 
@@ -74,11 +74,6 @@ export default function Home() {
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [selectedRegion, closeRegion]);
-
-    const parseTemp = (val) => {
-        const n = parseFloat(val);
-        return isFinite(n) ? n : null;
-    };
 
     const handleRegionLegendChange = (e) => {
         if (e.dataKey === "min") setShowMin(prev => !prev);
@@ -136,25 +131,11 @@ export default function Home() {
                         zoom={12}
                         regionData={showRegions ? regionData : []}
                         stations={stations}
-                        pmRegionIds={showPmRegions
-                            ? regionData.filter(r => r.avgPm25 != null).map(r => r.id)
-                            : []
-                        }
+                        metric={metric}
+                        onMetricChange={setMetric}
                         selectedRegionId={selectedRegion?.id ?? null}
                         onRegionClick={selectRegionFromMap}
                     />
-                   <div className="pm-toggle">
-                       <span className="pm-toggle-text">Fijnstof wijken</span>
-
-                       <label className="switch">
-                           <input
-                               type="checkbox"
-                               checked={showPmRegions}
-                               onChange={() => setShowPmRegions(v => !v)}
-                           />
-                           <span className="slider round"></span>
-                       </label>
-                   </div>
                 </div>
                 <div className="sidebar-container">
                     <div className="wijken-view">
@@ -167,7 +148,7 @@ export default function Home() {
                         <RegionList
                             regionData={regionData}
                             loading={regionsLoading}
-                            parseTemp={parseTemp}
+                            metric={metric}
                             selectedId={selectedRegion?.id ?? null}
                             onRegionClick={(region) => selectRegion(region, { zoom: true })}
                         />
@@ -184,7 +165,7 @@ export default function Home() {
                                 showGem={showGem}
                                 handleRegionLegendChange={handleRegionLegendChange}
                                 formatTimestamp={formatTimestamp}
-                                parseTemp={parseTemp}
+                                metric={metric}
                             />
                         )}
                     </div>

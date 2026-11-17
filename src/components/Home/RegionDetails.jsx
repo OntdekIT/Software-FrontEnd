@@ -5,6 +5,7 @@ import RegionMeasurementList from './RegionMeasurementList.jsx';
 import Button from '../ui/Button.jsx';
 import { Skeleton } from '../ui/Skeleton.jsx';
 import { NO_RECENT_DATA_LABEL, lastMeasurementTimestamp } from '../../utils/region-status.js';
+import { METRICS, METRIC_IDS, formatMetricValue } from '../../utils/map-metrics.js';
 
 export default function RegionDetails({
                                           selectedRegion,
@@ -18,8 +19,12 @@ export default function RegionDetails({
                                           showGem,
                                           handleRegionLegendChange,
                                           formatTimestamp,
-                                          parseTemp
+                                          metric = 'temperature'
                                       }) {
+    const metricConfig = METRICS[metric];
+    const currentValue = formatMetricValue(metric, selectedRegion[metricConfig.key]);
+    const lastMeasurement = lastMeasurementTimestamp(regionHistoryData, metricConfig.historyKey);
+
     return (
         <section className="region-details-card" aria-label={`Details van ${selectedRegion.name}`}>
             <div className="region-details-header">
@@ -28,12 +33,10 @@ export default function RegionDetails({
                     <i className="bi bi-x-lg" aria-hidden="true"></i> Sluiten
                 </Button>
             </div>
-            {parseTemp(selectedRegion.avgTemp) !== null ? (
+            {currentValue !== null ? (
                 <div className="region-current-temp">
-                    <span className="rct-label">Gem. temperatuur nu:</span>
-                    <span className="rct-value">
-                        {`${parseTemp(selectedRegion.avgTemp).toFixed(1)}°C`}
-                    </span>
+                    <span className="rct-label">{metricConfig.nowLabel}:</span>
+                    <span className="rct-value">{currentValue}</span>
                 </div>
             ) : (
                 <div className="region-current-temp region-current-nodata">
@@ -43,8 +46,8 @@ export default function RegionDetails({
                     </span>
                     {!regionLoading && (
                         <span className="rct-label">
-                            {lastMeasurementTimestamp(regionHistoryData)
-                                ? `Laatste meting: ${formatTimestamp(lastMeasurementTimestamp(regionHistoryData))}`
+                            {lastMeasurement
+                                ? `Laatste meting: ${formatTimestamp(lastMeasurement)}`
                                 : 'Geen meting in de afgelopen 24 uur.'}
                         </span>
                     )}
@@ -56,7 +59,7 @@ export default function RegionDetails({
                 </div>
             ) : regionHistoryData.length > 0 ? (
                 <>
-                    <RegionMiniChart regionHistoryData={regionHistoryData} formatTimestamp={formatTimestamp} />
+                    <RegionMiniChart regionHistoryData={regionHistoryData} formatTimestamp={formatTimestamp} metric={metric} />
                     <details className="region-more">
                         <summary>Alle metingen en grafiek</summary>
                         <div className="region-data-layout">
@@ -97,5 +100,5 @@ RegionDetails.propTypes = {
     showGem: PropTypes.bool.isRequired,
     handleRegionLegendChange: PropTypes.func.isRequired,
     formatTimestamp: PropTypes.func.isRequired,
-    parseTemp: PropTypes.func.isRequired
+    metric: PropTypes.oneOf(METRIC_IDS)
 };

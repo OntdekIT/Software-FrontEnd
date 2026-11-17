@@ -2,10 +2,11 @@
 import PropTypes from 'prop-types';
 import { Skeleton } from '../ui/Skeleton.jsx';
 import { NO_RECENT_DATA_LABEL } from '../../utils/region-status.js';
+import { METRICS, METRIC_IDS, formatMetricValue } from '../../utils/map-metrics.js';
 
 export default function RegionList({
     regionData,
-    parseTemp,
+    metric = 'temperature',
     onRegionClick,
     selectedId = null,
     loading = false
@@ -48,9 +49,9 @@ export default function RegionList({
                     <span className="wijken-list-name">
                         {region.name}
                     </span>
-                    {parseTemp(region.avgTemp) !== null ? (
+                    {formatMetricValue(metric, region[METRICS[metric].key]) !== null ? (
                         <span className="wijken-list-temp">
-                            {`${parseTemp(region.avgTemp).toFixed(1)}°C`}
+                            {formatMetricValue(metric, region[METRICS[metric].key])}
                         </span>
                     ) : (
                         <span className="wijken-list-nodata">
@@ -66,7 +67,7 @@ export default function RegionList({
 
 RegionList.propTypes = {
     regionData: PropTypes.array.isRequired,
-    parseTemp: PropTypes.func.isRequired,
+    metric: PropTypes.oneOf(METRIC_IDS),
     onRegionClick: PropTypes.func.isRequired,
     selectedId: PropTypes.number,
     loading: PropTypes.bool
