@@ -1,14 +1,18 @@
-import {useCallback, useEffect} from "react";
+import {Suspense, lazy, useCallback, useEffect} from "react";
+import {Skeleton} from "../components/ui/Skeleton.jsx";
 import {backendApi} from "../utils/backend-api.jsx";
 import {useAuth} from "../providers/auth-provider.jsx";
 import UserRole from "../domain/user-role.jsx";
 import useSource from "../hooks/use-source.js";
 import {buildBackfill} from "../utils/network-health.js";
+import {STATIONS_ENDPOINT, WIJKEN_ENDPOINT, peekCached, rememberCached} from "../utils/swr-cache.js";
 import KeyNumbers from "../components/dashboard/health/KeyNumbers.jsx";
-import CityChart from "../components/dashboard/health/CityChart.jsx";
 import StaleStations from "../components/dashboard/health/StaleStations.jsx";
 import ExtremeWijken from "../components/dashboard/health/ExtremeWijken.jsx";
 import MissingDataExplainer from "../components/dashboard/health/MissingDataExplainer.jsx";
+
+// De grafiek (recharts) laadt pas als het dashboard opent, niet in de hoofdbundel.
+const CityChart = lazy(() => import("../components/dashboard/health/CityChart.jsx"));
 
 const HOUR = 60 * 60 * 1000;
 // Oudere momenten om te zoeken naar de laatste meting van uitgevallen stations.
@@ -20,11 +24,16 @@ const snapshotAt = (time, signal) =>
     backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${new Date(time).toISOString()}`, {signal})
         .then((r) => (Array.isArray(r.data) ? r.data : []));
 
-const loadStations = (signal) => snapshotAt(Date.now(), signal);
+const loadStations = (signal) => snapshotAt(Date.now(), signal).then((data) => rememberCached(STATIONS_ENDPOINT, data));
 
 const loadRegions = (signal) =>
     backendApi.get(`/neighbourhood/history?timestamp=${new Date().toISOString()}`, {signal})
-        .then((r) => (Array.isArray(r.data) ? r.data : []));
+        .then((r) => (Array.isArray(r.data) ? r.data : []))
+        .then((data) => rememberCached(WIJKEN_ENDPOINT, data));
+
+// Bewaarde stand van de vorige keer: direct tonen, de echte call ververst.
+const peekStations = () => peekCached(STATIONS_ENDPOINT);
+const peekRegions = () => peekCached(WIJKEN_ENDPOINT);
 
 const loadTimelapse = (signal) => {
     const to = new Date();
@@ -50,8 +59,8 @@ export default function NetworkDashboard() {
         document.title = "Dashboard";
     }, []);
 
-    const stations = useSource(loadStations);
-    const regions = useSource(loadRegions);
+    const stations = useSource(loadStations, true, peekStations);
+    const regions = useSource(loadRegions, true, peekRegions);
     const timelapse = useSource(loadTimelapse);
     // Heavy and admin-only: failing here never affects the rest of the page.
     const pmCoverage = useSource(loadPmCoverage, isAdmin);
@@ -76,7 +85,7 @@ export default function NetworkDashboard() {
             <div className="space-y-4">
                 <KeyNumbers stations={stations} regions={regions} timelapse={timelapse} pmCoverage={isAdmin ? pmCoverage : undefined} />
                 <div className="grid gap-4 lg:grid-cols-3">
-                    <div className="lg:col-span-2"><CityChart timelapse={timelapse} /></div>
+                    <div className="lg:col-span-2"><Suspense fallback={<Skeleton className="h-96 w-full" rounded="rounded-xl" />}><CityChart timelapse={timelapse} /></Suspense></div>
                     <ExtremeWijken regions={regions} />
                 </div>
                 <div className="grid gap-4 lg:grid-cols-3">

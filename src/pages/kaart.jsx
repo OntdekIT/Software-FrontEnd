@@ -19,6 +19,7 @@ import {
     TIMELINE_HOURS, TIMELINE_STEPS, formatFrameTime, isLive, parseTimelapse, regionsForFrame, selectFrame,
 } from '../utils/timeline.js';
 import { KAART_PATH } from '../utils/legacy-routes.js';
+import { STATIONS_ENDPOINT, WIJKEN_ENDPOINT, swrRequest } from '../utils/swr-cache.js';
 import './kaart.css';
 
 const MAP_CENTER = { x: 5.0913, y: 51.5555, zoom: 12 };
@@ -74,12 +75,26 @@ export default function Kaart() {
         const now = new Date().toISOString();
         setRegionsLoading(true);
         setDataFailed(false);
-        backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${now}`)
-            .then(resp => setStations(resp.data))
+        // Stale-while-revalidate: een bewaarde stand staat meteen op de kaart en wordt ververst.
+        swrRequest(
+            STATIONS_ENDPOINT,
+            () => backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${now}`).then(resp => resp.data),
+            cached => setStations(cached.data)
+        )
+            .then(setStations)
             .catch(() => setDataFailed(true));
-        backendApi.get(`/neighbourhood/history?timestamp=${now}`)
-            .then(resp => {
-                setRegionData(resp.data);
+        swrRequest(
+            WIJKEN_ENDPOINT,
+            () => backendApi.get(`/neighbourhood/history?timestamp=${now}`).then(resp => resp.data),
+            cached => {
+                setRegionData(cached.data);
+                // Het bewaarde moment, zodat "Bijgewerkt" de echte leeftijd toont.
+                setLoadedAt(cached.savedAt);
+                setRegionsLoading(false);
+            }
+        )
+            .then(data => {
+                setRegionData(data);
                 setLoadedAt(Date.now());
             })
             .catch(() => setDataFailed(true))
