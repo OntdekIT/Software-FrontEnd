@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
@@ -82,16 +82,41 @@ function buildStationPopupHtml(station) {
     + `</div>`;
 }
 
-export default function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [], stations = [], colorRange = null, overlay = null }) {
+// Bounding box [[west, south], [east, north]] van een wijk. coordinates komt als
+// [lat, lng]-paren uit de backend.
+function regionBounds(region) {
+  const points = Array.isArray(region?.coordinates) ? region.coordinates : [];
+  if (points.length === 0) return null;
+  const lats = points.map(c => c[0]);
+  const lngs = points.map(c => c[1]);
+  return [
+    [Math.min(...lngs), Math.min(...lats)],
+    [Math.max(...lngs), Math.max(...lats)]
+  ];
+}
+
+const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, pmRegionIds = [], selectedRegionId = null, stations = [], colorRange = null, overlay = null }, ref) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const popupRef = useRef(null);
   const markersRef = useRef([]);
   const metricRef = useRef('temperature');
   const [metric, setMetric] = useState('temperature');
+  // Pas true als de bronnen en lagen bestaan. Effecten die de kaart vullen wachten
+  // hierop, zodat data die sneller binnenkomt dan de kaartstijl niet verloren gaat.
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // keep the ref in sync so map event closures read the current metric
   metricRef.current = metric;
+
+  // Laat de pagina (bijvoorbeeld de wijkenlijst) de kaart naar een wijk sturen.
+  useImperativeHandle(ref, () => ({
+    focusRegion(region) {
+      const bounds = regionBounds(region);
+      if (!mapInstance.current || !bounds) return;
+      mapInstance.current.fitBounds(bounds, { padding: 48, maxZoom: 15, duration: 600 });
+    }
+  }), []);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -154,7 +179,25 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
               },
               filter: ['==', 'id', -1]
             });
+
+            // Geselecteerde wijk: witte rand met een donkere lijn erbovenop, zodat
+            // de markering op elke kleur en op de kaartondergrond zichtbaar blijft.
+            ['regions-selected-casing', 'regions-selected'].forEach((id, i) => {
+              mapInstance.current.addLayer({
+                id,
+                type: 'line',
+                source: 'regions',
+                layout: { 'line-join': 'round' },
+                paint: {
+                  'line-color': i === 0 ? '#ffffff' : '#111827',
+                  'line-width': i === 0 ? 6 : 3
+                },
+                filter: ['==', ['get', 'id'], -1]
+              });
+            });
           }
+
+          setMapLoaded(true);
 
           mapInstance.current.on('click', 'regions-fill', (e) => {
             if (e.features.length > 0 && onRegionClick) {
@@ -231,6 +274,7 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
         mapInstance.current.remove();
         mapInstance.current = null;
       }
+      setMapLoaded(false);
     };
     // onRegionClick intentionally omitted: including it would re-create the
     // whole map on every parent render. The click handler reads the latest
@@ -239,48 +283,39 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
   }, [centerX, centerY, zoom]);
 
   useEffect(() => {
-    if (!mapInstance.current || !regionData || regionData.length === 0) return;
+    if (!mapLoaded || !regionData || regionData.length === 0) return;
 
-    const updateMapData = () => {
-      const source = mapInstance.current.getSource('regions');
-      if (source) {
-        source.setData(createRegionGeoJSON(regionData, metric, colorRange));
-      }
-    };
-
-    if (mapInstance.current.isStyleLoaded()) {
-      updateMapData();
-    } else {
-      mapInstance.current.once('load', updateMapData);
+    const source = mapInstance.current.getSource('regions');
+    if (source) {
+      source.setData(createRegionGeoJSON(regionData, metric, colorRange));
     }
-  }, [regionData, metric, colorRange]);
+  }, [mapLoaded, regionData, metric, colorRange]);
 
   useEffect(() => {
-    if (!mapInstance.current) return;
+    if (!mapLoaded || !mapInstance.current.getLayer('regions-pm-highlight')) return;
 
-    const updateFilter = () => {
-      if (!mapInstance.current.getLayer('regions-pm-highlight')) return;
-
-      if (pmRegionIds.length === 0) {
-        mapInstance.current.setFilter('regions-pm-highlight', ['==', 'id', -1]);
-      } else {
-        mapInstance.current.setFilter('regions-pm-highlight', [
-          'in', ['get', 'id'], ['literal', pmRegionIds]
-        ]);
-      }
-    };
-
-    if (mapInstance.current.isStyleLoaded()) {
-      updateFilter();
+    if (pmRegionIds.length === 0) {
+      mapInstance.current.setFilter('regions-pm-highlight', ['==', 'id', -1]);
     } else {
-      mapInstance.current.once('load', updateFilter);
+      mapInstance.current.setFilter('regions-pm-highlight', [
+        'in', ['get', 'id'], ['literal', pmRegionIds]
+      ]);
     }
-  }, [pmRegionIds]);
+  }, [mapLoaded, pmRegionIds]);
+
+  useEffect(() => {
+    if (!mapLoaded) return;
+
+    const filter = ['==', ['get', 'id'], selectedRegionId ?? -1];
+    ['regions-selected-casing', 'regions-selected'].forEach(id => {
+      if (mapInstance.current.getLayer(id)) mapInstance.current.setFilter(id, filter);
+    });
+  }, [mapLoaded, selectedRegionId]);
 
   // Render one maplibre marker per station. Rebuilds on every stations change
   // (clears old markers first) and guards against stations without coords.
   useEffect(() => {
-    if (!mapInstance.current) return;
+    if (!mapLoaded) return;
 
     const renderMarkers = () => {
       markersRef.current.forEach(m => m.remove());
@@ -304,12 +339,8 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
       });
     };
 
-    if (mapInstance.current.isStyleLoaded()) {
-      renderMarkers();
-    } else {
-      mapInstance.current.once('load', renderMarkers);
-    }
-  }, [stations]);
+    renderMarkers();
+  }, [mapLoaded, stations]);
 
   // does the data carry any pm2.5 readings? controls the toggle affordance
   const hasPm25 = Array.isArray(regionData)
@@ -387,7 +418,9 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
       )}
     </div>
   );
-}
+});
+
+export default NewMap;
 
 NewMap.propTypes = {
   centerX: PropTypes.number,
@@ -396,6 +429,8 @@ NewMap.propTypes = {
   regionData: PropTypes.array,
   onRegionClick: PropTypes.func,
   pmRegionIds: PropTypes.array,
+  /** Id van de gemarkeerde wijk (omlijnd op de kaart). */
+  selectedRegionId: PropTypes.number,
   stations: PropTypes.array,
   /** Vaste kleurschaal {min, max}; zonder deze wordt per dataset geschaald. */
   colorRange: PropTypes.shape({
