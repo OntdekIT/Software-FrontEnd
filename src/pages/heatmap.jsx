@@ -11,6 +11,7 @@ import { heatRange, toHeatPoints } from '../utils/heatmap-data.js';
 import { MAX_COVERAGE_KM, estimateAt, findExtremes, nearestPoints } from '../utils/interpolation.js';
 import { colorFor } from '../utils/color-scale.js';
 import { formatLastMeasurement } from '../utils/station-status.js';
+import { STATIONS_ENDPOINT, swrRequest } from '../utils/swr-cache.js';
 import './kaart.css';
 import './heatmap.css';
 
@@ -78,9 +79,18 @@ export default function Heatmap() {
     const load = useCallback(() => {
         setLoading(true);
         setFailed(false);
-        backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${new Date().toISOString()}`)
-            .then((resp) => {
-                setStations(resp.data);
+        swrRequest(
+            STATIONS_ENDPOINT,
+            () => backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${new Date().toISOString()}`).then((resp) => resp.data),
+            (cached) => {
+                setStations(cached.data);
+                // Het bewaarde moment, zodat de leeftijd van de metingen eerlijk blijft.
+                setLoadedAt(cached.savedAt);
+                setLoading(false);
+            }
+        )
+            .then((data) => {
+                setStations(data);
                 setLoadedAt(Date.now());
             })
             .catch(() => setFailed(true))
