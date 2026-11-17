@@ -10,7 +10,7 @@ const ACCENTS = {
     warning: { icon: 'text-warning', border: 'border-warning' },
 };
 
-export default function StatCard({ icon, value, unit, label, accent = 'secondary', loading = false }) {
+export default function StatCard({ icon, value, unit, label, detail, accent = 'secondary', loading = false }) {
     const theme = ACCENTS[accent] ?? ACCENTS.secondary;
 
     return (
@@ -20,12 +20,13 @@ export default function StatCard({ icon, value, unit, label, accent = 'secondary
                 {loading ? (
                     <div className="animate-skeleton h-7 w-16 rounded-md" aria-hidden="true" />
                 ) : (
-                    <p className="text-2xl font-bold leading-none text-dark">
+                    <p className="truncate text-2xl font-bold leading-none text-dark">
                         {value}
                         {unit && <span className="ml-1 text-base font-medium text-gray-500">{unit}</span>}
                     </p>
                 )}
                 <p className="mt-1 truncate text-sm text-gray-500">{label}</p>
+                {detail && !loading && <p className="truncate text-xs text-gray-500">{detail}</p>}
             </div>
         </div>
     );
@@ -36,6 +37,7 @@ StatCard.propTypes = {
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     unit: PropTypes.string,
     label: PropTypes.string.isRequired,
+    detail: PropTypes.string,
     accent: PropTypes.oneOf(['success', 'danger', 'secondary', 'warning']),
     loading: PropTypes.bool,
 };

@@ -3,18 +3,10 @@ import { Link } from "react-router-dom";
 import { backendApi } from "../utils/backend-api.jsx";
 import NewMap from "../components/newmap.jsx";
 import RegionChart from "../components/Home/RegionChart.jsx";
-import StatCard from "../components/dashboard/StatCard.jsx";
+import SummaryStrip from "../components/dashboard/SummaryStrip.jsx";
 import OutageList from "../components/dashboard/OutageList.jsx";
 import Button from "../components/ui/Button.jsx";
 import './dashboard.css';
-
-// Average of the finite numbers in a list, or null when there is nothing to
-// average. Keeps the KPI tiles honest instead of showing NaN.
-function average(values) {
-    const nums = values.map((v) => parseFloat(v)).filter((n) => Number.isFinite(n));
-    if (nums.length === 0) return null;
-    return nums.reduce((a, b) => a + b, 0) / nums.length;
-}
 
 export default function Dashboard() {
     const [stations, setStations] = useState([]);
@@ -82,13 +74,6 @@ export default function Dashboard() {
         return () => { cancelled = true; };
     }, [now]);
 
-    const activeCount = stations.filter((s) => s.isActive !== false).length;
-    const failingCount = stations.filter(
-        (s) => s.isActive === false || s.tempError || s.humError || s.stofError || s.locError
-    ).length;
-    const avgTemp = average(regionData.map((r) => r.avgTemp));
-    const avgPm25 = average(regionData.map((r) => r.avgPm25));
-
     return (
         <div className="dashboard-page">
             <title>Dashboard</title>
@@ -96,9 +81,6 @@ export default function Dashboard() {
             <header className="dashboard-header">
                 <div>
                     <h1 className="text-xl font-bold text-dark">Meetnet in één oogopslag</h1>
-                    <p className="text-sm text-gray-500">
-                        Laatst bijgewerkt: {now.toLocaleString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                    </p>
                 </div>
                 <div className="dashboard-header-links">
                     <Link to="/newheatmap">
@@ -124,38 +106,7 @@ export default function Dashboard() {
                 </div>
             )}
 
-            <section className="dashboard-kpis" aria-label="Kerncijfers meetnet">
-                <StatCard
-                    icon="bi-broadcast"
-                    accent="success"
-                    value={loading ? '' : activeCount}
-                    label="Actieve stations"
-                    loading={loading}
-                />
-                <StatCard
-                    icon="bi-exclamation-triangle"
-                    accent="danger"
-                    value={loading ? '' : failingCount}
-                    label="Uitgevallen / storing"
-                    loading={loading}
-                />
-                <StatCard
-                    icon="bi-thermometer-half"
-                    accent="warning"
-                    value={avgTemp != null ? avgTemp.toFixed(1) : '--'}
-                    unit="°C"
-                    label="Gem. temperatuur"
-                    loading={loading}
-                />
-                <StatCard
-                    icon="bi-cloud-haze2"
-                    accent="secondary"
-                    value={avgPm25 != null ? avgPm25.toFixed(1) : '--'}
-                    unit="µg/m³"
-                    label="Gem. fijnstof (PM2.5)"
-                    loading={loading}
-                />
-            </section>
+            <SummaryStrip stations={stations} regions={regionData} loading={loading} failed={Boolean(errMsg)} />
 
             <section className="dashboard-body">
                 <div className="dashboard-map-card">
