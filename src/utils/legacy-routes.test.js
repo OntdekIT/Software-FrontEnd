@@ -2,14 +2,22 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LEGACY_REDIRECTS, fillPath, resolveLegacyPath } from './legacy-routes.js';
 
-test('alle oude hoofdroutes sturen naar de kaart', () => {
-    for (const path of ['/heatmap', '/wijken', '/stations', '/kaart', '/newhome', '/dashboard', '/newheatmap']) {
+test('oude hoofdroutes sturen naar hun nieuwe pagina', () => {
+    for (const path of ['/stations', '/kaart', '/newhome']) {
         assert.equal(resolveLegacyPath(path), '/', path);
+    }
+    assert.equal(resolveLegacyPath('/newheatmap'), '/heatmap');
+});
+
+test('/heatmap, /wijken en /dashboard zijn eigen pagina\'s en worden niet doorgestuurd', () => {
+    for (const path of ['/heatmap', '/wijken', '/dashboard']) {
+        assert.ok(!Object.hasOwn(LEGACY_REDIRECTS, path), path);
+        assert.equal(resolveLegacyPath(path), null, path);
     }
 });
 
-test('de tabel bevat alle routes uit de user story', () => {
-    for (const path of ['/heatmap', '/wijken', '/stations', '/kaart']) {
+test('de tabel bevat de blijvende routes uit de user story', () => {
+    for (const path of ['/stations', '/kaart', '/newhome', '/newheatmap']) {
         assert.ok(Object.hasOwn(LEGACY_REDIRECTS, path), path);
     }
 });
@@ -19,7 +27,7 @@ test('een oude wijkdetail-link wordt een /wijk/:id-link', () => {
 });
 
 test('afsluitende slash en hoofdletters worden genegeerd', () => {
-    assert.equal(resolveLegacyPath('/Wijken/'), '/');
+    assert.equal(resolveLegacyPath('/Kaart/'), '/');
     assert.equal(resolveLegacyPath('/wijken/7/'), '/wijk/7');
 });
 
