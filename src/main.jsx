@@ -17,6 +17,7 @@ const Kaart = lazy(() => import('./pages/kaart.jsx'));
 const Heatmap = lazy(() => import('./pages/heatmap.jsx'));
 const Wijken = lazy(() => import('./pages/wijken.jsx'));
 const Notifications = lazy(() => import('./pages/notifications.jsx'));
+const NetworkDashboard = lazy(() => import('./pages/network-dashboard.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
 const Login = lazy(() => import('./pages/auth/login.jsx'));
 const Register = lazy(() => import('./pages/auth/register.jsx'));
@@ -37,7 +38,6 @@ const UserDetails = lazy(() => import('./pages/admin/users/user-details.jsx'));
 const StationOverview = lazy(() => import('./pages/admin/stations/stations-overview.jsx'));
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
 const DataCoverage = lazy(() => import('./pages/admin/data-coverage/data-coverage.jsx'));
-const ComingSoon = lazy(() => import('./pages/coming-soon.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
 
 // Oude routes sturen door naar de kaart (zie utils/legacy-routes.js).
@@ -77,12 +77,11 @@ const router = createBrowserRouter([
                 path: "/wijken",
                 element: <Suspense fallback={<Preloader />}><Wijken /></Suspense>
             },
+            {
+                path: "/dashboard",
+                element: <Suspense fallback={<Preloader />}><NetworkDashboard /></Suspense>
+            },
             ...legacyRoutes,
-            // Tijdelijk: de pagina-PR's (#184 tot #186) vervangen deze drie routes.
-            ...['dashboard'].map((path) => ({
-                path,
-                element: <Suspense fallback={<Preloader />}><ComingSoon /></Suspense>
-            })),
             {
                 path: "/about",
                 element: <Suspense fallback={<Preloader />}><About /></Suspense>
