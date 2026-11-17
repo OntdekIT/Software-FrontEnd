@@ -245,8 +245,8 @@ export default function DataCoverage() {
                                     <Tooltip formatter={value => [`${value}%`, "Stations met data"]}/>
                                     <ReferenceLine y={coverage.networkGapThreshold * 100} stroke="var(--color-danger)"
                                                    strokeDasharray="4 4"/>
-                                    <Area type="stepAfter" dataKey="percentage" stroke="var(--color-secondary)"
-                                          fill="var(--color-secondary)" fillOpacity={0.15} isAnimationActive={false}/>
+                                    <Area type="stepAfter" dataKey="percentage" stroke="var(--color-ink)"
+                                          fill="var(--color-ink)" fillOpacity={0.15} isAnimationActive={false}/>
                                 </AreaChart>
                             </ResponsiveContainer>
                         ) : (
@@ -261,7 +261,7 @@ export default function DataCoverage() {
                                 <ul className="mt-2 space-y-1 text-sm text-gray-700">
                                     {coverage.networkGaps.map(gap => (
                                         <li key={gap.start}>
-                                            {formatBucket(gap.start, coverage.granularity)} – {formatBucket(gap.end, coverage.granularity)}
+                                            {formatBucket(gap.start, coverage.granularity)} tot {formatBucket(gap.end, coverage.granularity)}
                                             <span className="text-gray-500">
                                                 {" "}({formatBuckets(gap.bucketCount, coverage.granularity)}, laagste dekking {formatPercent(gap.lowestShare)})
                                             </span>

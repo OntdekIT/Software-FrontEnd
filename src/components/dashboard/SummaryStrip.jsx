@@ -87,7 +87,7 @@ export default function SummaryStrip({ stations, regions, loading = false, faile
                 />
                 <StatCard
                     icon="bi-thermometer-snow"
-                    accent="secondary"
+                    accent="ink"
                     value={summary.coldest?.name ?? NO_VALUE}
                     label="Koudste wijk"
                     detail={summary.coldest ? `${formatTemp(summary.coldest.temp)} °C` : undefined}
@@ -110,7 +110,7 @@ export default function SummaryStrip({ stations, regions, loading = false, faile
                 />
                 <StatCard
                     icon="bi-cloud-haze2"
-                    accent="secondary"
+                    accent="ink"
                     value={formatTemp(summary.avgPm25)}
                     unit="µg/m³"
                     label="Gem. fijnstof (PM2.5)"

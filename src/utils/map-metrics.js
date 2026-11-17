@@ -36,3 +36,11 @@ export function formatMetricValue(metricId, value) {
     const metric = METRICS[metricId] ?? METRICS.temperature;
     return metric.unit === '\u00b0C' ? `${n.toFixed(1)}${metric.unit}` : `${n.toFixed(1)} ${metric.unit}`;
 }
+
+/** Waarde en eenheid apart, voor een groot getal met een kleine eenheid; null zonder echte meting. */
+export function formatMetricParts(metricId, value) {
+    const n = parseMeasurement(value);
+    if (n === null) return null;
+    const metric = METRICS[metricId] ?? METRICS.temperature;
+    return { number: n.toFixed(1), unit: metric.unit };
+}

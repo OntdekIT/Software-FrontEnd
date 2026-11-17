@@ -10,6 +10,8 @@ import RegionList from '../components/Home/RegionList.jsx';
 import RegionDetails from '../components/Home/RegionDetails.jsx';
 import SummaryStrip from '../components/dashboard/SummaryStrip.jsx';
 import Button from '../components/ui/Button.jsx';
+import { filterRegions } from '../utils/region-search.js';
+import { computeValueRange } from '../utils/color-scale.js';
 import { METRICS } from '../utils/map-metrics.js';
 import { computeColorRange } from '../utils/timelapse-utils.jsx';
 import { buildShareUrl, parseWijkId, wijkPath } from '../utils/wijk-link.js';
@@ -53,6 +55,8 @@ export default function Kaart() {
     const [metric, setMetric] = useState('temperature');
     const [sheetOpen, setSheetOpen] = useState(idParam !== undefined);
     const [locating, setLocating] = useState(false);
+    const [query, setQuery] = useState('');
+    const [loadedAt, setLoadedAt] = useState(null);
 
     const [history, setHistory] = useState([]);
     const [historyLoading, setHistoryLoading] = useState(false);
@@ -74,7 +78,10 @@ export default function Kaart() {
             .then(resp => setStations(resp.data))
             .catch(() => setDataFailed(true));
         backendApi.get(`/neighbourhood/history?timestamp=${now}`)
-            .then(resp => setRegionData(resp.data))
+            .then(resp => {
+                setRegionData(resp.data);
+                setLoadedAt(Date.now());
+            })
             .catch(() => setDataFailed(true))
             .finally(() => setRegionsLoading(false));
     }, []);
@@ -124,6 +131,13 @@ export default function Kaart() {
         () => (timeline ? computeColorRange(frames, METRICS[metric].key) : null),
         [timeline, frames, metric]
     );
+
+    // Dezelfde schaal als de kaart, ook als de lijst door de zoekterm korter is.
+    const listColorRange = useMemo(
+        () => colorRange ?? computeValueRange(displayRegions, METRICS[metric].key),
+        [colorRange, displayRegions, metric]
+    );
+    const listRegions = useMemo(() => filterRegions(displayRegions, query), [displayRegions, query]);
 
     const regionExists = wijkId !== null && regionData.some(r => r.id === wijkId);
     const selectedRegion = wijkId !== null ? displayRegions.find(r => r.id === wijkId) ?? null : null;
@@ -211,7 +225,7 @@ export default function Kaart() {
 
     const showDetail = selectedRegion !== null;
     const showNotFound = unknownRegion;
-    let panelTitle = `Wijken (${displayRegions.length})`;
+    let panelTitle = `Wijken (${listRegions.length})`;
     if (showDetail) panelTitle = selectedRegion.name;
     else if (showNotFound) panelTitle = 'Wijk niet gevonden';
 
@@ -238,6 +252,8 @@ export default function Kaart() {
                             onZoomIn={() => mapRef.current?.zoomIn()}
                             onZoomOut={() => mapRef.current?.zoomOut()}
                             locating={locating}
+                            query={query}
+                            onQueryChange={setQuery}
                         />
                         <SummaryStrip stations={stations} regions={regionData} loading={regionsLoading} compact />
                     </div>
@@ -299,8 +315,12 @@ export default function Kaart() {
                             </div>
                         )}
                         <RegionList
-                            regionData={displayRegions}
+                            regionData={listRegions}
                             loading={regionsLoading}
+                            colorRange={listColorRange}
+                            updatedAt={loadedAt}
+                            viewedTime={live || !frame ? null : formatFrameTime(frame.timestamp)}
+                            filtered={query.trim() !== ''}
                             metric={metric}
                             selectedId={selectedId}
                             onRegionClick={selectRegion}

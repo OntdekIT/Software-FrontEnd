@@ -15,3 +15,11 @@ export function searchRegions(regions, query, limit = 6) {
         })
         .slice(0, limit);
 }
+
+/** Alle wijken waarvan de naam de zoekterm bevat (zonder limiet); bij een lege term alles. */
+export function filterRegions(regions, query) {
+    const term = (query ?? '').trim().toLowerCase();
+    const list = regions ?? [];
+    if (term === '') return list;
+    return list.filter(r => typeof r.name === 'string' && r.name.toLowerCase().includes(term));
+}

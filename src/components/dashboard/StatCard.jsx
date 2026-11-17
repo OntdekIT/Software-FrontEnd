@@ -6,12 +6,12 @@ import PropTypes from 'prop-types';
 const ACCENTS = {
     success: { icon: 'text-success', border: 'border-success' },
     danger: { icon: 'text-danger', border: 'border-danger' },
-    secondary: { icon: 'text-secondary', border: 'border-secondary' },
+    ink: { icon: 'text-ink', border: 'border-ink' },
     warning: { icon: 'text-warning', border: 'border-warning' },
 };
 
-export default function StatCard({ icon, value, unit, label, detail, accent = 'secondary', loading = false }) {
-    const theme = ACCENTS[accent] ?? ACCENTS.secondary;
+export default function StatCard({ icon, value, unit, label, detail, accent = 'ink', loading = false }) {
+    const theme = ACCENTS[accent] ?? ACCENTS.ink;
 
     return (
         <div className={`flex items-center gap-3 rounded-xl border-l-4 ${theme.border} bg-white p-4 shadow-sm`}>
@@ -38,6 +38,6 @@ StatCard.propTypes = {
     unit: PropTypes.string,
     label: PropTypes.string.isRequired,
     detail: PropTypes.string,
-    accent: PropTypes.oneOf(['success', 'danger', 'secondary', 'warning']),
+    accent: PropTypes.oneOf(['success', 'danger', 'ink', 'warning']),
     loading: PropTypes.bool,
 };

@@ -22,3 +22,12 @@ test('searchRegions geeft niets bij een lege zoekterm of zonder treffer', () => 
 test('searchRegions begrenst het aantal resultaten', () => {
     assert.equal(searchRegions(regions, 'e', 2).length, 2);
 });
+
+test('filterRegions geeft alles bij een lege term en filtert op deel van de naam', async () => {
+    const { filterRegions } = await import('./region-search.js');
+    const regions = [{ name: 'Centrum' }, { name: 'Noord' }, { name: 'Oosterhout Centrum' }];
+    assert.equal(filterRegions(regions, '  ').length, 3);
+    assert.deepEqual(filterRegions(regions, 'CENTR').map(r => r.name), ['Centrum', 'Oosterhout Centrum']);
+    assert.deepEqual(filterRegions(regions, 'zzz'), []);
+    assert.deepEqual(filterRegions(undefined, 'a'), []);
+});

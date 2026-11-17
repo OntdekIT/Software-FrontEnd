@@ -192,7 +192,7 @@ export default function StationDetails() {
         return <Preloader message="Data aan het ophalen..." />;
     }
 
-    const fmt = (v, unit) => (v == null || isNaN(v) ? "—" : `${Number(v).toFixed(1)} ${unit}`);
+    const fmt = (v, unit) => (v == null || isNaN(v) ? "-" : `${Number(v).toFixed(1)} ${unit}`);
     const isActive = meetstation.isActive !== false;
 
     // Period statistics over the selected date range: min/max/avg + a trend
@@ -217,7 +217,7 @@ export default function StationDetails() {
     const metrics = [
         { key: "temp", label: "Temperatuur", unit: "°C", data: tempGraphData, icon: "bi-thermometer-half", tint: "text-warning" },
         { key: "hum", label: "Luchtvochtigheid", unit: "%", data: humGraphData, icon: "bi-droplet-half", tint: "text-info" },
-        { key: "stof", label: "Fijnstof", unit: "µg/m³", data: stofGraphData, icon: "bi-wind", tint: "text-secondary" },
+        { key: "stof", label: "Fijnstof", unit: "µg/m³", data: stofGraphData, icon: "bi-wind", tint: "text-ink" },
     ].map((m) => ({ ...m, stats: computeStats(m.data) }));
 
     // Quick-range selector: set start N days before end (= now).
