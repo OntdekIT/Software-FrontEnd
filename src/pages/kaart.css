@@ -8,7 +8,56 @@
     height: calc(100dvh - 4rem - var(--bottom-nav-height, 0px));
 }
 
-/* Wijkenlijst in het zijpaneel / de bottom sheet */
+/* Wijkenlijst in het zijpaneel / de bottom sheet: rustige rijen, kleurchip links,
+   grote waarde rechts. Alleen amber en inkt; blauw is voor knoppen. */
+.kaart .wijken-list-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kaart .wijken-sort {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    background: var(--color-sunken);
+    border-radius: 10px;
+}
+
+.kaart .wijken-sort-btn {
+    flex: 1;
+    min-height: 32px;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-ink-soft);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.kaart .wijken-sort-btn:hover {
+    background: var(--color-select-bg);
+}
+
+.kaart .wijken-sort-btn.is-active {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 1px 2px rgba(17, 24, 39, 0.18), inset 0 -2px 0 var(--color-select-border);
+}
+
+.kaart .wijken-sort-btn:focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 1px;
+}
+
+.kaart .wijken-empty {
+    margin: 4px 2px;
+    font-size: 0.875rem;
+    color: var(--color-muted);
+}
+
 .kaart .wijken-list {
     display: flex;
     flex-direction: column;
@@ -18,51 +67,110 @@
 .kaart .wijken-list-item {
     display: flex;
     width: 100%;
-    border: 1px solid #e5e7eb;
-    text-align: left;
-    justify-content: space-between;
     align-items: center;
-    padding: 10px 14px;
-    background: #fff;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    text-align: left;
     cursor: pointer;
 }
 
 .kaart .wijken-list-item:hover {
-    background: #fff9e6;
+    background: var(--color-select-bg);
 }
 
 .kaart .wijken-list-item:focus-visible {
-    outline: 3px solid #111827;
+    outline: 3px solid var(--color-ink);
     outline-offset: 2px;
 }
 
+/* Gekozen wijk: amber rand en vlak, geen blauw */
 .kaart .wijken-list-item.is-selected {
-    box-shadow: inset 0 0 0 3px #111827;
+    background: var(--color-select-bg);
+    border-color: var(--color-select-border);
+    box-shadow: inset 4px 0 0 var(--color-select-border);
+}
+
+.kaart .wijken-list-chip {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(17, 24, 39, 0.28);
+}
+
+/* Wijk zonder meting: gestippelde lege chip in plaats van een kleur */
+.kaart .wijken-list-chip.is-empty {
+    background: var(--color-sunken);
+    box-shadow: none;
+    border: 1.5px dashed var(--color-muted);
+}
+
+.kaart .wijken-list-text {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .kaart .wijken-list-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.95rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-ink);
 }
 
-.kaart .wijken-list-temp {
-    color: #111827;
-    font-weight: 600;
-    min-width: 48px;
-    text-align: right;
+.kaart .wijken-list-sub {
+    font-size: 0.75rem;
+    color: var(--color-muted);
 }
 
-/* Wijk zonder recente meting: rustig grijs met icoon, geen temperatuurkleur */
-.kaart .wijken-list-nodata {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: #4b5563;
-    font-size: 0.85em;
+.kaart .wijken-list-value {
+    display: flex;
+    flex: none;
+    align-items: baseline;
+    gap: 3px;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.kaart .wijken-list-number {
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.kaart .wijken-list-unit {
+    font-size: 0.75rem;
     font-weight: 500;
-    text-align: right;
+    color: var(--color-muted);
+}
+
+/* Compact op mobiel */
+@media (max-width: 639px) {
+    .kaart .wijken-list {
+        gap: 4px;
+    }
+
+    .kaart .wijken-list-item {
+        gap: 10px;
+        padding: 8px 10px;
+    }
+
+    .kaart .wijken-list-chip {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+    }
+
+    .kaart .wijken-list-number {
+        font-size: 1.125rem;
+    }
 }
 
 /* Uitklapbare volledige grafiek en meetlijst in het detailsheet */
@@ -70,7 +178,7 @@
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--color-ink-soft);
     padding: 4px 0;
 }
 
@@ -86,8 +194,8 @@
 
 .region-sheet .region-chart {
     min-width: 0;
-    background: #fff;
-    border: 1px solid #e5e7eb;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
     border-radius: 10px;
     padding: 6px 0;
 }
@@ -103,13 +211,13 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #4b5563;
+    color: var(--color-muted);
     margin: 0 0 4px 0;
 }
 
 .region-sheet .region-measurement-item {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
+    background: var(--color-sunken);
+    border: 1px solid var(--color-line);
     border-radius: 6px;
     padding: 5px 8px;
     display: flex;
@@ -127,21 +235,21 @@
     flex: 1;
     padding: 4px 8px;
     font-size: 12px;
-    border: 1px solid #9ca3af;
+    border: 1px solid var(--color-muted);
     border-radius: 4px;
-    background: #f5f5f5;
+    background: var(--color-sunken);
     cursor: pointer;
 }
 
 .region-sheet .toggle-btn.active {
-    background: #1a3ab8;
+    background: var(--color-ink);
     color: white;
-    border-color: #1a3ab8;
+    border-color: var(--color-ink);
 }
 
 .region-sheet .rm-time {
     font-size: 11px;
-    color: #4b5563;
+    color: var(--color-muted);
     white-space: nowrap;
 }
 
@@ -168,18 +276,18 @@
 }
 
 .region-sheet .rm-min {
-    background: #e8eeff;
-    color: #1a3ab8;
+    background: var(--color-data-min-bg);
+    color: var(--color-data-min-fg);
 }
 
 .region-sheet .rm-avg {
-    background: #e6fae6;
-    color: #1a7a1a;
+    background: var(--color-data-avg-bg);
+    color: var(--color-data-avg-fg);
 }
 
 .region-sheet .rm-max {
-    background: #ffeaea;
-    color: #c42020;
+    background: var(--color-data-max-bg);
+    color: var(--color-data-max-fg);
 }
 
 /* Hover-popup van de kaart blijft onder de zwevende bediening */

@@ -6,8 +6,11 @@ const ROUND_BUTTON = 'pointer-events-auto flex h-10 w-10 shrink-0 items-center j
 
 // Zwevende bediening linksboven op de kaart: zoeken, mijn locatie en zoomen.
 // De laagkeuze staat eronder en is onderdeel van de kaart zelf.
-export default function MapControls({ regions, onSelectRegion, onLocate, onZoomIn, onZoomOut, locating = false }) {
-    const [query, setQuery] = useState('');
+export default function MapControls({ regions, onSelectRegion, onLocate, onZoomIn, onZoomOut, locating = false, query: queryProp, onQueryChange }) {
+    // Het zoekveld kan door de pagina beheerd worden, zodat de wijkenlijst meefiltert.
+    const [ownQuery, setOwnQuery] = useState('');
+    const query = queryProp ?? ownQuery;
+    const setQuery = onQueryChange ?? setOwnQuery;
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
     const listId = useId();
@@ -109,4 +112,6 @@ MapControls.propTypes = {
     onZoomIn: PropTypes.func.isRequired,
     onZoomOut: PropTypes.func.isRequired,
     locating: PropTypes.bool,
+    query: PropTypes.string,
+    onQueryChange: PropTypes.func,
 };
