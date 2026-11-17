@@ -5,6 +5,8 @@ import {SkeletonCard} from "../../../components/ui/Skeleton.jsx";
 import {Spinner} from "../../../components/ui/Preloader.jsx";
 import Button from "../../../components/ui/Button.jsx";
 import StationCard from "../../../components/stations/station-card.jsx";
+import MyStationStatusList from "../../../components/stations/my-station-status-list.jsx";
+import {indexLastMeasurements} from "../../../utils/station-status.js";
 
 export default function MyStationsOverview() {
     const [loading, setLoading] = useState(true); // true while any fetch is in flight
@@ -12,6 +14,9 @@ export default function MyStationsOverview() {
     const [errMsg, setErrMsg] = useState(null);
     const [name, setName] = useState(null);
     const [stations, setStations] = useState([]);
+    // Latest measurement per station id. Stays null when it could not be loaded;
+    // the list then shows the moment as unknown.
+    const [lastMeasurements, setLastMeasurements] = useState(null);
 
     useEffect(() => {
         const getData = async () => {
@@ -29,6 +34,12 @@ export default function MyStationsOverview() {
             }
         };
         getData();
+
+        // The own-station endpoint has no measurements, so derive the latest
+        // one from the public list. Failure only costs the "laatste meting".
+        backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${new Date().toISOString()}`)
+            .then((response) => setLastMeasurements(indexLastMeasurements(response.data)))
+            .catch(() => setLastMeasurements(null));
     }, []);
 
     const sortedStations = [...stations].sort((a, b) => a.stationid - b.stationid);
@@ -54,11 +65,14 @@ export default function MyStationsOverview() {
                             <Spinner className="h-3 w-3" /> bijwerken…
                         </span>
                     )}
-                    <Link to={"./claim"} aria-label="Nieuw station toevoegen">
-                        <Button variant="primary" size="sm">
-                            <i className="bi bi-plus-lg" aria-hidden="true"></i> Nieuw station toevoegen
-                        </Button>
-                    </Link>
+                    {/* In the empty state the button lives in the empty-state card, so it appears only once. */}
+                    {ready && sortedStations.length > 0 && (
+                        <Link to={"./claim"} aria-label="Nieuw station toevoegen">
+                            <Button variant="primary" size="sm">
+                                <i className="bi bi-plus-lg" aria-hidden="true"></i> Nieuw station toevoegen
+                            </Button>
+                        </Link>
+                    )}
                 </div>
             </div>
 
@@ -81,9 +95,20 @@ export default function MyStationsOverview() {
                         <i className="bi bi-broadcast text-2xl" aria-hidden="true"></i>
                     </div>
                     <h2 className="text-lg font-semibold text-gray-800">Nog geen stations</h2>
-                    <p className="mt-1 max-w-md text-sm text-gray-500">
+                    <p className="mt-1 max-w-md text-sm text-gray-600">
                         Je hebt nog geen meetstations geclaimd. Voeg je eerste station toe om metingen te bekijken.
                     </p>
+                    <div className="mt-4 max-w-md rounded-lg bg-brand-50 px-4 py-3 text-left text-sm text-gray-700">
+                        <p className="flex items-center gap-2 font-semibold text-gray-900">
+                            <i className="bi bi-key" aria-hidden="true"></i> Wat is een workshopcode?
+                        </p>
+                        <p className="mt-1">
+                            Een workshopcode is een tijdelijke code van 6 cijfers die je krijgt van de begeleider
+                            van de workshop waarin je je meetstation bouwt. Je vult de code in samen met het
+                            stationnummer dat op je meetstation staat. Een code is beperkt geldig: heb je er geen of
+                            is de code verlopen, vraag dan de organisator van de workshop om een nieuwe.
+                        </p>
+                    </div>
                     <Link to={"./claim"} className="mt-5" aria-label="Nieuw station toevoegen">
                         <Button variant="primary" size="sm">
                             <i className="bi bi-plus-lg" aria-hidden="true"></i> Nieuw station toevoegen
@@ -91,11 +116,14 @@ export default function MyStationsOverview() {
                     </Link>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    {sortedStations.map((station) => (
-                        <StationCard key={station.stationid} station={station}></StationCard>
-                    ))}
-                </div>
+                <>
+                    <MyStationStatusList stations={sortedStations} lastMeasurements={lastMeasurements}/>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {sortedStations.map((station) => (
+                            <StationCard key={station.stationid} station={station}></StationCard>
+                        ))}
+                    </div>
+                </>
             )}
         </div>
     )
