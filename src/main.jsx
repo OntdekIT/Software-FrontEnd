@@ -2,18 +2,18 @@ import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import Root from "./pages/root.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import AuthProvider from "./providers/auth-provider.jsx";
 import ProtectedRoute from "./components/protected-route.jsx";
 import UserRole from "./domain/user-role.jsx";
 import { getUserByIdLoader } from "./loaders/user-loader.jsx";
 import Preloader from "./components/ui/Preloader.jsx";
 import { ToastProvider } from "./components/ui/toast.jsx";
+import LegacyRedirect from "./components/legacy-redirect.jsx";
+import { LEGACY_PARAM_REDIRECTS, LEGACY_REDIRECTS } from "./utils/legacy-routes.js";
 
 // Lazy load everything
-const Dashboard = lazy(() => import('./pages/dashboard.jsx'));
-const NewHome = lazy(() => import('./pages/new-home.jsx'));
-const NewHeatMap = lazy(() => import('./pages/new-heatmap.jsx'));
+const Kaart = lazy(() => import('./pages/kaart.jsx'));
 const About = lazy(() => import('./pages/about.jsx'));
 const Login = lazy(() => import('./pages/auth/login.jsx'));
 const Register = lazy(() => import('./pages/auth/register.jsx'));
@@ -23,7 +23,6 @@ const ResetPassword = lazy(() => import('./pages/auth/reset-password.jsx'));
 const MyStationsOverview = lazy(() => import('./pages/my/stations/my-stations-overview.jsx'));
 const ClaimStation = lazy(() => import('./pages/my/stations/claim-station.jsx'));
 const Profile = lazy(() => import('./pages/my/account/profile.jsx'));
-const StationsList = lazy(() => import('./pages/stations/stations-list.jsx'));
 const StationDetails = lazy(() => import('./pages/stations/station-details.jsx'));
 const EditStation = lazy(() => import('./pages/stations/edit-station.jsx'));
 const AdminDashboard = lazy(() => import('./pages/admin/admin-dashboard.jsx'));
@@ -35,7 +34,18 @@ const StationOverview = lazy(() => import('./pages/admin/stations/stations-overv
 const MeetstationToevoegen = lazy(() => import('./pages/admin/stations/toevoegen/meetstation-toevoegen.jsx'));
 const DataCoverage = lazy(() => import('./pages/admin/data-coverage/data-coverage.jsx'));
 const ErrorPage = lazy(() => import('./pages/error-page.jsx'));
-const NeighbourhoodPage = lazy(() => import('./pages/neighbourhoodPage.jsx'));
+
+// Oude routes sturen door naar de kaart (zie utils/legacy-routes.js).
+const legacyRoutes = [
+    ...Object.entries(LEGACY_REDIRECTS).map(([path, to]) => ({
+        path,
+        element: <Navigate to={to} replace />
+    })),
+    ...Object.entries(LEGACY_PARAM_REDIRECTS).map(([path, to]) => ({
+        path,
+        element: <LegacyRedirect to={to} />
+    })),
+];
 
 const router = createBrowserRouter([
     {
@@ -44,36 +54,11 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             {
+                // De kaart is het hoofdscherm.
                 index: true,
-                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
+                element: <Suspense fallback={<Preloader />}><Kaart /></Suspense>
             },
-            {
-                path: "/dashboard",
-                element: <Suspense fallback={<Preloader />}><Dashboard /></Suspense>
-            },
-            {
-                // The interactive map+regions view that used to be the landing
-                // page. Kept at /kaart (with the old /newhome alias) now that
-                // the dashboard is the index route.
-                path: "/kaart",
-                element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
-            },
-            {
-                path: "/newhome",
-                element: <Suspense fallback={<Preloader />}><NewHome /></Suspense>
-            },
-            {
-                path: "/newheatmap",
-                element: <Suspense fallback={<Preloader />}><NewHeatMap /></Suspense>
-            },
-            {
-                path: "/wijken",
-                element: <Suspense fallback={<Preloader />}><NeighbourhoodPage /></Suspense>
-            },
-            {
-                path: "/wijken/:id",
-                element: <Suspense fallback={<Preloader />}><NeighbourhoodPage /></Suspense>
-            },
+            ...legacyRoutes,
             {
                 path: "/about",
                 element: <Suspense fallback={<Preloader />}><About /></Suspense>
@@ -105,7 +90,6 @@ const router = createBrowserRouter([
             {
                 path: "/stations",
                 children: [
-                    { index: true, element: <Suspense fallback={<Preloader />}><StationsList /></Suspense> },
                     {
                         path: ":stationId",
                         element: <Suspense fallback={<Preloader />}><StationDetails /></Suspense>,
