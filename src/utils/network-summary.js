@@ -1,6 +1,8 @@
 // Pure helpers behind the summary strip on the homepage. Kept free of React so
 // they can be unit tested with `node --test`.
 
+import {parseMeasurementTime} from "./measurement-time.js";
+
 function toNumber(value) {
     const n = typeof value === "number" ? value : parseFloat(value);
     return Number.isFinite(n) ? n : null;
@@ -33,8 +35,8 @@ export function latestMeasurementTime(stations) {
     for (const station of stations ?? []) {
         const list = station.measurementDtoList ?? station.measurements ?? [];
         for (const m of list) {
-            const t = new Date(m.timestamp).getTime();
-            if (Number.isFinite(t) && (latest === null || t > latest)) latest = t;
+            const t = parseMeasurementTime(m.timestamp);
+            if (t !== null && (latest === null || t > latest)) latest = t;
         }
     }
     return latest;

@@ -1,4 +1,5 @@
 // Pure helpers to describe the state of a measuring station in the UI.
+import {parseMeasurementTime} from "./measurement-time.js";
 
 // Newest measurement time (ms since epoch) of a station, or null when it has
 // no (parseable) measurement. The list endpoint calls the field
@@ -6,8 +7,8 @@
 export function lastMeasurementTime(station) {
     const list = station?.measurementDtoList ?? station?.measurements ?? [];
     const times = list
-        .map((m) => new Date(m.timestamp).getTime())
-        .filter((t) => Number.isFinite(t));
+        .map((m) => parseMeasurementTime(m.timestamp))
+        .filter((t) => t !== null);
     return times.length > 0 ? Math.max(...times) : null;
 }
 
