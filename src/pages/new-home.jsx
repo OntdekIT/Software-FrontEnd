@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { backendApi } from "../utils/backend-api.jsx";
 import './new-home.css';
 import NewMap from "../components/newmap.jsx";
@@ -22,43 +22,58 @@ export default function Home() {
     const [showMax, setShowMax] = useState(false);
     const [showGem, setShowGem] = useState(false);
     const [dataView, setDataView] = useState('temperature');
-    const [showPmRegions, setShowPmRegions] = useState(false);
+    const [metric, setMetric] = useState('temperature');
 
     const mapRef = useRef();
 
-    function zoomToRegion(region) {
-        if (mapRef.current && Array.isArray(region.coordinates) && region.coordinates.length > 0) {
-            const lats = region.coordinates.map(coord => coord[0]);
-            const lngs = region.coordinates.map(coord => coord[1]);
-            const center = [
-                lats.reduce((a, b) => a + b, 0) / lats.length,
-                lngs.reduce((a, b) => a + b, 0) / lngs.length
-            ];
-            mapRef.current.setView(center, 14);
-            setSelectedRegion(region);
-            fetchRegionData(region.id);
-        }
+    // Teller om te voorkomen dat een trage vorige respons de grafiek van een
+    // nieuwere selectie overschrijft.
+    const historyRequestId = useRef(0);
+
+    // Eén plek voor selecteren: lijst en kaart roepen dezelfde functie aan.
+    // Alleen een klik in de lijst laat de kaart inzoomen; bij een klik op de
+    // kaart staat de wijk al in beeld.
+    function selectRegion(region, { zoom = false } = {}) {
+        setSelectedRegion(region);
+        fetchRegionData(region.id);
+        if (zoom) mapRef.current?.focusRegion(region);
+    }
+
+    function selectRegionFromMap(properties) {
+        const region = regionData.find(r => String(r.id) === String(properties.id)) ?? properties;
+        selectRegion(region);
     }
 
     const fetchRegionData = (regionId) => {
+        const requestId = ++historyRequestId.current;
         setRegionLoading(true);
         setRegionHistoryData([]);
         backendApi.get(`/measurement/history/average/region/${regionId}?granularity=half-hour`)
             .then(response => {
+                if (requestId !== historyRequestId.current) return;
                 setRegionHistoryData(response.data);
                 setRegionLoading(false);
             })
             .catch(() => {
+                if (requestId !== historyRequestId.current) return;
                 console.error("Failed to fetch region data");
                 setRegionHistoryData([]);
                 setRegionLoading(false);
             });
     };
 
-    const parseTemp = (val) => {
-        const n = parseFloat(val);
-        return isFinite(n) ? n : null;
-    };
+    const closeRegion = useCallback(() => {
+        historyRequestId.current++;
+        setSelectedRegion(null);
+    }, []);
+
+    // Escape sluit het detailsheet.
+    useEffect(() => {
+        if (!selectedRegion) return undefined;
+        const onKeyDown = (e) => { if (e.key === 'Escape') closeRegion(); };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [selectedRegion, closeRegion]);
 
     const handleRegionLegendChange = (e) => {
         if (e.dataKey === "min") setShowMin(prev => !prev);
@@ -110,32 +125,17 @@ export default function Home() {
                         </div>
                     )}
                     <NewMap
+                        ref={mapRef}
                         centerX={5.0913}
                         centerY={51.5555}
                         zoom={12}
                         regionData={showRegions ? regionData : []}
                         stations={stations}
-                        pmRegionIds={showPmRegions
-                            ? regionData.filter(r => r.avgPm25 != null).map(r => r.id)
-                            : []
-                        }
-                        onRegionClick={(region) => {
-                            setSelectedRegion(region);
-                            fetchRegionData(region.id);
-                        }}
+                        metric={metric}
+                        onMetricChange={setMetric}
+                        selectedRegionId={selectedRegion?.id ?? null}
+                        onRegionClick={selectRegionFromMap}
                     />
-                   <div className="pm-toggle">
-                       <span className="pm-toggle-text">Fijnstof wijken</span>
-
-                       <label className="switch">
-                           <input
-                               type="checkbox"
-                               checked={showPmRegions}
-                               onChange={() => setShowPmRegions(v => !v)}
-                           />
-                           <span className="slider round"></span>
-                       </label>
-                   </div>
                 </div>
                 <div className="sidebar-container">
                     <div className="wijken-view">
@@ -145,10 +145,17 @@ export default function Home() {
                                 Wijken
                             </h2>
                         </div>
-                        {selectedRegion ? (
+                        <RegionList
+                            regionData={regionData}
+                            loading={regionsLoading}
+                            metric={metric}
+                            selectedId={selectedRegion?.id ?? null}
+                            onRegionClick={(region) => selectRegion(region, { zoom: true })}
+                        />
+                        {selectedRegion && (
                             <RegionDetails
                                 selectedRegion={selectedRegion}
-                                setSelectedRegion={setSelectedRegion}
+                                setSelectedRegion={closeRegion}
                                 regionLoading={regionLoading}
                                 regionHistoryData={regionHistoryData}
                                 dataView={dataView}
@@ -158,19 +165,8 @@ export default function Home() {
                                 showGem={showGem}
                                 handleRegionLegendChange={handleRegionLegendChange}
                                 formatTimestamp={formatTimestamp}
-                                parseTemp={parseTemp}
+                                metric={metric}
                             />
-                        ) : (
-                           <RegionList
-                               regionData={regionData}
-                               loading={regionsLoading}
-                               zoomToRegion={zoomToRegion}
-                               parseTemp={parseTemp}
-                               onRegionClick={(region) => {
-                                   setSelectedRegion(region);
-                                   fetchRegionData(region.id);
-                               }}
-                           />
                         )}
                     </div>
 

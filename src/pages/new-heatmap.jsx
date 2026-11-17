@@ -5,6 +5,7 @@ import Preloader from "../components/ui/Preloader.jsx";
 import NewMap from "../components/newmap.jsx";
 import TimeSlider from "../components/map/time-slider.jsx";
 import { PLAYBACK_SPEEDS, computeColorRange } from "../utils/timelapse-utils.jsx";
+import { METRICS } from "../utils/map-metrics.js";
 import './new-heatmap.css';
 
 /** Keuzes voor de lengte van de time-lapse, met het aantal stappen erbij. */
@@ -18,6 +19,7 @@ export default function Heatmap() {
     const [neighbourhoods, setNeighbourhoods] = useState([]);
     const [frames, setFrames] = useState([]);
     const [stations, setStations] = useState([]);
+    const [metric, setMetric] = useState('temperature');
     const [loading, setLoading] = useState(true);
 
     const [rangeIndex, setRangeIndex] = useState(1); // standaard 24 uur
@@ -77,7 +79,7 @@ export default function Heatmap() {
 
     // Eén kleurschaal voor de hele reeks, zodat de kleuren tussen tijdstappen
     // dezelfde betekenis houden.
-    const colorRange = useMemo(() => computeColorRange(frames, 'avgTemp'), [frames]);
+    const colorRange = useMemo(() => computeColorRange(frames, METRICS[metric].key), [frames, metric]);
 
     // De kaart verwacht wijken met coordinaten én waarden in één object; de
     // backend stuurt die bewust gescheiden om de payload klein te houden.
@@ -121,7 +123,7 @@ export default function Heatmap() {
                 )}
 
                 {/* Periodekeuze: bepaalt hoe ver de time-lapse terugkijkt. */}
-                <div className="pointer-events-auto absolute right-3 top-3 z-10 flex overflow-hidden rounded-lg border border-gray-200 bg-white/95 shadow-md backdrop-blur">
+                <div className="pointer-events-auto absolute right-3 top-3 z-10 flex overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md">
                     {RANGE_OPTIONS.map((option, i) => (
                         <button
                             key={option.label}
@@ -130,8 +132,8 @@ export default function Heatmap() {
                             aria-pressed={rangeIndex === i}
                             className={`px-3 py-1.5 text-sm font-medium transition-colors ${
                                 rangeIndex === i
-                                    ? 'bg-brand-500 text-white'
-                                    : 'bg-transparent text-gray-700 hover:bg-brand-50'
+                                    ? 'bg-brand-500 font-semibold text-gray-900'
+                                    : 'bg-white text-gray-800 hover:bg-brand-50'
                             }`}
                         >
                             {option.label}
@@ -146,6 +148,8 @@ export default function Heatmap() {
                     regionData={regionData}
                     stations={stations}
                     colorRange={colorRange}
+                    metric={metric}
+                    onMetricChange={setMetric}
                     overlay={
                         <TimeSlider
                             timestamps={timestamps}

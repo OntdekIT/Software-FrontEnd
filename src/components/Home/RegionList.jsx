@@ -1,13 +1,24 @@
-﻿import PropTypes from 'prop-types';
+﻿import { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Skeleton } from '../ui/Skeleton.jsx';
+import { NO_RECENT_DATA_LABEL } from '../../utils/region-status.js';
+import { METRICS, METRIC_IDS, formatMetricValue } from '../../utils/map-metrics.js';
 
 export default function RegionList({
     regionData,
-    zoomToRegion,
-    parseTemp,
+    metric = 'temperature',
     onRegionClick,
+    selectedId = null,
     loading = false
 }) {
+    const itemRefs = useRef(new Map());
+
+    // Een klik op de kaart selecteert een wijk die buiten beeld kan staan.
+    useEffect(() => {
+        if (selectedId === null) return;
+        itemRefs.current.get(selectedId)?.scrollIntoView({ block: 'nearest' });
+    }, [selectedId]);
+
     if (loading) {
         return (
             <div className="wijken-list" aria-busy="true" aria-label="Wijken laden">
@@ -24,24 +35,31 @@ export default function RegionList({
     return (
         <div className="wijken-list">
             {regionData.map((region, idx) => (
-                <div
-                    className="wijken-list-item"
+                <button
+                    type="button"
+                    className={`wijken-list-item${region.id === selectedId ? ' is-selected' : ''}`}
                     key={region.id || idx}
-                    onClick={() => {
-                        zoomToRegion(region);
-                        onRegionClick(region);
+                    ref={(el) => {
+                        if (el) itemRefs.current.set(region.id, el);
+                        else itemRefs.current.delete(region.id);
                     }}
-                    style={{ cursor: 'pointer' }}
+                    aria-pressed={region.id === selectedId}
+                    onClick={() => onRegionClick(region)}
                 >
                     <span className="wijken-list-name">
                         {region.name}
                     </span>
-                    <span className="wijken-list-temp">
-                        {parseTemp(region.avgTemp) !== null
-                            ? `${parseTemp(region.avgTemp).toFixed(1)}°C`
-                            : '--'}
-                    </span>
-                </div>
+                    {formatMetricValue(metric, region[METRICS[metric].key]) !== null ? (
+                        <span className="wijken-list-temp">
+                            {formatMetricValue(metric, region[METRICS[metric].key])}
+                        </span>
+                    ) : (
+                        <span className="wijken-list-nodata">
+                            <i className="bi bi-clock-history" aria-hidden="true"></i>
+                            {NO_RECENT_DATA_LABEL}
+                        </span>
+                    )}
+                </button>
             ))}
         </div>
     );
@@ -49,8 +67,8 @@ export default function RegionList({
 
 RegionList.propTypes = {
     regionData: PropTypes.array.isRequired,
-    zoomToRegion: PropTypes.func.isRequired,
-    parseTemp: PropTypes.func.isRequired,
+    metric: PropTypes.oneOf(METRIC_IDS),
     onRegionClick: PropTypes.func.isRequired,
+    selectedId: PropTypes.number,
     loading: PropTypes.bool
 };
