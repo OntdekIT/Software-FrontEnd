@@ -17,7 +17,7 @@ export const LEGACY_REDIRECTS = {
 
 // Doorverwijzingen met een parameter. `:id` wordt in het doelpad ingevuld.
 export const LEGACY_PARAM_REDIRECTS = {
-    '/wijken/:id': KAART_PATH,
+    '/wijken/:id': '/wijk/:id',
 };
 
 /** Vult `:param`-plekken in een pad in. */

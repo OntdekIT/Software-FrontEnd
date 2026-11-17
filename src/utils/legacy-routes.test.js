@@ -14,19 +14,20 @@ test('de tabel bevat alle routes uit de user story', () => {
     }
 });
 
-test('een oude wijkdetail-link stuurt ook naar de kaart', () => {
-    assert.equal(resolveLegacyPath('/wijken/12'), '/');
+test('een oude wijkdetail-link wordt een /wijk/:id-link', () => {
+    assert.equal(resolveLegacyPath('/wijken/12'), '/wijk/12');
 });
 
 test('afsluitende slash en hoofdletters worden genegeerd', () => {
     assert.equal(resolveLegacyPath('/Wijken/'), '/');
-    assert.equal(resolveLegacyPath('/wijken/7/'), '/');
+    assert.equal(resolveLegacyPath('/wijken/7/'), '/wijk/7');
 });
 
 test('stationdetails en andere routes worden niet doorgestuurd', () => {
     assert.equal(resolveLegacyPath('/stations/5'), null);
     assert.equal(resolveLegacyPath('/about'), null);
     assert.equal(resolveLegacyPath('/'), null);
+    assert.equal(resolveLegacyPath('/wijk/3'), null);
 });
 
 test('fillPath codeert parameters', () => {
