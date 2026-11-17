@@ -32,12 +32,21 @@
     color: #b42318;
 }
 
-/* KPI strip: four tiles on desktop, wrapping down to 2 then 1 on narrow screens. */
+/* KPI strip: three tiles per row on desktop, wrapping down to 2 then 1 on narrow screens. */
 .dashboard-kpis {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin-bottom: 1.25rem;
+}
+
+.dashboard-kpis-empty {
+    grid-column: 1 / -1;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #4b5563;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 /* Main body: map on the left, stacked summary cards on the right. */
