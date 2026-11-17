@@ -54,9 +54,15 @@ const router = createBrowserRouter([
         errorElement: <ErrorPage />,
         children: [
             {
-                // De kaart is het hoofdscherm.
-                index: true,
-                element: <Suspense fallback={<Preloader />}><Kaart /></Suspense>
+                // De kaart is het hoofdscherm. /wijk/:id is dezelfde pagina met het
+                // detailsheet open; als kinderroutes zodat de kaart niet opnieuw
+                // laadt bij het wisselen tussen wijken.
+                path: "/",
+                element: <Suspense fallback={<Preloader />}><Kaart /></Suspense>,
+                children: [
+                    { index: true },
+                    { path: "wijk/:id" }
+                ]
             },
             ...legacyRoutes,
             {
