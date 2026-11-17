@@ -4,6 +4,8 @@
 // Een punt is {lat, lng, value, ...}. Punten met een niet-eindige waarde of
 // positie worden overal genegeerd (NaN mag nooit in de kleurvlak lekken).
 
+import { pickExtremes } from './current-values.js';
+
 export const KM_PER_DEG_LAT = 110.57;
 export const KM_PER_DEG_LNG_AT_EQUATOR = 111.32;
 
@@ -131,11 +133,7 @@ export function buildGrid(points, bounds, cols, rows, options = {}) {
 export function findExtremes(points) {
     const pts = usablePoints(points);
     if (pts.length < 2) return { hot: null, cold: null };
-    let hot = pts[0];
-    let cold = pts[0];
-    for (const p of pts) {
-        if (p.value > hot.value) hot = p;
-        if (p.value < cold.value) cold = p;
-    }
-    return hot.value === cold.value ? { hot: null, cold: null } : { hot, cold };
+    // Gelijke waarden beslist de naam, net als bij wijken (current-values.js).
+    const { highest, lowest } = pickExtremes(pts, (p) => p.value);
+    return highest.value === lowest.value ? { hot: null, cold: null } : { hot: highest, cold: lowest };
 }

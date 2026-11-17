@@ -1,4 +1,5 @@
 import { parseMeasurement } from './region-status.js';
+import { parseMeasurementTime } from './measurement-time.js';
 
 // Zet de stationslijst (/Meetstation/stationsMetMeasurements) om naar punten
 // voor de interpolatie. Alleen stations met een recente, echte meting doen mee.
@@ -12,38 +13,6 @@ const MEASUREMENT_KEYS = { temperature: 'temperature', pm25: 'pm2.5' };
 // Kleurschaal: minimaal zoveel eenheden breed, anders wordt een verschil van een
 // tiende graad een regenboog. De kaart zelf schaalt op min en max.
 export const MIN_RANGE_SPAN = { temperature: 3, pm25: 10 };
-
-const AMSTERDAM = 'Europe/Amsterdam';
-
-// Verschil (ms) tussen Amsterdamse wandtijd en UTC op een moment.
-function amsterdamOffsetMs(utcMs) {
-    const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone: AMSTERDAM, hourCycle: 'h23',
-        year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit',
-    }).formatToParts(new Date(utcMs));
-    const get = (type) => Number(parts.find((p) => p.type === type).value);
-    const asUtc = Date.UTC(get('year'), get('month') - 1, get('day'), get('hour'), get('minute'), get('second'));
-    return asUtc - Math.floor(utcMs / 1000) * 1000;
-}
-
-/**
- * Tijdstip van een meting in ms, of null. De backend stuurt "17-11-2026 22:30:19"
- * (Amsterdamse tijd); ISO-teksten worden ook begrepen.
- */
-export function parseMeasurementTime(text) {
-    if (typeof text !== 'string') return null;
-    const match = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2}):(\d{2})$/.exec(text.trim());
-    if (!match) {
-        const iso = new Date(text).getTime();
-        return Number.isFinite(iso) ? iso : null;
-    }
-    const [, d, mo, y, h, mi, s] = match.map(Number);
-    const wall = Date.UTC(y, mo - 1, d, h, mi, s);
-    // Twee keer verfijnen vangt de zomertijdgrens op.
-    let utc = wall - amsterdamOffsetMs(wall);
-    utc = wall - amsterdamOffsetMs(utc);
-    return utc;
-}
 
 /**
  * @returns {{points: Array, total: number, excluded: number}}

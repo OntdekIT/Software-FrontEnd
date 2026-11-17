@@ -83,7 +83,7 @@ export default function NetworkDashboard() {
             </header>
 
             <div className="space-y-4">
-                <KeyNumbers stations={stations} timelapse={timelapse} pmCoverage={isAdmin ? pmCoverage : undefined} />
+                <KeyNumbers stations={stations} regions={regions} timelapse={timelapse} pmCoverage={isAdmin ? pmCoverage : undefined} />
                 <div className="grid gap-4 lg:grid-cols-3">
                     <div className="lg:col-span-2"><Suspense fallback={<Skeleton className="h-96 w-full" rounded="rounded-xl" />}><CityChart timelapse={timelapse} /></Suspense></div>
                     <ExtremeWijken regions={regions} />

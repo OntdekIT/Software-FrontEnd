@@ -134,10 +134,11 @@ export default function Kaart() {
     const frame = timeline ? selectFrame(frames, frameIndex) : null;
     const live = !timeline || isLive(frameIndex, frames.length);
 
-    // De wijken zoals de kaart ze toont: de live gegevens, of de waarden van het gekozen frame.
+    // De wijken zoals de kaart ze toont: de live gegevens (dezelfde bron als de andere pagina's),
+    // of de waarden van het gekozen frame. Op LIVE tonen we de snapshot, niet het laatste frame.
     const displayRegions = useMemo(
-        () => (timeline && frame ? regionsForFrame(timeline.neighbourhoods, frame) : regionData),
-        [timeline, frame, regionData]
+        () => (timeline && frame && !(live && regionData.length > 0) ? regionsForFrame(timeline.neighbourhoods, frame) : regionData),
+        [timeline, frame, live, regionData]
     );
 
     // Een kleurschaal voor de hele reeks, zodat de kleuren per tijdstip dezelfde betekenis houden

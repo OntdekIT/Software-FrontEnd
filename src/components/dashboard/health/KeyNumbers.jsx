@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import {useMemo} from "react";
 import StatCard from "../StatCard.jsx";
+import {cityAverage} from "../../../utils/current-values.js";
 import {
-    cityAverageFromStations,
     countStationHealth,
     coverageFromFrames,
 } from "../../../utils/network-health.js";
@@ -14,11 +14,13 @@ const fixed = (value, digits = 1) => (value == null ? NO_VALUE : value.toFixed(d
 
 // The headline numbers. Stations and timelapse load independently, so a card
 // only waits for (or fails on) its own source.
-export default function KeyNumbers({stations, timelapse, pmCoverage}) {
+export default function KeyNumbers({stations, regions, timelapse, pmCoverage}) {
     const stationsOk = stations.state === "ok";
     const health = useMemo(() => (stationsOk ? countStationHealth(stations.data) : null), [stationsOk, stations.data]);
-    const avgTemp = useMemo(() => (stationsOk ? cityAverageFromStations(stations.data, "temperature") : null), [stationsOk, stations.data]);
-    const avgPm25 = useMemo(() => (stationsOk ? cityAverageFromStations(stations.data, "pm2.5") : null), [stationsOk, stations.data]);
+    // Same city average as the map strip: mean of the wijk averages now (current-values.js).
+    const regionsOk = regions.state === "ok";
+    const avgTemp = useMemo(() => (regionsOk ? cityAverage(regions.data, "avgTemp") : null), [regionsOk, regions.data]);
+    const avgPm25 = useMemo(() => (regionsOk ? cityAverage(regions.data, "avgPm25") : null), [regionsOk, regions.data]);
     const coverage = useMemo(
         () => (timelapse.state === "ok" && stationsOk ? coverageFromFrames(timelapse.data?.frames, stations.data.length) : null),
         [timelapse.state, timelapse.data, stationsOk, stations.data],
@@ -26,6 +28,8 @@ export default function KeyNumbers({stations, timelapse, pmCoverage}) {
 
     const stationsLoading = stations.state === "loading";
     const stationsDetail = stations.state === "error" ? UNAVAILABLE : undefined;
+    const regionsLoading = regions.state === "loading";
+    const regionsDetail = regions.state === "error" ? UNAVAILABLE : undefined;
     const coverageLoading = stationsLoading || timelapse.state === "loading";
     const coverageFailed = stations.state === "error" || timelapse.state === "error";
 
@@ -52,14 +56,14 @@ export default function KeyNumbers({stations, timelapse, pmCoverage}) {
                 detail={coverageDetail}
             />
             <StatCard
-                icon="bi-thermometer-half" accent="warning" label="Gem. temperatuur stad" loading={stationsLoading}
+                icon="bi-thermometer-half" accent="warning" label="Gem. temperatuur stad" loading={regionsLoading}
                 value={fixed(avgTemp)} unit={avgTemp == null ? undefined : "°C"}
-                detail={stationsDetail ?? (avgTemp == null ? "geen recente metingen" : "stations, afgelopen uur")}
+                detail={regionsDetail ?? (avgTemp == null ? "geen recente metingen" : "gemiddelde van de wijken, nu")}
             />
             <StatCard
-                icon="bi-cloud-haze2" accent="ink" label="Gem. fijnstof (PM2.5)" loading={stationsLoading}
+                icon="bi-cloud-haze2" accent="ink" label="Gem. fijnstof (PM2.5)" loading={regionsLoading}
                 value={fixed(avgPm25)} unit={avgPm25 == null ? undefined : "µg/m³"}
-                detail={stationsDetail ?? (avgPm25 == null ? "geen recente fijnstofmeting" : "stations, afgelopen uur")}
+                detail={regionsDetail ?? (avgPm25 == null ? "geen recente fijnstofmeting" : "gemiddelde van de wijken, nu")}
             />
         </section>
     );
@@ -68,6 +72,7 @@ export default function KeyNumbers({stations, timelapse, pmCoverage}) {
 const sourceShape = PropTypes.shape({state: PropTypes.string.isRequired, data: PropTypes.any});
 KeyNumbers.propTypes = {
     stations: sourceShape.isRequired,
+    regions: sourceShape.isRequired,
     timelapse: sourceShape.isRequired,
     pmCoverage: sourceShape,
 };

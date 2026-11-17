@@ -3,6 +3,7 @@
 
 import {getStationStatus} from "./station-status.js";
 import {parseMeasurementTime} from "./measurement-time.js";
+import {pickRegionExtremes} from "./current-values.js";
 
 export const HOUR_MS = 60 * 60 * 1000;
 // A station counts as "recent" when its newest measurement is at most this old.
@@ -137,16 +138,10 @@ export function coverageFromFrames(frames, totalStations) {
     return shares.reduce((a, b) => a + b, 0) / shares.length;
 }
 
-// Warmest and coldest wijk (with id, for the link to /wijk/:id).
+// Warmest and coldest wijk (with id, for the link to /wijk/:id). Shared rule in
+// current-values.js: no value is never 0, ties go to the name.
 export function pickWarmestAndColdest(regions) {
-    const usable = (regions ?? [])
-        .map((r) => ({id: r.id, name: r.name, temp: toNumber(r.avgTemp)}))
-        .filter((r) => r.temp !== null);
-    if (usable.length === 0) return {warmest: null, coldest: null};
-    return {
-        warmest: usable.reduce((best, r) => (r.temp > best.temp ? r : best)),
-        coldest: usable.reduce((best, r) => (r.temp < best.temp ? r : best)),
-    };
+    return pickRegionExtremes(regions, "avgTemp");
 }
 
 // Newest known sighting per station id over several older snapshots.
