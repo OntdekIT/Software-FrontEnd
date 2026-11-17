@@ -5,7 +5,7 @@ import {Spinner} from "../ui/Preloader.jsx";
 import Button from "../ui/Button.jsx";
 import ReactDatePicker from "react-datepicker";
 import PropTypes from "prop-types";
-import ZoomableChart from "../charts/ZoomableChart";
+import ZoomableChart from "../charts/LazyZoomableChart";
 import {useChartZoom} from "../charts/UseChartZoom";
 
 const DAY = 24 * 60 * 60 * 1000;

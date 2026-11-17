@@ -1,11 +1,13 @@
 import ReactDatePicker from "react-datepicker";
-import {useEffect, useState} from "react";
+import {Suspense, lazy, useEffect, useState} from "react";
 import {Link, Outlet, useParams} from "react-router-dom";
 import {backendApi} from "../../utils/backend-api.jsx";
 import Preloader, { Spinner } from "../../components/ui/Preloader.jsx";
 import Button from "../../components/ui/Button.jsx";
 import GraphView from "../../components/stations/graph-view.jsx";
-import FourPanelStats from "../../components/stations/four-panel-stats.jsx";
+import {Skeleton} from "../../components/ui/Skeleton.jsx";
+
+const FourPanelStats = lazy(() => import("../../components/stations/four-panel-stats.jsx"));
 
 /**
  * Datumformaat dat de backend verwacht (dd-MM-yyyy HH:mm). Staat buiten de
@@ -367,14 +369,16 @@ export default function StationDetails() {
 
             {/* Four-panel comparison: network min / max / median vs this station,
                 all over the period selected above. */}
-            <FourPanelStats
-                networkData={networkData}
-                stationData={tempGraphData}
-                stationName={meetstation.name || `Station ${meetstation.stationid}`}
-                unit="°C"
-                loading={networkLoading}
-                error={networkError}
-            />
+            <Suspense fallback={<Skeleton className="h-64 w-full" rounded="rounded-xl" />}>
+                <FourPanelStats
+                    networkData={networkData}
+                    stationData={tempGraphData}
+                    stationName={meetstation.name || `Station ${meetstation.stationid}`}
+                    unit="°C"
+                    loading={networkLoading}
+                    error={networkError}
+                />
+            </Suspense>
 
             {/* Graphs, each in its own card */}
             <div className="space-y-6">
