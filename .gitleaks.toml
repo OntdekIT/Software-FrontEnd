@@ -1,0 +1,11 @@
+title = "OntdekIT Software-FrontEnd gitleaks config"
+
+[extend]
+useDefault = true
+
+# JWT_SECRET in de e2e-workflow is een bewust weggegooid testgeheim voor de
+# tijdelijke CI-backend ("dev-..." in base64), geen productiegeheim.
+[[allowlists]]
+description = "Wegwerp JWT_SECRET voor de e2e-CI-backend"
+paths = ['''^\.github/workflows/e2e\.yml$''']
+regexes = ['''JWT_SECRET:\s*ZGV2LW[A-Za-z0-9+/=]+''']

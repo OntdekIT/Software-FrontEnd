@@ -1,0 +1,8 @@
+# Bekende gelekte MailSlurp API-key in de historie (cypress/support/commands.js,
+# commits van mei en juni 2025). De key is inmiddels uit de code gehaald maar staat
+# nog in de git-historie: ROTEER DE KEY in het MailSlurp-dashboard. Pas daarna is
+# dit ignore-blok echt onschuldig.
+8520efb10ebcd2f9b3c5113127f35e8a3b3bce55:cypress/support/commands.js:generic-api-key:29
+8520efb10ebcd2f9b3c5113127f35e8a3b3bce55:cypress/support/commands.js:generic-api-key:34
+6b00e41f97420f66ba7bb9b16ead48d89772dc31:cypress/support/commands.js:generic-api-key:29
+6b00e41f97420f66ba7bb9b16ead48d89772dc31:cypress/support/commands.js:generic-api-key:34
