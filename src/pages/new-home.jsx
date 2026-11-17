@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { backendApi } from "../utils/backend-api.jsx";
-import ColorLegend from "../components/map/color-legend.jsx";
 import './new-home.css';
 import NewMap from "../components/newmap.jsx";
 import RegionList from "../components/Home/RegionList.jsx";
@@ -14,7 +13,6 @@ export default function Home() {
     const [regionData, setRegionData] = useState([]);
     const [regionsLoading, setRegionsLoading] = useState(true);
     const [stations, setStations] = useState([]);
-    const [measurements, setMeasurements] = useState([]);
     const [showRegions] = useState(true);
     const [dateTime] = useState(new Date());
     const [selectedRegion, setSelectedRegion] = useState(null);
@@ -86,10 +84,6 @@ export default function Home() {
                 .then(resp => setStations(resp.data))
                 .catch(handleAxiosError);
 
-            backendApi.get(`/measurement/history?timestamp=${dateTime.toISOString()}`)
-                .then(resp => setMeasurements(resp.data))
-                .catch(handleAxiosError);
-
             backendApi.get(`/neighbourhood/history?timestamp=${dateTime.toISOString()}`)
                 .then(response => setRegionData(response.data))
                 .catch(handleAxiosError)
@@ -130,10 +124,6 @@ export default function Home() {
                             fetchRegionData(region.id);
                         }}
                     />
-                   <div className="map-legend">
-                       <ColorLegend temperatures={measurements} />
-                   </div>
-
                    <div className="pm-toggle">
                        <span className="pm-toggle-text">Fijnstof wijken</span>
 
