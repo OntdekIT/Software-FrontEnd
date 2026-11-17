@@ -4,6 +4,7 @@ import '../utils/maplibre-worker.js'; // must run before any map is created
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { colorFor, computeValueRange, legendSteps } from '../utils/color-scale.js';
+import { NO_RECENT_DATA_LABEL, parseMeasurement } from '../utils/region-status.js';
 
 // Effectieve kleurschaal voor een metriek: de vaste schaal van de pagina
 // (time-lapse) of anders min/max van de huidige dataset. Kaart en legenda
@@ -204,10 +205,12 @@ export default function NewMap({ centerX, centerY, zoom, regionData, onRegionCli
 
     function buildPopupHtml(regionProps) {
       const name = regionProps.name ?? 'Onbekend gebied';
-      const temp = regionProps.avgTemp != null && regionProps.avgTemp !== '' ? `${regionProps.avgTemp} °C` : '—';
+      const temp = parseMeasurement(regionProps.avgTemp);
       const rows = [
         `<div style="font-weight:600;margin-bottom:2px;">${name}</div>`,
-        `<div>Gem. temperatuur: <strong>${temp}</strong></div>`
+        temp !== null
+          ? `<div>Gem. temperatuur: <strong>${temp.toFixed(1)} °C</strong></div>`
+          : `<div style="color:#4b5563;">${NO_RECENT_DATA_LABEL}</div>`
       ];
       if (regionProps.avgPm25 != null && regionProps.avgPm25 !== '') {
         rows.push(`<div>Gem. PM2.5: <strong>${regionProps.avgPm25} µg/m³</strong></div>`);

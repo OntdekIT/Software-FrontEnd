@@ -122,6 +122,17 @@
                 min-width: 48px;
                 text-align: right;
             }
+
+            /* Wijk zonder recente meting: rustig grijs met icoon, geen temperatuurkleur */
+            .wijken-list-nodata {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                color: #4b5563;
+                font-size: 0.9em;
+                font-weight: 500;
+                text-align: right;
+            }
         }
 
         .wijken-list-item:hover {
@@ -185,6 +196,21 @@
     .rct-label {
         font-size: 0.8rem;
         color: #555;
+    }
+
+    .rct-nodata {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    .region-current-nodata {
+        flex-wrap: wrap;
+        row-gap: 2px;
+        column-gap: 12px;
     }
 
     .rct-value {
