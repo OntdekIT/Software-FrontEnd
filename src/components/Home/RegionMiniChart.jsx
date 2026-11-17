@@ -18,9 +18,9 @@ export default function RegionMiniChart({ regionHistoryData, formatTimestamp, me
         + `hoogste ${Math.max(...values).toFixed(1)} ${unit}.`;
 
     return (
-        <figure className="region-mini-chart" aria-label={summary}>
-            <figcaption className="region-mini-chart-caption">Laatste 24 uur ({label}, {unit})</figcaption>
-            <ResponsiveContainer width="100%" height={96}>
+        <figure className="m-0 rounded-xl border border-gray-200 bg-white px-1 pb-1 pt-2" aria-label={summary}>
+            <figcaption className="px-2 pb-1 text-xs text-gray-700">Laatste 24 uur ({label}, {unit})</figcaption>
+            <ResponsiveContainer width="100%" height={128}>
                 <LineChart data={points} margin={{ top: 4, right: 8, bottom: 0, left: 0 }}>
                     <XAxis dataKey="timestamp" tick={{ fontSize: 10 }} tickFormatter={formatTimestamp} minTickGap={48} />
                     <YAxis domain={['auto', 'auto']} width={28} tick={{ fontSize: 10 }} />

@@ -96,11 +96,33 @@ function regionBounds(region) {
   ];
 }
 
-const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, metric = 'temperature', onMetricChange, selectedRegionId = null, stations = [], colorRange = null, overlay = null }, ref) {
+// Zichtbaar gebied van de kaart (zelfde grenzen als maxBounds van de kaart zelf).
+const MAP_BOUNDS = [[4.90, 51.44], [5.25, 51.68]];
+
+function isInsideBounds([lng, lat]) {
+  return lng >= MAP_BOUNDS[0][0] && lng <= MAP_BOUNDS[1][0]
+    && lat >= MAP_BOUNDS[0][1] && lat <= MAP_BOUNDS[1][1];
+}
+
+// "Mijn locatie" als stip op de kaart.
+function createLocationElement() {
+  const el = document.createElement('div');
+  el.className = 'h-4 w-4 rounded-full border-2 border-white bg-blue-600 shadow-md ring-4 ring-blue-600/30';
+  el.setAttribute('role', 'img');
+  el.setAttribute('aria-label', 'Mijn locatie');
+  return el;
+}
+
+const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, onRegionClick, metric = 'temperature', onMetricChange, selectedRegionId = null, stations = [], colorRange = null, overlay = null, controls = null, bottomInsetClassName = 'inset-x-3 bottom-3' }, ref) {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const popupRef = useRef(null);
   const markersRef = useRef([]);
+  const locationMarkerRef = useRef(null);
+  // Een focus-verzoek dat binnenkomt voordat de kaart klaar is (bijvoorbeeld bij
+  // een directe link naar een wijk) wordt bewaard en uitgevoerd zodra hij laadt.
+  const pendingFocusRef = useRef(null);
+  const readyRef = useRef(false);
   const metricRef = useRef(metric);
   // Pas true als de bronnen en lagen bestaan. Effecten die de kaart vullen wachten
   // hierop, zodat data die sneller binnenkomt dan de kaartstijl niet verloren gaat.
@@ -110,11 +132,53 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
   metricRef.current = metric;
 
   // Laat de pagina (bijvoorbeeld de wijkenlijst) de kaart naar een wijk sturen.
+  // De bediening (zoeken, mijn locatie, zoom) staat zwevend in de pagina en
+  // stuurt de kaart via deze functies aan.
   useImperativeHandle(ref, () => ({
-    focusRegion(region) {
+    focusRegion(region, padding = 48) {
       const bounds = regionBounds(region);
-      if (!mapInstance.current || !bounds) return;
-      mapInstance.current.fitBounds(bounds, { padding: 48, maxZoom: 15, duration: 600 });
+      if (!bounds) return;
+      if (!mapInstance.current || !readyRef.current) {
+        pendingFocusRef.current = { bounds, padding };
+        return;
+      }
+      mapInstance.current.fitBounds(bounds, { padding, maxZoom: 15, duration: 600 });
+    },
+    zoomIn() {
+      mapInstance.current?.zoomIn();
+    },
+    zoomOut() {
+      mapInstance.current?.zoomOut();
+    },
+    // Resolve met 'ok', 'outside' (buiten het meetgebied) of 'unavailable'.
+    locate() {
+      return new Promise((resolve) => {
+        if (!mapInstance.current || !('geolocation' in navigator)) {
+          resolve('unavailable');
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          ({ coords }) => {
+            const lngLat = [coords.longitude, coords.latitude];
+            if (!mapInstance.current) {
+              resolve('unavailable');
+              return;
+            }
+            locationMarkerRef.current?.remove();
+            locationMarkerRef.current = new maplibregl.Marker({ element: createLocationElement() })
+              .setLngLat(lngLat)
+              .addTo(mapInstance.current);
+            if (!isInsideBounds(lngLat)) {
+              resolve('outside');
+              return;
+            }
+            mapInstance.current.flyTo({ center: lngLat, zoom: Math.max(mapInstance.current.getZoom(), 14) });
+            resolve('ok');
+          },
+          () => resolve('unavailable'),
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      });
     }
   }), []);
 
@@ -132,23 +196,10 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
           style: styleJson,
           center: [centerX, centerY],
           zoom: zoom,
-          maxBounds: [
-              [4.90, 51.44],
-              [5.25, 51.68]
-            ]
+          maxBounds: MAP_BOUNDS,
+          // Geen ingebouwde knoppen: de pagina toont zwevende bediening.
+          attributionControl: { compact: true }
         });
-
-        // navigation, geolocate ("mijn locatie") and fullscreen controls
-        mapInstance.current.addControl(new maplibregl.NavigationControl(), 'top-right');
-        mapInstance.current.addControl(
-          new maplibregl.GeolocateControl({
-            positionOptions: { enableHighAccuracy: true },
-            trackUserLocation: true,
-            showUserLocation: true
-          }),
-          'top-right'
-        );
-        mapInstance.current.addControl(new maplibregl.FullscreenControl(), 'top-right');
 
         mapInstance.current.on('load', () => {
           if (!mapInstance.current.getSource('regions')) {
@@ -187,6 +238,7 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
             });
           }
 
+          readyRef.current = true;
           setMapLoaded(true);
 
           mapInstance.current.on('click', 'regions-fill', (e) => {
@@ -266,6 +318,9 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
       }
       markersRef.current.forEach(m => m.remove());
       markersRef.current = [];
+      locationMarkerRef.current?.remove();
+      locationMarkerRef.current = null;
+      readyRef.current = false;
       if (mapInstance.current) {
         mapInstance.current.remove();
         mapInstance.current = null;
@@ -277,6 +332,13 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
     // prop via closure at call time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [centerX, centerY, zoom]);
+
+  useEffect(() => {
+    if (!mapLoaded || !pendingFocusRef.current) return;
+    const { bounds, padding } = pendingFocusRef.current;
+    pendingFocusRef.current = null;
+    mapInstance.current.fitBounds(bounds, { padding, maxZoom: 15, duration: 0 });
+  }, [mapLoaded]);
 
   useEffect(() => {
     if (!mapLoaded || !regionData || regionData.length === 0) return;
@@ -342,11 +404,14 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
     <div className="relative h-full w-full">
       <div ref={mapRef} className="h-full w-full" />
 
-      {/* Laagkeuze: één plek voor temperatuur en fijnstof (linksboven) */}
+      {/* Zwevende bediening linksboven: de pagina vult dit (zoeken, mijn
+          locatie), de laagkeuze staat eronder. */}
+      <div className="pointer-events-none absolute left-3 top-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-col items-start gap-2 lg:max-w-sm">
+        {controls && <div className="pointer-events-auto w-full">{controls}</div>}
       <div
         role="radiogroup"
         aria-label="Kaartlaag"
-        className="absolute left-3 top-3 z-10 flex overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md"
+        className="pointer-events-auto flex overflow-hidden rounded-lg border border-gray-300 bg-white shadow-md"
       >
         {METRIC_IDS.map((id) => {
           const option = METRICS[id];
@@ -372,10 +437,15 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
           );
         })}
       </div>
+      </div>
 
+      {/* Onderrand: legenda met daaronder de pagina-overlay (tijdlijn). Op
+          mobiel zit alles boven de bottom sheet, via de inset die de pagina meegeeft.
+          pointer-events-none zodat de kaart eromheen sleepbaar blijft. */}
+      <div className={`pointer-events-none absolute z-10 flex flex-col items-start gap-2 ${bottomInsetClassName}`}>
       {/* Legenda: eenheid, schaal en kleur voor wijken zonder meting */}
       <div
-        className="absolute bottom-3 left-3 z-10 rounded-lg border border-gray-300 bg-white p-3 shadow-md"
+        className="pointer-events-auto rounded-lg border border-gray-300 bg-white p-3 shadow-md"
         role="group"
         aria-label={`Legenda ${activeMetric.label}`}
       >
@@ -407,14 +477,8 @@ const NewMap = forwardRef(function NewMap({ centerX, centerY, zoom, regionData, 
         </div>
       </div>
 
-      {/* Ruimte voor bediening van de pagina, bijvoorbeeld de tijdslider.
-          pointer-events-none op de wrapper zodat de kaart eromheen sleepbaar
-          blijft; de inhoud zet hem zelf weer aan. */}
-      {overlay && (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 w-[min(42rem,calc(100%-1.5rem))] -translate-x-1/2">
-          {overlay}
-        </div>
-      )}
+      {overlay && <div className="w-full max-w-2xl">{overlay}</div>}
+      </div>
     </div>
   );
 });
@@ -440,4 +504,8 @@ NewMap.propTypes = {
   }),
   /** Bediening die over de kaart heen getoond wordt, onderaan gecentreerd. */
   overlay: PropTypes.node,
+  /** Zwevende bediening linksboven, boven de laagkeuze. */
+  controls: PropTypes.node,
+  /** Tailwind-klassen voor de positie van legenda en overlay onderaan de kaart. */
+  bottomInsetClassName: PropTypes.string,
 };
