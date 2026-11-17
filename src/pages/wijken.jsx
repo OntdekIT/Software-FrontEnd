@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { backendApi } from '../utils/backend-api.jsx';
 import Button from '../components/ui/Button.jsx';
 import { Skeleton } from '../components/ui/Skeleton.jsx';
 import Sparkline from '../components/wijken/Sparkline.jsx';
-import CompareChart from '../components/wijken/CompareChart.jsx';
 import { COMPARE_COLORS } from '../components/wijken/compare-colors.js';
 import { METRICS, formatMetricParts } from '../utils/map-metrics.js';
 import { NO_RECENT_DATA_LABEL } from '../utils/region-status.js';
 import { filterRegions } from '../utils/region-search.js';
 import { DEFAULT_SORT_MODE, sortOptions, sortRegions } from '../utils/region-sort.js';
 import { TIMELINE_HOURS, TIMELINE_STEPS, parseTimelapse } from '../utils/timeline.js';
+import { STATIONS_ENDPOINT, WIJKEN_ENDPOINT, swrRequest } from '../utils/swr-cache.js';
 import { wijkPath } from '../utils/wijk-link.js';
 import {
     MAX_COMPARE, TREND, buildCompareData, buildRows, buildSeriesByRegion, countActiveStations,
@@ -80,6 +80,9 @@ SummaryCard.propTypes = {
     detail: PropTypes.func.isRequired,
 };
 
+// De vergelijkingsgrafiek (recharts) laadt pas zodra er wijken gekozen zijn.
+const CompareChart = lazy(() => import('../components/wijken/CompareChart.jsx'));
+
 export default function Wijken() {
     const [regions, setRegions] = useState([]);
     const [timeline, setTimeline] = useState(null);
@@ -102,22 +105,32 @@ export default function Wijken() {
         setLoading(true);
         setFailed(false);
         // De tijdlijn is een bonus: zonder blijft de lijst werken, alleen zonder verloop.
-        const timelapse = backendApi.get('/neighbourhood/history/timelapse', {
+        // De drie calls lopen parallel en zetten elk hun eigen state: de trage
+        // timelapse (3 tot 9 s) houdt de lijst dus niet meer tegen.
+        backendApi.get('/neighbourhood/history/timelapse', {
             params: { from: from.toISOString(), to: to.toISOString(), steps: TIMELINE_STEPS },
             timeout: TIMELAPSE_TIMEOUT_MS,
-        }).then(r => parseTimelapse(r.data)).catch(() => null);
-        const stationsCall = backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${to.toISOString()}`)
-            .then(r => (Array.isArray(r.data) ? r.data : [])).catch(() => []);
-        const current = backendApi.get(`/neighbourhood/history?timestamp=${to.toISOString()}`)
-            .then(r => (Array.isArray(r.data) ? r.data : []));
-
-        Promise.all([current, timelapse, stationsCall])
-            .then(([cur, tl, st]) => {
-                setRegions(cur);
-                setTimeline(tl);
-                setStations(st);
-            })
-            .catch(() => setFailed(true))
+        }).then(r => parseTimelapse(r.data)).catch(() => null).then(setTimeline);
+        swrRequest(
+            STATIONS_ENDPOINT,
+            () => backendApi.get(`/Meetstation/stationsMetMeasurements?timestamp=${to.toISOString()}`)
+                .then(r => (Array.isArray(r.data) ? r.data : [])),
+            cached => setStations(cached.data)
+        ).then(setStations).catch(() => {});
+        let showingCached = false;
+        swrRequest(
+            WIJKEN_ENDPOINT,
+            () => backendApi.get(`/neighbourhood/history?timestamp=${to.toISOString()}`)
+                .then(r => (Array.isArray(r.data) ? r.data : [])),
+            cached => {
+                showingCached = true;
+                setRegions(cached.data);
+                setLoading(false);
+            }
+        )
+            .then(setRegions)
+            // Mislukt het verversen terwijl de bewaarde stand al staat, dan blijft die zichtbaar.
+            .catch(() => { if (!showingCached) setFailed(true); })
             .finally(() => setLoading(false));
     }, []);
 
@@ -223,7 +236,11 @@ export default function Wijken() {
                                 ))}
                             </ul>
                             {frames.length > 0
-                                ? <CompareChart data={compareData} selected={selected} unit={metricDef.unit} decimals={decimals} />
+                                ? (
+                                    <Suspense fallback={<Skeleton className="mt-3 h-72 w-full" rounded="rounded-xl" />}>
+                                        <CompareChart data={compareData} selected={selected} unit={metricDef.unit} decimals={decimals} />
+                                    </Suspense>
+                                )
                                 : <p className="mt-3 text-sm text-muted" role="status">Het verloop over 24 uur is nu niet beschikbaar.</p>}
                         </>
                     )}

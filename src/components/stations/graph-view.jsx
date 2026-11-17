@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 import PropTypes from "prop-types";
-import ZoomableChart from "../charts/ZoomableChart";
+import ZoomableChart from "../charts/LazyZoomableChart";
 import {useChartZoom} from "../charts/UseChartZoom";
 
 const LINES = [

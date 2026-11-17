@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import ZoomableChart from "../charts/ZoomableChart";
+import ZoomableChart from "../charts/LazyZoomableChart";
 
 export default function DustGraph({ data, zoom }) {
     if (!data || data.length === 0) {

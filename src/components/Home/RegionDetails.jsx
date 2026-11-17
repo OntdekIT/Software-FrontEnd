@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import RegionChart from './RegionChart.jsx';
-import RegionMiniChart from './RegionMiniChart.jsx';
 import RegionMeasurementList from './RegionMeasurementList.jsx';
 import { Skeleton } from '../ui/Skeleton.jsx';
 import { NO_RECENT_DATA_LABEL, lastMeasurementTimestamp } from '../../utils/region-status.js';
@@ -16,6 +14,10 @@ function formatTimestamp(ts) {
         hour: '2-digit', minute: '2-digit'
     }) : ts;
 }
+
+// De grafieken (recharts) laden pas zodra een wijk geopend wordt, niet met de kaart mee.
+const RegionChart = lazy(() => import('./RegionChart.jsx'));
+const RegionMiniChart = lazy(() => import('./RegionMiniChart.jsx'));
 
 const ACTION_BUTTON = 'inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-900 hover:bg-brand-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 disabled:cursor-not-allowed disabled:text-gray-600 disabled:hover:bg-white';
 
@@ -110,11 +112,14 @@ export default function RegionDetails({
                 </div>
             ) : history.length > 0 ? (
                 <>
-                    <RegionMiniChart regionHistoryData={history} formatTimestamp={formatTimestamp} metric={metric} />
+                    <Suspense fallback={<Skeleton className="h-32 w-full" rounded="rounded-xl" />}>
+                        <RegionMiniChart regionHistoryData={history} formatTimestamp={formatTimestamp} metric={metric} />
+                    </Suspense>
                     <details className="region-more">
                         <summary>Alle metingen en grafiek</summary>
                         <div className="region-data-layout">
-                            <RegionChart
+                            <Suspense fallback={<Skeleton className="h-64 w-full" rounded="rounded-xl" />}>
+                                <RegionChart
                                 regionHistoryData={history}
                                 dataView={dataView}
                                 setDataView={setDataView}
@@ -124,6 +129,7 @@ export default function RegionDetails({
                                 handleRegionLegendChange={handleLegendChange}
                                 formatTimestamp={formatTimestamp}
                             />
+                            </Suspense>
                             <RegionMeasurementList
                                 regionHistoryData={history}
                                 dataView={dataView}
