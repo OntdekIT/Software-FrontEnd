@@ -33,6 +33,7 @@ export default function NeighbourhoodDetail({ neighbourhood }) {
             return;
         }
 
+        let cancelled = false;
         setHistoryLoading(true);
 
         backendApi
@@ -43,14 +44,24 @@ export default function NeighbourhoodDetail({ neighbourhood }) {
                 },
             })
             .then((response) => {
-                setHistory(response.data);
+                if (!cancelled) {
+                    setHistory(response.data);
+                }
             })
             .catch(() => {
-                setHistory([]);
+                if (!cancelled) {
+                    setHistory([]);
+                }
             })
             .finally(() => {
-                setHistoryLoading(false);
+                if (!cancelled) {
+                    setHistoryLoading(false);
+                }
             });
+
+        return () => {
+            cancelled = true;
+        };
     }, [neighbourhood?.id, period]);
 
     // Nieuwe periode gekozen: oude zoom past niet meer, dus wissen.
